@@ -1,7 +1,7 @@
-SZABLON DOKUMENTACJI PROJEKTOWEJ
-Przedmiot: Zagadnienia sieciowe w systemach mobilnych
+#Projekt Cinkciarz2
+##Przedmiot: Zagadnienia sieciowe w systemach mobilnych
 
-Część 1 – Projekt koncepcyjny
+##Część 1 – Projekt koncepcyjny
 
 Temat projektu: System mobilny kantoru wymiany walut (lub alternatywny temat zaakceptowany przez prowadzącego)
 
@@ -9,42 +9,27 @@ Temat projektu: System mobilny kantoru wymiany walut (lub alternatywny temat zaa
    Tytuł Projektu:
    Cinkciarz
 
-Autorzy projektu:
+**Autorzy projektu:** Tomasz Turek, Marek Wietecki
 
-Tomasz Turek, Marek Wietecki
+**Kierunek studiów:** Informatyka
 
-Kierunek studiów:
+**Rok / Semestr:** 4ty rok, 7my semestr
 
-Informatyka
+**Prowadzący:** Marcin Kacprowicz
 
-Rok / Semestr:
+**Data oddania:** 6.02.2025
 
-4ty rok, 7my semestr
-
-Prowadzący
-
-Marcin Kacprowicz
-
-Data oddania
-
-6.02.2025
 
 2. Opis projektu
-   2.1. Cel projektu
-   •Krótki opis celu aplikacji:
-   Aplikacja ma na celu stworzenie mobilnego systemu pozwalającemu użytkownikowai na intuicyjną i wygodną wymianę wirtualnych walut w czasie rzeczywistym. Użyktownik korzystając z naszej aplikacji możesz kupować, a także sprzedawać z wykorzystaniem
+   1. Cel projektu
 
-•Główna funkcjonalność
+   Aplikacja ma na celu stworzenie mobilnego systemu pozwalającemu użytkownikowai na intuicyjną i wygodną wymianę wirtualnych walut w czasie rzeczywistym. Użyktownik korzystając z naszej aplikacji może kupować, a także sprzedawać z wykorzystaniem API Narodowego Banku Polskiego.
 
-•Wartości użytkowa systemu
-
-Przykład: Celem projektu jest stworzenie aplikacji mobilnej umożliwiającej wymianę walut wirtualnych, w tym przegląd kursów walut w czasie rzeczywistym i realizację transakcji kupna/sprzedaży, z wykorzystaniem API Narodowego Banku Polskiego.
-
-2.2. Zakres projektu
+   2. Zakres projektu
 Opis modułów systemu oraz ich roli (np. aplikacja mobilna, Web Service, baza danych).
 
 3. Wymagania systemowe
-   3.1. Wymagania funkcjonalne
+   1. Wymagania funkcjonalne
    Tabela przedstawiająca wszystkie funkcje systemu:
 
 ID
@@ -83,10 +68,10 @@ Czas odpowiedzi systemu ≤ 2 s
 Wydajność
 
 4. Diagramy UML
-   4.1. Diagram przypadków użycia
+   1. Diagram przypadków użycia
    Wstaw diagram przedstawiający interakcje między użytkownikiem a systemem.
 
-4.2. Diagram klas
+   2. Diagram klas
 Przedstaw strukturę logiczną systemu – główne klasy, atrybuty, relacje.
 
 5. Projekt bazy danych
