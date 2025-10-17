@@ -1,39 +1,118 @@
-# Welcome to your Expo app 👋
+SZABLON DOKUMENTACJI PROJEKTOWEJ
+Przedmiot: Zagadnienia sieciowe w systemach mobilnych
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Część 1 – Projekt koncepcyjny
 
-## Get started
+Temat projektu: System mobilny kantoru wymiany walut (lub alternatywny temat zaakceptowany przez prowadzącego)
 
-1. Install dependencies
+1. Informacje ogólne
+   Tytuł Projektu:
+   Cinkciarz
 
-   ```bash
-   npm install
-   ```
+Autorzy projektu:
 
-2. Start the app
+Tomasz Turek, Marek Wietecki
 
-   ```bash
-   npx expo start
-   ```
+Kierunek studiów:
 
-In the output, you'll find options to open the app in a
+Informatyka
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Rok / Semestr:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4ty rok, 7my semestr
 
-## Get a fresh project
+Prowadzący
 
-When you're ready, run:
+Marcin Kacprowicz
 
-```bash
-npm run reset-project
-```
+Data oddania
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+6.02.2025
+
+2. Opis projektu
+   2.1. Cel projektu
+   •Krótki opis celu aplikacji:
+   Aplikacja ma na celu stworzenie mobilnego systemu pozwalającemu użytkownikowai na intuicyjną i wygodną wymianę wirtualnych walut w czasie rzeczywistym. Użyktownik korzystając z naszej aplikacji możesz kupować, a także sprzedawać z wykorzystaniem
+
+•Główna funkcjonalność
+
+•Wartości użytkowa systemu
+
+Przykład: Celem projektu jest stworzenie aplikacji mobilnej umożliwiającej wymianę walut wirtualnych, w tym przegląd kursów walut w czasie rzeczywistym i realizację transakcji kupna/sprzedaży, z wykorzystaniem API Narodowego Banku Polskiego.
+
+2.2. Zakres projektu
+Opis modułów systemu oraz ich roli (np. aplikacja mobilna, Web Service, baza danych).
+
+3. Wymagania systemowe
+   3.1. Wymagania funkcjonalne
+   Tabela przedstawiająca wszystkie funkcje systemu:
+
+ID
+
+Nazwa funkcji
+
+Opis działania
+
+Priorytet
+
+F1
+
+Rejestracja użytkownika
+
+Użytkownik może utworzyć konto
+
+Wysoki
+
+3.2. Wymagania niefunkcjonalne
+Opis wymagań dotyczących jakości systemu:
+
+ID
+
+Nazwa
+
+Opis
+
+Kategoria
+
+N1
+
+Wydajność
+
+Czas odpowiedzi systemu ≤ 2 s
+
+Wydajność
+
+4. Diagramy UML
+   4.1. Diagram przypadków użycia
+   Wstaw diagram przedstawiający interakcje między użytkownikiem a systemem.
+
+4.2. Diagram klas
+Przedstaw strukturę logiczną systemu – główne klasy, atrybuty, relacje.
+
+5. Projekt bazy danych
+   Model ERD (Entity-Relationship Diagram), opis tabel i relacji, klucze główne, obce, typy danych.
+
+6. Architektura systemu
+   Opis wzajemnych powiązań między modułami aplikacji oraz schemat logiczny przepływu danych.
+
+7. Plan realizacji projektu
+   Etap
+
+Opis
+
+Termin
+
+Osoba odpowiedzialna
+
+1
+
+Analiza wymagań
+
+8. Wnioski i możliwe rozszerzenia
+   Opis potencjalnych funkcjonalności dodatkowych lub usprawnień, które mogą zostać dodane po ukończeniu projektu.
+
+9. Źródła
+   Lista źródeł i materiałów wykorzystanych w projekcie (np. dokumentacja API NBP, dokumentacja technologii, literatura).
 
 ## Learn more
 
