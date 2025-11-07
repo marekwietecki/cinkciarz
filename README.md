@@ -114,6 +114,11 @@ Analiza wymagań
 9. Źródła
    Lista źródeł i materiałów wykorzystanych w projekcie (np. dokumentacja API NBP, dokumentacja technologii, literatura).
 
+
+https://expo.dev/
+https://docs.npmjs.com
+https://expressjs.com
+
 ## Learn more
 
 To learn more about developing your project with Expo, look at the following resources:
