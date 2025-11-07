@@ -21,68 +21,194 @@ function getISODate(date) {
 }
 
 async function getTable(tableType, startDate = null, endDate = null) {
-    if (startDate && endDate) {
-        // Transforms data to ISO 8601
-        startDate = getISODate(startDate);
-        endDate = getISODate(endDate);
+    tableType = tableType.toUpperCase();
+    const baseUrl = `https://api.nbp.pl/api/exchangerates/tables/${tableType}`;
+    const url = startDate && endDate
+        ? `${baseUrl}/${getISODate(startDate)}/${getISODate(endDate)}/?format=json`
+        : `${baseUrl}/?format=json`;
 
-        try {
-            const table = await axios.get(`https://api.nbp.pl/api/exchangerates/tables/${tableType}/${startDate}/${endDate}/?format=json`).then(response => response.data);
-            const { rates } = table[0];
-            return rates;
-        } catch (error) {
-            console.error(error);
+    try {
+        const response = await axios.get(url);
+        const { rates } = response.data[0];
+        return { success: true, data: rates };
+    } catch (error) {
+        console.error('NBP API Error:', error.response?.status, error.response?.data);
+
+        if (error.response) {
+            const { status, data } = error.response;
+            
+            if (status === 404) {
+                return { 
+                    success: false, 
+                    status: 404,
+                    message: 'Not Found - Brak danych dla określonego zakresu czasowego'
+                };
+            }
+            
+            if (status === 400) {
+                const message = data.includes('limit')
+                    ? 'Bad Request - Przekroczony limit'
+                    : 'Bad Request - Nieprawidłowo sformułowane zapytanie';
+                    
+                return {
+                    success: false,
+                    status: 400,
+                    message
+                };
+            }
+            
+            return {
+                success: false,
+                status: status,
+                message: data || 'Unknown error'
+            };
         }
-    } else {
-        try {
-            const table = await axios.get(`https://api.nbp.pl/api/exchangerates/tables/${tableType}/?format=json`).then(response => response.data);
-            const { rates } = table[0];
-            return rates;
-        } catch (error) {
-            console.error(error);
+        
+        return {
+            success: false,
+            status: 500,
+            message: 'Internal Server Error'
+        };
+    }
+}
+
+async function getCurrencyRate(tableType, code, startDate = null, endDate = null) {
+    tableType = tableType.toUpperCase();
+    
+    const baseUrl = `https://api.nbp.pl/api/exchangerates/rates/${tableType}/${code}/`;
+    const url = startDate && endDate
+        ? `${baseUrl}/${getISODate(startDate)}/${getISODate(endDate)}/?format=json`
+        : startDate && !endDate
+        ? `${baseUrl}/${getISODate(startDate)}/?format=json`
+        : `${baseUrl}/?format=json`;
+
+        
+    try {
+        const response = await axios.get(url);
+        const { rates } = response.data;
+        return { success: true, data: rates };
+    } catch (error) {
+        console.error('NBP API Error:', error.response?.status, error.response?.data);
+
+        if (error.response) {
+            const { status, data } = error.response;
+            
+            if (status === 404) {
+                return { 
+                    success: false, 
+                    status: 404,
+                    message: 'Not Found - Brak danych dla określonego zakresu czasowego'
+                };
+            }
+            
+            if (status === 400) {
+                const message = data.includes('limit')
+                    ? 'Bad Request - Przekroczony limit'
+                    : 'Bad Request - Nieprawidłowo sformułowane zapytanie';
+                    
+                return {
+                    success: false,
+                    status: 400,
+                    message
+                };
+            }
+            
+            return {
+                success: false,
+                status: status,
+                message: data || 'Unknown error'
+            };
         }
+        
+        return {
+            success: false,
+            status: 500,
+            message: 'Internal Server Error'
+        };
     }
 }
 
 
-// Table A
-router.get('/table/a', async (req, res) => {
+// Table A, B, C with optional startDate and endDate
+router.get('/table/:tableLetter', async (req, res) => {
     try {
-        res.json(await getTable('A'));
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Could not fetch data' });
-    }
-});
-
-// Table B
-router.get('/table/b', async (req, res) => {
-    try {
-        res.json(await getTable('B'));
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Could not fetch data' });
-    }
-});
-
-
-// Table C
-router.get('/table/c', async (req, res) => {
-    try {
-        res.json(await getTable('C'));
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Could not fetch data' });
-    }
-});
-
-router.get('/table/d', async (req, res) => {
-    try {
+        const { tableLetter } = req.params;
         const { startDate, endDate } = req.query;
-        res.json(await getTable('C', startDate, endDate));
+
+        if (!['A', 'B', 'C'].includes(tableLetter.toUpperCase())) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Invalid table type' 
+            });            
+        }
+
+        const result = await getTable(tableLetter.toUpperCase(), startDate, endDate);
+        
+        if (!result.success) {
+            return res.status(result.status).json({
+                success: false,
+                message: result.message
+            });
+        }
+
+        res.json({
+            success: true,
+            data: result.data
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Could not fetch data' });
+        console.error('Route error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+router.get('/rate/:tableLetter/:currencyCode', async (req, res) => {
+    try {
+        const { tableLetter, currencyCode } = req.params;
+        const { startDate, endDate } = req.query;
+        
+        if (!['A', 'B', 'C'].includes(tableLetter.toUpperCase())) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Invalid table type' 
+            });
+        }
+
+        const result = await getCurrencyRate(tableLetter.toUpperCase(), currencyCode, startDate, endDate);
+        
+        if (!result.success) {
+            return res.status(result.status).json({
+                success: false,
+                message: result.message
+            });
+        }
+
+        const newResult = result.data.map(item => {
+            return {
+                date: item.effectiveDate,
+                rate: item.mid
+            }
+        });
+
+        if (!newResult) {
+            return res.status(404).json({
+                success: false,
+                message: 'Currency not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: newResult
+        });
+    } catch (error) {
+        console.error('Route error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Internal server error'
+        });
     }
 });
 
