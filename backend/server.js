@@ -1,7 +1,9 @@
-require('dotenv').config
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 19000;
+const {
+    PORT,
+    TEST_MESSANGE
+} = require('./config');
 
 // Middleware
 app.use(express.json());
@@ -18,4 +20,5 @@ app.use('/api/nbp', nbpRoutes);
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(TEST_MESSANGE);
 });

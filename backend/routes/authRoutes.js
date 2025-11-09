@@ -3,8 +3,10 @@ const router = express.Router();
 const db = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = process.env.SECRET_KEY || 'secret_key';
-const SALT_ROUNDS = process.env.SALT_ROUNDS || 10;
+const {
+    SECRET_KEY,
+    SALT_ROUNDS
+} = require('./config');
 
 // Register
 router.post('/register', async (req, res) => {
