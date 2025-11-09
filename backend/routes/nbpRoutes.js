@@ -12,6 +12,44 @@ const axios = require('axios');
 
 // {date}, {startDate}, {endDate} – data w formacie RRRR-MM-DD (standard ISO 8601)
 
+//-----------------------------------------------------------------------------
+// Routes returns json file in format:
+// {
+//     status: Boolean,
+//     data: [data]
+// }
+// data in route api/nbp/table/:tableLetter is table of objects with currencies. Eg:
+// [
+//     {
+//       "currency": "bat (Tajlandia)",
+//       "code": "THB",
+//       "mid": 0.1138
+//     },
+//     {
+//       "currency": "dolar amerykański",
+//       "code": "USD",
+//       "mid": 3.6818
+//     }
+// ]
+// data in route api/nbp/rate/:tableLetter/:currencyCode  is table of one object
+// or few objects if, you will pass date rage. Eg:
+// [
+//     {
+//       "date": "2024-10-01",
+//       "rate": 3.859
+//     },
+//     {
+//       "date": "2024-10-02",
+//       "rate": 3.8792
+//     },
+//     {
+//       "date": "2024-10-03",
+//       "rate": 3.8951
+//     }
+//   ]
+//-----------------------------------------------------------------------------
+
+
 function getISODate(date) {
     date = new Date(date);
     const year = date.getFullYear();
