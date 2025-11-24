@@ -1,0 +1,137 @@
+[
+    {
+    "name": "bat (Tajlandia)",
+    "code": "THB"
+    },
+    {
+    "name": "dolar amerykański",
+    "code": "USD",
+    "symbol": "$"
+    },
+    {
+    "name": "dolar australijski",
+    "code": "AUD"
+    },
+    {
+    "name": "dolar Hongkongu",
+    "code": "HKD"
+    },
+    {
+    "name": "dolar kanadyjski",
+    "code": "CAD"
+    },
+    {
+    "name": "dolar nowozelandzki",
+    "code": "NZD"
+    },
+    {
+    "name": "dolar singapurski",
+    "code": "SGD"
+    },
+    {
+    "name": "euro",
+    "code": "EUR",
+    "symbol": "€"
+    },
+    {
+    "name": "forint (Węgry)",
+    "code": "HUF"
+    },
+    {
+    "name": "frank szwajcarski",
+    "code": "CHF"
+    },
+    {
+    "name": "funt szterling",
+    "code": "GBP",
+    "symbol": "£"
+    },
+    {
+    "name": "hrywna (Ukraina)",
+    "code": "UAH"
+    },
+    {
+    "name": "jen (Japonia)",
+    "code": "JPY"
+    },
+    {
+    "name": "korona czeska",
+    "code": "CZK"
+    },
+    {
+    "name": "korona duńska",
+    "code": "DKK"
+    },
+    {
+    "name": "korona islandzka",
+    "code": "ISK"
+    },
+    {
+    "name": "korona norweska",
+    "code": "NOK"
+    },
+    {
+    "name": "korona szwedzka",
+    "code": "SEK"
+    },
+    {
+    "name": "lej rumuński",
+    "code": "RON"
+    },
+    {
+    "name": "lew (Bułgaria)",
+    "code": "BGN"
+    },
+    {
+    "name": "lira turecka",
+    "code": "TRY"
+    },
+    {
+    "name": "nowy izraelski szekel",
+    "code": "ILS"
+    },
+    {
+    "name": "peso chilijskie",
+    "code": "CLP"
+    },
+    {
+    "name": "peso filipińskie",
+    "code": "PHP"
+    },
+    {
+    "name": "peso meksykańskie",
+    "code": "MXN"
+    },
+    {
+    "name": "rand (Republika Południowej Afryki)",
+    "code": "ZAR"
+    },
+    {
+    "name": "real (Brazylia)",
+    "code": "BRL"
+    },
+    {
+    "name": "ringgit (Malezja)",
+    "code": "MYR"
+    },
+    {
+    "name": "rupia indonezyjska",
+    "code": "IDR"
+    },
+    {
+    "name": "rupia indyjska",
+    "code": "INR"
+    },
+    {
+    "name": "won południowokoreański",
+    "code": "KRW"
+    },
+    {
+    "name": "yuan renminbi (Chiny)",
+    "code": "CNY"
+    },
+    {
+    "name": "SDR (MFW)",
+    "code": "XDR"
+    }
+]
