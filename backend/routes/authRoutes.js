@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const { dbGet, dbRun } = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {
@@ -9,26 +9,13 @@ const {
 } = require('../config');
 const authenticateToken = require('./authMiddleware');
 
-function dbGet(query, params = []) {
-    return new Promise((resolve, reject) => {
-        db.get(query, params, (error, row) => {
-            if (error) reject(error);
-            else resolve(row);
-        });
-    });
-}
-
-router.get('/', (req, res) => {
-    // await db.get('SELECT * FROM users WHERE email = ?', [email])
-    db.get('SELECT * FROM users where email = ?', ['ola@ola.ola'], (err, rows) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error' });
-        }
-
-        res.status(200).json(rows);
-    });
-});
+//-----------------------------------------------------------------------------
+// Change password:
+// curl -X PUT /api/auth/change-password
+// -H "Content-Type: application/json"
+// -H "Authorization: Bearer {token}"
+// -d '{"oldPassword":"{oldPassword}}", "newPassword":"{newPassword}"}'
+//-----------------------------------------------------------------------------
 
 // Register
 router.post('/register', async (req, res) => {
@@ -39,11 +26,10 @@ router.post('/register', async (req, res) => {
     try {
         const userAlreadyExists = await (dbGet('SELECT * FROM users WHERE email = ?', [email]));
         if (userAlreadyExists) {
-            console.log(userAlreadyExists);
             return res.status(400).json({ message: 'User already exists' });
         }
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-        const user = await db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword]);
+        const user = await dbRun('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword]);
         res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
         console.error(error);
@@ -81,16 +67,20 @@ router.post('/login', async (req, res) => {
 });
 
 // Delete user
-router.delete('/delete', async (req, res) => {
+router.delete('/delete', authenticateToken, async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required' });
     }
     try {
-        const user = await (dbGet('SELECT * FROM users WHERE email = ? LIMIT 1', [email]));
+        const user = await (dbGet('SELECT * FROM users WHERE id = ? LIMIT 1', [req.user.userId]));
 
         if (!user) 
             return res.status(401).json({ message: 'Invalid email or password'});
+
+        if (user.email !== email) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
 
@@ -98,7 +88,7 @@ router.delete('/delete', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
         const id = user.id;
-        await db.run('DELETE FROM users WHERE id = ?', [id]);
+        await dbRun('DELETE FROM users WHERE id = ?', [id]);
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
         console.error(error);
@@ -112,7 +102,7 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     if (!oldPassword || !newPassword) {
         return res.status(400).json({ message: 'Old password and new password are required' });
     }
-    try {       
+    try {
         const user = await (dbGet('SELECT * FROM users WHERE id = ? LIMIT 1', [req.user.userId]));
         
         if (!user)
@@ -126,7 +116,7 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
 
-        await db.run('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, user.id]);
+        await dbRun('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, user.id]);
         return res.status(200).json({ message: 'Password changed successfully' });
 
     } catch (error) {
