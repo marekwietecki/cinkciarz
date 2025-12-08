@@ -14,7 +14,7 @@ export default function WelcomeScreen() {
   return (
     <View style={[ styles.container, { backgroundColor: theme.background }]}>
       <Text style={[styles.title, { color: theme.text, fontSize: 24 }]}>
-        {strings.welcome_title}
+        Locales
       </Text>
 
       <Text style={[styles.label, { color: theme.text }]}>
@@ -51,7 +51,7 @@ export default function WelcomeScreen() {
 
       <TouchableOpacity style={styles.startBtn} onPress={() => router.push('/')}>
         <Text style={[ styles.startBtnText, { color: theme.text}]}>
-          {strings.start_game}
+          Przejdź do loginu
         </Text>
       </TouchableOpacity>
     </View>

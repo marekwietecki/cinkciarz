@@ -7,7 +7,7 @@ import { Colors } from '@/constants/theme';
 
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
-import { router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const scheme = useColorScheme() ?? 'light';

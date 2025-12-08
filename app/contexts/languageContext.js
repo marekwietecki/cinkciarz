@@ -4,7 +4,7 @@ import pl from '../locales/pl.json';
 
 export const LanguageContext = createContext({
     lang: 'en',
-    setLang: (p0: string) => {},
+    setLang: () => {},
     strings: en
 });
 
