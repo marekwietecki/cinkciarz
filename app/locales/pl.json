@@ -1,0 +1,19 @@
+{
+    "login_title": "Zaloguj się",
+    "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
+    "login_email": "E-mail",
+    "login_email_example": "twój@mail.com",
+    "login_password": "Hasło",
+    "login_password_example": "Hasło123!",
+    "login_button": "Zaloguj się",
+    "login_no_account": "Nie masz konta?",
+    "login_register": "Zarejestruj się",
+
+
+    "choose_language": "Wybierz język",
+    "choose_theme": "Wybierz motyw",
+    "polish": "Polski",
+    "english": "Angielski",
+    "dark_theme": "Ciemny",
+    "light_theme": "Jasny"
+}

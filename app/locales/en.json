@@ -1,0 +1,18 @@
+{
+    "login_title": "Log In!",
+    "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
+    "login_email": "E-mail",
+    "login_email_example": "your@mail.com",
+    "login_password": "Password",
+    "login_password_example": "Password123!",
+    "login_button": "Log In",
+    "login_no_account": "No account?",
+    "login_register": "Register",
+
+    "choose_language": "Choose language",
+    "choose_theme": "Choose theme",
+    "polish": "Polish",
+    "english": "English",
+    "dark_theme": "Dark",
+    "light_theme": "Light"
+}

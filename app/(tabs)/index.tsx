@@ -1,13 +1,21 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
+import { StyleSheet, View, TextInput, TouchableOpacity, useColorScheme, } from 'react-native';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useContext } from 'react';
+import { Colors } from '@/constants/theme';
+
+import { LanguageContext } from '../contexts/languageContext';
+import { ThemeContext } from '../contexts/themeContext';
+import { router, useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const scheme = useColorScheme() ?? 'light';
+  const router = useRouter();
+  const { strings } = useContext(LanguageContext);
+  const { theme } = useContext(ThemeContext);
+ 
+  
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -17,76 +25,90 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+      <View style={[
+        styles.container,
+        { backgroundColor: Colors[scheme].background } // dynamiczne tło
+      ]}>
+        <View style={styles.titleContainer}>
+          <ThemedText type="titleMid">{strings.login_title}</ThemedText>
+          <ThemedText type="subtitle">{strings.login_subtitle}</ThemedText>
+        </View>
+        <View style={styles.mainContainer}>
+          <View style={styles.titleSmallContainer}>
+            <ThemedText type="titleSmall">✉️</ThemedText>
+            <ThemedText type="titleSmall">{strings.login_email}</ThemedText>
+          </View>  
+          <View style={styles.inputsContainer}>
+            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. midContrast}]}>
+              <TextInput placeholder={strings.login_email_example}></TextInput>
+            </TouchableOpacity>
+            <View style={styles.titleSmallContainer}>
+              <ThemedText type="titleSmall">🔑</ThemedText>
+              <ThemedText type="titleSmall">{strings.login_password}</ThemedText>
+            </View>  
+            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. midContrast}]}>
+              <TextInput placeholder={strings.login_password_example}></TextInput>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={[styles.button, {backgroundColor: theme.buttonBg}]}>
+            <ThemedText type='default' style={{ color: theme.buttonText }}>{strings.login_button}</ThemedText>
+          </TouchableOpacity>
+          <View style={styles.textsSmallContainer}>
+            <ThemedText type='textSmall'>{strings.login_no_account}</ThemedText>
+            <TouchableOpacity onPress={() => router.push('./profile')}>
+              <ThemedText type='textSmallSemiBold'>{strings.login_register}</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     gap: 8,
   },
-  stepContainer: {
+  titleSmallContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap:8,
+  },
+  textInputWrapper: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderWidth: 3,
+    borderRadius: 32,
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textsSmallContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mainContainer: {
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 24,
+    marginTop: 48,
+    width: '100%',
+  },
+  inputsContainer: {
+    gap: 16,
+    marginBottom: 40,
   },
   reactLogo: {
     height: 178,
