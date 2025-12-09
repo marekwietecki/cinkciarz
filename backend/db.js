@@ -21,9 +21,9 @@ function dbAll(query, params = []) {
 
 function dbRun(query, params = []) {
     return new Promise((resolve, reject) => {
-        db.run(query, params, (error) => {
+        db.run(query, params, function (error) {
             if (error) reject(error);
-            else resolve();
+            else resolve({ lastID: this.lastID, changes: this.changes });
         });
     });
 }
@@ -37,7 +37,7 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS wallets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        FOREIGN KEY(user_id) REFERENCES users(id)
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS currencies (
         code TEXT PRIMARY KEY,
@@ -49,7 +49,7 @@ db.serialize(() => {
         wallet_id INTEGER NOT NULL,
         currency TEXT NOT NULL,
         amount REAL,
-        FOREIGN KEY(wallet_id) REFERENCES wallets(id),
+        FOREIGN KEY(wallet_id) REFERENCES wallets(id) ON DELETE CASCADE,
         FOREIGN KEY(currency) REFERENCES currencies(code)
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS transactions (
@@ -62,7 +62,7 @@ db.serialize(() => {
         to_amount REAL,
         rate REAL,
         date TEXT,
-        FOREIGN KEY(wallet_id) REFERENCES wallets(id),
+        FOREIGN KEY(wallet_id) REFERENCES wallets(id) ON DELETE CASCADE,
         FOREIGN KEY(from_currency) REFERENCES currencies(code),
         FOREIGN KEY(to_currency) REFERENCES currencies(code)
     )`);

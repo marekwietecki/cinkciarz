@@ -53,13 +53,13 @@ describe('Wallet working corectly with correct data', () => {
         expect(response.statusCode).toBe(200);
 
         // [
-        //     { "amount": null, "currency": "USD", "id": 42, "wallet_id": 35 },
-        //     { "amount": null, "currency": "EUR", "id": 43, "wallet_id": 35 }
+        //     { "amount": 0, "currency": "USD", "id": 42, "wallet_id": 35 },
+        //     { "amount": 0, "currency": "EUR", "id": 43, "wallet_id": 35 }
         // ]
         expect(response.body).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ currency: `${CURRENCY_CODE_1}`, amount: null }),
-                expect.objectContaining({ currency: `${CURRENCY_CODE_2}`, amount: null })
+                expect.objectContaining({ currency: `${CURRENCY_CODE_1}`, amount: 0 }),
+                expect.objectContaining({ currency: `${CURRENCY_CODE_2}`, amount: 0 })
             ])
         );
     });

@@ -1,7 +1,8 @@
 [
     {
     "name": "bat (Tajlandia)",
-    "code": "THB"
+    "code": "THB",
+    "symbol": "฿"
     },
     {
     "name": "dolar amerykański",
@@ -10,23 +11,28 @@
     },
     {
     "name": "dolar australijski",
-    "code": "AUD"
+    "code": "AUD",
+    "symbol": "AU$"
     },
     {
     "name": "dolar Hongkongu",
-    "code": "HKD"
+    "code": "HKD",
+    "symbol": "HK$"
     },
     {
     "name": "dolar kanadyjski",
-    "code": "CAD"
+    "code": "CAD",
+    "symbol": "CA$"
     },
     {
     "name": "dolar nowozelandzki",
-    "code": "NZD"
+    "code": "NZD",
+    "symbol": "NZ$"
     },
     {
     "name": "dolar singapurski",
-    "code": "SGD"
+    "code": "SGD",
+    "symbol": "S$"
     },
     {
     "name": "euro",
@@ -35,11 +41,13 @@
     },
     {
     "name": "forint (Węgry)",
-    "code": "HUF"
+    "code": "HUF",
+    "symbol": "Ft"
     },
     {
     "name": "frank szwajcarski",
-    "code": "CHF"
+    "code": "CHF",
+    "symbol": "Fr"
     },
     {
     "name": "funt szterling",
@@ -48,87 +56,108 @@
     },
     {
     "name": "hrywna (Ukraina)",
-    "code": "UAH"
+    "code": "UAH",
+    "symbol": "₴"
     },
     {
     "name": "jen (Japonia)",
-    "code": "JPY"
+    "code": "JPY",
+    "symbol": "¥"
     },
     {
     "name": "korona czeska",
-    "code": "CZK"
+    "code": "CZK",
+    "symbol": "Kč <3"
     },
     {
     "name": "korona duńska",
-    "code": "DKK"
+    "code": "DKK",
+    "symbol": "kr."
     },
     {
     "name": "korona islandzka",
-    "code": "ISK"
+    "code": "ISK",
+    "symbol": "kr"
     },
     {
     "name": "korona norweska",
-    "code": "NOK"
+    "code": "NOK",
+    "symbol": "kr"
     },
     {
     "name": "korona szwedzka",
-    "code": "SEK"
+    "code": "SEK",
+    "symbol": "kr"
     },
     {
     "name": "lej rumuński",
-    "code": "RON"
+    "code": "RON",
+    "symbol": "lei"
     },
     {
     "name": "lew (Bułgaria)",
-    "code": "BGN"
+    "code": "BGN",
+    "symbol": "лв"
     },
     {
     "name": "lira turecka",
-    "code": "TRY"
+    "code": "TRY",
+    "symbol": "₺"
     },
     {
     "name": "nowy izraelski szekel",
-    "code": "ILS"
+    "code": "ILS",
+    "symbol": "₪"
     },
     {
     "name": "peso chilijskie",
-    "code": "CLP"
+    "code": "CLP",
+    "symbol": "$"
     },
     {
     "name": "peso filipińskie",
-    "code": "PHP"
+    "code": "PHP",
+    "symbol": "₱"
     },
     {
     "name": "peso meksykańskie",
-    "code": "MXN"
+    "code": "MXN",
+    "symbol": "M$"
     },
     {
     "name": "rand (Republika Południowej Afryki)",
-    "code": "ZAR"
+    "code": "ZAR",
+    "symbol": "Rp"
     },
     {
     "name": "real (Brazylia)",
-    "code": "BRL"
+    "code": "BRL",
+    "symbol": "R$"
     },
     {
     "name": "ringgit (Malezja)",
-    "code": "MYR"
+    "code": "MYR",
+    "symbol": "RM"
     },
     {
     "name": "rupia indonezyjska",
-    "code": "IDR"
+    "code": "IDR",
+    "symbol": "Rp"
     },
     {
     "name": "rupia indyjska",
-    "code": "INR"
+    "code": "INR",
+    "symbol": "₹"
     },
     {
     "name": "won południowokoreański",
-    "code": "KRW"
+    "code": "KRW",
+    "symbol": "₩"
     },
     {
     "name": "yuan renminbi (Chiny)",
-    "code": "CNY"
+    "code": "CNY",
+    "symbol": "¥"
     },
     {
     "name": "SDR (MFW)",
