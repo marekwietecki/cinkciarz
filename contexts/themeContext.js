@@ -4,7 +4,7 @@ import light from '../themes/light';
 
 export const ThemeContext = createContext({
     themeName: 'light',
-    setThemeName: () => {},
+    setThemeName: (p0?: string) => {},
     theme: light
 });
 

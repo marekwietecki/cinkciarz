@@ -18,56 +18,15 @@ export default function HomeScreen() {
       styles.container,
       { backgroundColor: theme.background }
     ]}>
-      <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('./profile')}>
-        <ThemedText>🙍‍♂️</ThemedText>
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <ThemedText type="titleMid" style={{color: theme.highContrast}}>{strings.register_title}</ThemedText>
-        <ThemedText type="subtitle" style={{color: theme.midContrast}}>{strings.register_subtitle}</ThemedText>
-      </View>
-
-      <View style={styles.mainContainer}>
-        <View style={styles.inputsContainer}>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-              <ThemedText type="titleSmall">✉️</ThemedText>
-              <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_email}</ThemedText>
-            </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput placeholder={strings.register_email_example} placeholderTextColor={theme.lowContrast} style={[styles.textInput, {color: theme.highContrast}]}></TextInput>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-              <ThemedText type="titleSmall">🔑</ThemedText>
-              <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_password}</ThemedText>
-            </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput placeholder={strings.register_password_example} placeholderTextColor={theme.lowContrast} style={[styles.textInput, {color: theme.highContrast}]}></TextInput>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-              <ThemedText type="titleSmall">🔁</ThemedText>
-              <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_repeat_password}</ThemedText>
-            </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput placeholder={strings.register_password_example} placeholderTextColor={theme.lowContrast} style={[styles.textInput, {color: theme.highContrast}]}></TextInput>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <TouchableOpacity style={[styles.button, {backgroundColor: theme.buttonBg}]}>
-          <ThemedText type='default' style={{ color: theme.buttonText }}>{strings.register_button}</ThemedText>
+        <TouchableOpacity onPress={() => router.push('./auth/register')}>
+          <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>
         </TouchableOpacity>
-
-        <View style={styles.textsSmallContainer}>
-          <ThemedText type='textSmall' style={{color: theme.highContrast}}>{strings.register_have_an_account}</ThemedText>
-          <TouchableOpacity onPress={() => router.push('./profile')}>
-            <ThemedText type='textSmallSemiBold' style={{color: theme.highContrast}}>{strings.register_login}</ThemedText>
-          </TouchableOpacity>
-        </View>
-
-      </View>
+        <TouchableOpacity onPress={() => router.push('./auth/login')}>
+          <ThemedText type='titleMid' style={{color: theme.highContrast}}>Login</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('./profile')}>
+          <ThemedText type='titleMid' style={{color: theme.highContrast}}>Profile</ThemedText>
+        </TouchableOpacity>
     </View>
   );
 }
@@ -78,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingHorizontal: '8%',
-    paddingBottom: '4%',
+    paddingBottom: '8%',
   },
   profileLink: {
     paddingVertical: 11,

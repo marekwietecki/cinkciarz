@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingHorizontal: '8%',
-    paddingBottom: '4%',
+    paddingBottom: '8%',
   },
   profileLink: {
     paddingVertical: 11,

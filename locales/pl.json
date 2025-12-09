@@ -20,10 +20,12 @@
     "register_have_an_account": "Masz już konto?",
     "register_login": "Zaloguj się",
 
-    "choose_language": "Wybierz język",
-    "choose_theme": "Wybierz motyw",
-    "polish": "Polski",
-    "english": "Angielski",
-    "dark_theme": "Ciemny",
-    "light_theme": "Jasny"
+    "profile_choose_language": "Wybierz język",
+    "profile_polish": "Polski",
+    "profile_english": "Angielski",
+    "profile_choose_theme": "Wybierz motyw",
+    "profile_dark_theme": "Ciemny",
+    "profile_light_theme": "Jasny",
+    "profile_log_out": "Wyloguj się",
+    "profile_delete_account": "Usuń Konto"
 }

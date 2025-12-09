@@ -4,58 +4,89 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
+import { ThemedText } from '@/components/themed-text';
 
 
 export default function WelcomeScreen() {
-  const router = useRouter();
-  const { lang, setLang, strings } = useContext(LanguageContext);
-  const { themeName, setThemeName, theme } = useContext(ThemeContext);
+    const router = useRouter();
+    const { lang, setLang, strings } = useContext(LanguageContext);
+    const { themeName, setThemeName, theme } = useContext(ThemeContext);
 
-  return (
-    <View style={[ styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text, fontSize: 24 }]}>
-        Locales
-      </Text>
+    return (
+        <View style={[ styles.container, { backgroundColor: theme.background }]}>
+            
+            <View style={styles.userContainer}>
+                <ThemedText type="titleBig">🙍‍♂️</ThemedText>
+                <ThemedText type="titleMid" style={{ color: theme.highContrast, fontSize: 24 }}>
+                    NAZWA UŻYTKOWNIKA
+                </ThemedText>
+                <ThemedText type="subtitle" style={{ color: theme.midContrast }}>
+                    SESJA AKTYWNA
+                </ThemedText>
+            </View>
 
-      <Text style={[styles.label, { color: theme.text }]}>
-        {strings.choose_language}
-      </Text>
-      <View style={styles.row}>
-        <TouchableOpacity style={[styles.button, {backgroundColor: lang === 'pl' ? theme.buttonBg : theme.card }]} onPress={() => setLang('pl')}>
-          <Text style={[styles.buttonText, { color: lang === 'pl' ? theme.buttonText : theme.text }]}>
-            {strings.polish}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, {backgroundColor: lang === 'en' ? theme.buttonBg : theme.card }]} onPress={() => setLang('en')}>
-          <Text style={[styles.buttonText, { color: lang === 'en' ? theme.buttonText : theme.text }]}>
-            {strings.english}
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <View style={styles.contextPickers}>
+                <View style={styles.pickerContainer}>    
+                    <View style={styles.rowTitle}>        
+                        <ThemedText type="default" >
+                            🗣️
+                        </ThemedText>  
+                        <ThemedText type="default" style={[styles.label, { color: theme.midContrast }]}>
+                            {strings.profile_choose_language}
+                        </ThemedText>
+                    </View>
+                    
+                    <View style={styles.row}>
+                        <TouchableOpacity style={[styles.picker, {backgroundColor: lang === 'pl' ? theme.highContrast : theme.background }]} onPress={() => setLang('pl')}>
+                            <ThemedText type="titleSmall" style={{ color: lang === 'pl' ? theme.accentDark : theme.highContrast }}>
+                                {strings.profile_polish}
+                            </ThemedText>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.picker, {backgroundColor: lang === 'en' ? theme.highContrast : theme.background }]} onPress={() => setLang('en')}>
+                            <ThemedText type="titleSmall" style={{ color: lang === 'en' ? theme.accentDark : theme.highContrast }}>
+                                {strings.profile_english}
+                            </ThemedText>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={styles.pickerContainer}>
+                    <View style={styles.rowTitle}>        
+                        <ThemedText type="default" >
+                            🔲
+                        </ThemedText>  
+                        <ThemedText type="default" style={[styles.label, { color: theme.midContrast }]}>
+                            {strings.profile_choose_theme}
+                        </ThemedText>
+                    </View>
 
-      <Text style={[styles.label, { color: theme.text }]}>
-        {strings.choose_theme}
-      </Text>
-      <View style={styles.row}>
-        <TouchableOpacity style={[styles.button, {backgroundColor: themeName === 'light' ? theme.buttonBg : theme.card }]} onPress={() => setThemeName('light')}>
-          <Text style={[styles.buttonText, { color: themeName === 'light' ? theme.buttonText : theme.text }]}>
-            {strings.light_theme}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, {backgroundColor: themeName === 'dark' ? theme.buttonBg : theme.card }]} onPress={() => setThemeName('dark')}>
-          <Text style={[styles.buttonText, { color: themeName === 'dark' ? theme.buttonText : theme.text }]}>
-            {strings.dark_theme}
-          </Text>
-        </TouchableOpacity>
-      </View>
+                    <View style={styles.row}>
+                        <TouchableOpacity style={[styles.picker, {backgroundColor: themeName === 'light' ? theme.highContrast : theme.background }]} onPress={() => setThemeName('light')}>
+                            <ThemedText  type="titleSmall" style={{ color: themeName === 'light' ? theme.accentDark : theme.highContrast }}>
+                                {strings.profile_light_theme}
+                            </ThemedText>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.picker, {backgroundColor: themeName === 'dark' ? theme.highContrast : theme.background }]} onPress={() => setThemeName('dark')}>
+                            <ThemedText type="titleSmall" style={{ color: themeName === 'dark' ? theme.accentDark : theme.highContrast }}>
+                                {strings.profile_dark_theme}
+                            </ThemedText>
+                        </TouchableOpacity>
+                    </View>
+                </View>    
+            </View>
 
-      <TouchableOpacity style={styles.startBtn} onPress={() => router.push('/')}>
-        <Text style={[ styles.startBtnText, { color: theme.text}]}>
-          Przejdź do loginu
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
+            <TouchableOpacity style={[styles.button, { borderColor: theme.midContrast}]} onPress={() => router.push('/auth/login')}>
+                <ThemedText type="default" style={{ color: theme.midContrast}}>
+                    {strings.profile_log_out}
+                </ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.smallButton}>
+                <ThemedText type="textSmall" style={{color: theme.midContrast}}>
+                    {strings.profile_delete_account}
+                </ThemedText>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 
@@ -64,8 +95,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     padding: 20,
+  },
+  userContainer: {
+    marginBottom: '20%',
   },
   title: {
     fontSize: 20,
@@ -78,27 +112,43 @@ const styles = StyleSheet.create({
   },
   row: { 
     flexDirection: 'row', 
-    justifyContent: 'space-between' 
+    justifyContent: 'center',
+    alignItems: 'center', 
+    width: '80%',
+    gap: 6,
   },
-  button: { 
+  rowTitle: {
+    flexDirection: 'row', 
+    justifyContent: 'center',
+    alignItems: 'center', 
+    width: '80%',
+    gap: 6,
+  },
+  contextPickers: {
+    gap: '6%',
+  },
+  pickerContainer: {
+    width: '100%',
+    gap: '2%',
+  },
+  picker: { 
     flex: 1, 
-    padding: 12, 
+    paddingVertical: 10, 
+    paddingHorizontal: 0,
     margin: 6, 
-    borderRadius: 8, 
+    borderRadius: 24, 
     alignItems: 'center' 
   },
-  buttonText: {
-    fontWeight: '600',
-
-  },
-  startBtn: { 
-    marginTop: 24, 
-    padding: 14, 
-    borderRadius: 10, 
+  button: { 
+    marginTop: '16%', 
+    marginBottom: '16%',
+    paddingVertical: 12,
+    paddingHorizontal: 20, 
+    borderRadius: 40, 
     alignItems: 'center',
+    borderWidth: 3,
   },
-  startBtnText: {
-    fontWeight: '600',
-    fontSize: 18,
+  smallButton: {
+    marginBottom: '6%',
   }
 });

@@ -20,12 +20,12 @@
     "register_have_an_account": "Have an account?",
     "register_login": "Log In",
 
-    
-
-    "choose_language": "Choose language",
-    "choose_theme": "Choose theme",
-    "polish": "Polish",
-    "english": "English",
-    "dark_theme": "Dark",
-    "light_theme": "Light"
+    "profile_choose_language": "Choose language",
+    "profile_polish": "Polish",
+    "profile_english": "English",
+    "profile_choose_theme": "Choose theme",
+    "profile_dark_theme": "Dark",
+    "profile_light_theme": "Light",
+    "profile_log_out": "Log Out",
+    "profile_delete_account": "Delete Account"
 }
