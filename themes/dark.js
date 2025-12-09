@@ -24,6 +24,7 @@ export default {
   highContrast: gray100,
   midContrast: gray300,
   lowContrast: gray500,
+  veryLowContrast: gray700,
   background: gray900,
   accentDark: gold900,
   accentLight: gold600,

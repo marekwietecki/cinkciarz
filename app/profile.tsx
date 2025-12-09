@@ -1,10 +1,10 @@
-import { useContext } from 'react'; 
 import { useRouter } from 'expo-router';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { LanguageContext } from './contexts/languageContext';
-import { ThemeContext } from './contexts/themeContext';
-import React from 'react';
+import { LanguageContext } from '../contexts/languageContext';
+import { ThemeContext } from '../contexts/themeContext';
+
 
 export default function WelcomeScreen() {
   const router = useRouter();

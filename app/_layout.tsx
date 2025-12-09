@@ -2,9 +2,9 @@ import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { ThemeProvider } from './contexts/themeContext';
-import { LanguageProvider } from './contexts/languageContext';
 import React, { useEffect } from 'react';
+import { LanguageProvider } from '../contexts/languageContext';
+import { ThemeProvider } from '../contexts/themeContext';
 
 import { useFonts } from 'expo-font';
 

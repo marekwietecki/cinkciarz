@@ -22,8 +22,9 @@ const gold900 = '#906201';
 
 export default {
     highContrast: gray800,
-    midContrast: gray600,
+    midContrast: gray500,
     lowContrast: gray300,
+    veryLowContrast: gray200,
     background: gray100,
     accentDark: gold700,
     accentLight: gold400,

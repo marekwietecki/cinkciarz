@@ -9,6 +9,19 @@
     "login_no_account": "No account?",
     "login_register": "Register",
 
+    "register_title": "Register!",
+    "register_subtitle": "Register to our online currency exchange service - eWalutka.pl",
+    "register_email": "E-mail",
+    "register_email_example": "your@mail.com",
+    "register_password": "Password",
+    "register_password_example": "Password123!",
+    "register_repeat_password": "Repeat Password",
+    "register_button": "Register",
+    "register_have_an_account": "Have an account?",
+    "register_login": "Log In",
+
+    
+
     "choose_language": "Choose language",
     "choose_theme": "Choose theme",
     "polish": "Polish",

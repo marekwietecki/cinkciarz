@@ -9,6 +9,16 @@
     "login_no_account": "Nie masz konta?",
     "login_register": "Zarejestruj się",
 
+    "register_title": "Zarejestruj się!",
+    "register_subtitle": "Zarejestruj się do internetowego serwisu wymiany walut - eWalutka.pl",
+    "register_email": "E-mail",
+    "register_email_example": "twój@mail.com",
+    "register_password": "Hasło",
+    "register_password_example": "Hasło123!",
+    "register_repeat_password": "Powtórz Hasło",
+    "register_button": "Zarejestruj się",
+    "register_have_an_account": "Masz już konto?",
+    "register_login": "Zaloguj się",
 
     "choose_language": "Wybierz język",
     "choose_theme": "Wybierz motyw",
