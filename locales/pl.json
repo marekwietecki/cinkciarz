@@ -1,4 +1,7 @@
 {
+    "error": "Błąd",
+    "success": "Sukces",
+
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
     "login_email": "E-mail",
@@ -6,8 +9,15 @@
     "login_password": "Hasło",
     "login_password_example": "Hasło123!",
     "login_button": "Zaloguj się",
+    "login_fields_required": "Wypełnij wszystkie pola",
     "login_no_account": "Nie masz konta?",
     "login_register": "Zarejestruj się",
+    "login_success_message": "Zalogowano pomyślnie", 
+    "login_token_error": "Błąd autoryzacji. Spróbuj ponownie.",
+    "login_unknown_error": "Wystąpił nieznany błąd podczas logowania.",
+    "login_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
+    "login_loading": "Trwa logowanie..",
+
 
     "register_title": "Zarejestruj się!",
     "register_subtitle": "Zarejestruj się do internetowego serwisu wymiany walut - eWalutka.pl",
@@ -17,8 +27,15 @@
     "register_password_example": "Hasło123!",
     "register_repeat_password": "Powtórz Hasło",
     "register_button": "Zarejestruj się",
+    "register_fields_required": "Wypełnij wszystkie pola",
+    "register_password_mismatch": "Podane hasła nie są takie same",
     "register_have_an_account": "Masz już konto?",
     "register_login": "Zaloguj się",
+    "register_success_message": "Zarejestrowano pomyślnie",
+    "register_unknown_error": "Wystąpił nieznany błąd podczas rejestracji",
+    "register_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
+    "register_loading": "Trwa rejestracja..",
+
 
     "profile_choose_language": "Wybierz język",
     "profile_polish": "Polski",

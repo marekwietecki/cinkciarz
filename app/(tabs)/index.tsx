@@ -1,15 +1,13 @@
 import { ThemedText } from '@/components/themed-text';
 import React, { useContext } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
-import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
  
   

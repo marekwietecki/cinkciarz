@@ -11,7 +11,7 @@ export default function WelcomeScreen() {
     const router = useRouter();
     const { lang, setLang, strings } = useContext(LanguageContext);
     const { themeName, setThemeName, theme } = useContext(ThemeContext);
-
+    
     return (
         <View style={[ styles.container, { backgroundColor: theme.background }]}>
             

@@ -1,24 +1,75 @@
 import { ThemedText } from '@/components/themed-text';
-import React, { useContext } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+const BASE_URL = 'http://192.168.18.9:19000/api/auth';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   
+  const handleLogin = async () => {
+    if (!email || !password){
+      Alert.alert(strings.error, strings.login_fields_required);
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const response = await fetch(`${BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }), 
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const token = data.token;
+        if(token) {
+          await AsyncStorage.setItem('userToken', token);
+
+          Alert.alert(strings.success, strings.login_success_message);
+          router.replace('/');
+        } else {
+          //no token
+          Alert.alert(strings.error, strings.login_token_error);
+        }
+      } else {
+        //400 401
+        const errorMessage = data.message || strings.login_unknown_error;
+        Alert.alert(strings.error, errorMessage);
+        setPassword('');
+      }
+    } catch (error) {
+      //sieci
+      console.error("Błąd logowania:", error);
+      Alert.alert(strings.error, strings.login_network_error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={[
       styles.container,
       { backgroundColor: theme.background } 
     ]}>
-      <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('./profile')}>
+      <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
         <ThemedText>🙍‍♂️</ThemedText>
       </TouchableOpacity>
       <View style={styles.titleContainer}>
@@ -34,7 +85,15 @@ export default function HomeScreen() {
               <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_email}</ThemedText>
             </View>  
             <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput placeholder={strings.login_email_example} placeholderTextColor={theme.lowContrast} style={[styles.textInput, {color: theme.highContrast}]}></TextInput>
+              <TextInput 
+                placeholder={strings.login_email_example} 
+                placeholderTextColor={theme.lowContrast} 
+                style={[styles.textInput, {color: theme.highContrast}]}
+                onChangeText={setEmail}
+                value={email}
+                keyboardType='email-address'
+                autoCapitalize='none'
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.singleInputContainer}>
@@ -43,17 +102,30 @@ export default function HomeScreen() {
               <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_password}</ThemedText>
             </View>  
             <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput placeholder={strings.login_password_example} placeholderTextColor={theme.lowContrast} style={[styles.textInput, {color: theme.highContrast}]}></TextInput>
+              <TextInput 
+                placeholder={strings.login_password_example} 
+                placeholderTextColor={theme.lowContrast} 
+                style={[styles.textInput, {color: theme.highContrast}]}
+                onChangeText={setPassword}
+                value={password}
+                secureTextEntry={true}
+              />
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity style={[styles.button, {backgroundColor: theme.buttonBg}]}>
-          <ThemedText type='default' style={{ color: theme.buttonText }}>{strings.login_button}</ThemedText>
+        <TouchableOpacity 
+          style={[styles.button, {backgroundColor: theme.buttonBg}]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <ThemedText type='default' style={{ color: theme.buttonText }}>
+            {loading ? strings.login_loading : strings.login_button}
+          </ThemedText>
         </TouchableOpacity>
 
         <View style={styles.textsSmallContainer}>
           <ThemedText type='textSmall' style={{color: theme.highContrast}}>{strings.login_no_account}</ThemedText>
-          <TouchableOpacity onPress={() => router.push('./profile')}>
+          <TouchableOpacity onPress={() => router.push('./register')}>
             <ThemedText type='textSmallSemiBold' style={{color: theme.highContrast}}>{strings.login_register}</ThemedText>
           </TouchableOpacity>
         </View>

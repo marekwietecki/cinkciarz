@@ -1,4 +1,7 @@
 {
+    "error": "Error",
+    "success": "Success",
+    
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
     "login_email": "E-mail",
@@ -6,8 +9,14 @@
     "login_password": "Password",
     "login_password_example": "Password123!",
     "login_button": "Log In",
+    "login_fields_required": "Fill in all items",
     "login_no_account": "No account?",
     "login_register": "Register",
+    "login_success_message": "Logged In succefully",
+    "login_token_error": "Authorization failure. Try again.",
+    "login_unknown_error": "Unknown Login error occurred",
+    "login_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "login_loading": "Login in progress..",
 
     "register_title": "Register!",
     "register_subtitle": "Register to our online currency exchange service - eWalutka.pl",
@@ -17,8 +26,14 @@
     "register_password_example": "Password123!",
     "register_repeat_password": "Repeat Password",
     "register_button": "Register",
+    "register_fields_required": "Fill in all items",
+    "register_password_mismatch": "Given passwords are not the same",
     "register_have_an_account": "Have an account?",
     "register_login": "Log In",
+    "register_success_message": "Registered succefully",
+    "register_unknown_error": "Unknown Registration error occurred",
+    "register_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "register_loading": "Registration in progress..",
 
     "profile_choose_language": "Choose language",
     "profile_polish": "Polish",
