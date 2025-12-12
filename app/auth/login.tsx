@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import React, { useContext, useState } from 'react';
-import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
@@ -67,82 +67,102 @@ export default function HomeScreen() {
     }
   };
 
-  return (
-    <View style={[
-      styles.container,
-      { backgroundColor: theme.background } 
-    ]}>
-      <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
-        <ThemedText>🙍‍♂️</ThemedText>
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <ThemedText type="titleMid" style={{color: theme.highContrast}}>{strings.login_title}</ThemedText>
-        <ThemedText type="subtitle" style={{color: theme.midContrast}}>{strings.login_subtitle}</ThemedText>
-      </View>
+  const clearMessage = () => {
+    setMessage({ text: '', type: null });
+  };
 
-      <View style={styles.mainContainer}>
-        <View style={styles.inputsContainer}>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-              <ThemedText type="titleSmall">✉️</ThemedText>
-              <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_email}</ThemedText>
-            </View>  
-            <TextInput 
-                placeholder={strings.login_email_example} 
+  const handleSetEmail = (text: string) => {
+      clearMessage();
+      setEmail(text);
+  };
+
+  const handleSetPassword = (text: string) => {
+      clearMessage();
+      setPassword(text);
+  };
+
+  return (
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0} 
+    >
+      <View style={[
+        styles.container,
+        { backgroundColor: theme.background } 
+      ]}>
+        <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
+          <ThemedText>🙍‍♂️</ThemedText>
+        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <ThemedText type="titleMid" style={{color: theme.highContrast}}>{strings.login_title}</ThemedText>
+          <ThemedText type="subtitle" style={{color: theme.midContrast}}>{strings.login_subtitle}</ThemedText>
+        </View>
+
+        <View style={styles.mainContainer}>
+          <View style={styles.inputsContainer}>
+            <View style={styles.singleInputContainer}>
+              <View style={styles.titleSmallContainer}>
+                <ThemedText type="titleSmall">✉️</ThemedText>
+                <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_email}</ThemedText>
+              </View>  
+              <TextInput 
+                  placeholder={strings.login_email_example} 
+                  placeholderTextColor={theme.lowContrast} 
+                  style={[styles.textInput, { color: theme.highContrast, borderColor: theme. lowContrast }]}
+                  onChangeText={handleSetEmail}
+                  value={email}
+                  keyboardType='email-address'
+                  autoCapitalize='none'
+                />
+            </View>
+            <View style={styles.singleInputContainer}>
+              <View style={styles.titleSmallContainer}>
+                <ThemedText type="titleSmall">🔑</ThemedText>
+                <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_password}</ThemedText>
+              </View>  
+              <TextInput 
+                placeholder={strings.login_password_example} 
                 placeholderTextColor={theme.lowContrast} 
                 style={[styles.textInput, { color: theme.highContrast, borderColor: theme. lowContrast }]}
-                onChangeText={setEmail}
-                value={email}
-                keyboardType='email-address'
-                autoCapitalize='none'
+                onChangeText={handleSetPassword}
+                value={password}
+                secureTextEntry={true}
               />
+            </View>
           </View>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-              <ThemedText type="titleSmall">🔑</ThemedText>
-              <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_password}</ThemedText>
-            </View>  
-            <TextInput 
-              placeholder={strings.login_password_example} 
-              placeholderTextColor={theme.lowContrast} 
-              style={[styles.textInput, { color: theme.highContrast, borderColor: theme. lowContrast }]}
-              onChangeText={setPassword}
-              value={password}
-              secureTextEntry={true}
-            />
-          </View>
-        </View>
 
-        {message.type && message.text ? (
-          <View style={ styles.messageContainer }>
-            <ThemedText 
-              type="default"
-              style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
-            >
-              {message.text}  
-            </ThemedText>  
-          </View>
-        ) : null}
+          {message.type && message.text ? (
+            <View style={ styles.messageContainer }>
+              <ThemedText 
+                type="default"
+                style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
+              >
+                {message.text}  
+              </ThemedText>  
+            </View>
+          ) : null}
 
-        <TouchableOpacity 
-          style={[styles.button, {backgroundColor: theme.buttonBg}]}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          <ThemedText type='default' style={{ color: theme.buttonText }}>
-            {loading ? strings.login_loading : strings.login_button}
-          </ThemedText>
-        </TouchableOpacity>
-
-        <View style={styles.textsSmallContainer}>
-          <ThemedText type='textSmall' style={{color: theme.highContrast}}>{strings.login_no_account}</ThemedText>
-          <TouchableOpacity onPress={() => router.push('./register')}>
-            <ThemedText type='textSmallSemiBold' style={{color: theme.highContrast}}>{strings.login_register}</ThemedText>
+          <TouchableOpacity 
+            style={[styles.button, {backgroundColor: theme.buttonBg}]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            <ThemedText type='default' style={{ color: theme.buttonText }}>
+              {loading ? strings.login_loading : strings.login_button}
+            </ThemedText>
           </TouchableOpacity>
-        </View>
 
+          <View style={styles.textsSmallContainer}>
+            <ThemedText type='textSmall' style={{color: theme.highContrast}}>{strings.login_no_account}</ThemedText>
+            <TouchableOpacity onPress={() => router.push('./register')}>
+              <ThemedText type='textSmallSemiBold' style={{color: theme.highContrast}}>{strings.login_register}</ThemedText>
+            </TouchableOpacity>
+          </View>
+
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -175,7 +195,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     gap: 8,
     marginBottom: 24,
-    marginTop: 48,
+    marginTop: 40,
     width: '100%',
   },
   textInput: {
@@ -189,7 +209,7 @@ const styles = StyleSheet.create({
   },
   inputsContainer: {
     gap: 16,
-    marginBottom: 40,
+    marginBottom: 28,
   },
   singleInputContainer: {
     gap: 4,

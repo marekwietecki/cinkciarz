@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import React, { useContext, useState } from 'react';
-import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
