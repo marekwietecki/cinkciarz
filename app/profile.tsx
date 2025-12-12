@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
@@ -37,12 +37,12 @@ export default function WelcomeScreen() {
                     </View>
                     
                     <View style={styles.row}>
-                        <TouchableOpacity style={[styles.picker, {backgroundColor: lang === 'pl' ? theme.highContrast : theme.background }]} onPress={() => setLang('pl')}>
+                        <TouchableOpacity style={[styles.picker, {borderColor: lang === 'pl' ? theme.accentDark : theme.background }]} onPress={() => setLang('pl')}>
                             <ThemedText type="titleSmall" style={{ color: lang === 'pl' ? theme.accentDark : theme.highContrast }}>
                                 {strings.profile_polish}
                             </ThemedText>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.picker, {backgroundColor: lang === 'en' ? theme.highContrast : theme.background }]} onPress={() => setLang('en')}>
+                        <TouchableOpacity style={[styles.picker, {borderColor: lang === 'en' ? theme.accentDark : theme.background }]} onPress={() => setLang('en')}>
                             <ThemedText type="titleSmall" style={{ color: lang === 'en' ? theme.accentDark : theme.highContrast }}>
                                 {strings.profile_english}
                             </ThemedText>
@@ -60,12 +60,12 @@ export default function WelcomeScreen() {
                     </View>
 
                     <View style={styles.row}>
-                        <TouchableOpacity style={[styles.picker, {backgroundColor: themeName === 'light' ? theme.highContrast : theme.background }]} onPress={() => setThemeName('light')}>
+                        <TouchableOpacity style={[styles.picker, {borderColor: themeName === 'light' ? theme.accentDark : theme.background }]} onPress={() => setThemeName('light')}>
                             <ThemedText  type="titleSmall" style={{ color: themeName === 'light' ? theme.accentDark : theme.highContrast }}>
                                 {strings.profile_light_theme}
                             </ThemedText>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.picker, {backgroundColor: themeName === 'dark' ? theme.highContrast : theme.background }]} onPress={() => setThemeName('dark')}>
+                        <TouchableOpacity style={[styles.picker, {borderColor: themeName === 'dark' ? theme.accentDark : theme.background }]} onPress={() => setThemeName('dark')}>
                             <ThemedText type="titleSmall" style={{ color: themeName === 'dark' ? theme.accentDark : theme.highContrast }}>
                                 {strings.profile_dark_theme}
                             </ThemedText>
@@ -136,7 +136,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10, 
     paddingHorizontal: 0,
     margin: 6, 
-    borderRadius: 24, 
+    borderRadius: 24,
+    borderWidth: 3, 
     alignItems: 'center' 
   },
   button: { 

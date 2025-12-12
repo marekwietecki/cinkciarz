@@ -17,11 +17,14 @@ export default function HomeScreen() {
  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [loading, setLoading] = useState(false);
   
   const handleLogin = async () => {
+    setMessage({ text: '', type: null });    
+    
     if (!email || !password){
-      Alert.alert(strings.error, strings.login_fields_required);
+      setMessage({ text: strings.login_fields_required, type: 'error' });
       return;
     }
     
@@ -43,22 +46,22 @@ export default function HomeScreen() {
         if(token) {
           await AsyncStorage.setItem('userToken', token);
 
-          Alert.alert(strings.success, strings.login_success_message);
+          setMessage({ text: strings.login_success_message, type: 'success' })
           router.replace('/');
         } else {
           //no token
-          Alert.alert(strings.error, strings.login_token_error);
+          setMessage({text: strings.login_token_error, type: 'error'})
         }
       } else {
         //400 401
         const errorMessage = data.message || strings.login_unknown_error;
-        Alert.alert(strings.error, errorMessage);
+        setMessage({ text: errorMessage, type: 'error'})
         setPassword('');
       }
     } catch (error) {
       //sieci
       console.error("Błąd logowania:", error);
-      Alert.alert(strings.error, strings.login_network_error);
+      setMessage({ text: strings.login_network_error, type: 'error'})
     } finally {
       setLoading(false);
     }
@@ -84,35 +87,43 @@ export default function HomeScreen() {
               <ThemedText type="titleSmall">✉️</ThemedText>
               <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_email}</ThemedText>
             </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput 
+            <TextInput 
                 placeholder={strings.login_email_example} 
                 placeholderTextColor={theme.lowContrast} 
-                style={[styles.textInput, {color: theme.highContrast}]}
+                style={[styles.textInput, { color: theme.highContrast, borderColor: theme. lowContrast }]}
                 onChangeText={setEmail}
                 value={email}
                 keyboardType='email-address'
                 autoCapitalize='none'
               />
-            </TouchableOpacity>
           </View>
           <View style={styles.singleInputContainer}>
             <View style={styles.titleSmallContainer}>
               <ThemedText type="titleSmall">🔑</ThemedText>
               <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.login_password}</ThemedText>
             </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-              <TextInput 
-                placeholder={strings.login_password_example} 
-                placeholderTextColor={theme.lowContrast} 
-                style={[styles.textInput, {color: theme.highContrast}]}
-                onChangeText={setPassword}
-                value={password}
-                secureTextEntry={true}
-              />
-            </TouchableOpacity>
+            <TextInput 
+              placeholder={strings.login_password_example} 
+              placeholderTextColor={theme.lowContrast} 
+              style={[styles.textInput, { color: theme.highContrast, borderColor: theme. lowContrast }]}
+              onChangeText={setPassword}
+              value={password}
+              secureTextEntry={true}
+            />
           </View>
         </View>
+
+        {message.type && message.text ? (
+          <View style={ styles.messageContainer }>
+            <ThemedText 
+              type="default"
+              style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
+            >
+              {message.text}  
+            </ThemedText>  
+          </View>
+        ) : null}
+
         <TouchableOpacity 
           style={[styles.button, {backgroundColor: theme.buttonBg}]}
           onPress={handleLogin}
@@ -171,11 +182,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular, 
     fontSize: 16, 
     lineHeight: 20,
-  },
-  textInputWrapper: {
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderWidth: 3,
+    borderWidth: 2,
     borderRadius: 32,
   },
   inputsContainer: {
@@ -184,6 +193,13 @@ const styles = StyleSheet.create({
   },
   singleInputContainer: {
     gap: 4,
+  },
+  messageContainer: {
+    marginVertical: 10, 
+    paddingHorizontal: 20
+  },
+  message: {
+    textAlign: 'center',
   },
   button: {
     paddingVertical: 12,

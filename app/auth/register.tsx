@@ -17,15 +17,18 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
+    setMessage({ text: '', type: null });    
+
     if(!email || !password || !confirmPassword){
-        Alert.alert(strings.error, strings.register_fields_required);
-        return;
+      setMessage({ text: strings.register_fields_required, type: 'error' })
+      return;
     }
     if(password !== confirmPassword) {
-        Alert.alert(strings.error, strings.register_password_mismatch);
+        setMessage({ text: strings.register_password_mismatch, type: 'error' })
         setPassword('');
         setConfirmPassword('');
         return;
@@ -45,20 +48,38 @@ export default function RegisterScreen() {
         const data = await response.json();
 
         if (response.ok) {
-            Alert.alert(strings.success, data.message || strings.register_success_message);
-            router.push('./auth/login');
+            setMessage({ text: strings.register_success_message, type: 'success' })
+            router.push('./login');
         } else {
             const errorMessage = data.message || strings.register_unknown_error;
-            Alert.alert(strings.error, errorMessage);
+            setMessage({ text: errorMessage, type: 'error' });
         }
     } catch (error) {
         console.log(error);
-        Alert.alert(strings.error, strings.register_network_error);
+        setMessage({ text: strings.register_network_error, type: 'error' });
     } finally {
         setLoading(false);
     }
   }
 
+  const clearMessage = () => {
+    setMessage({ text: '', type: null });
+  };
+
+  const handleSetEmail = (text: string) => {
+      clearMessage();
+      setEmail(text);
+  };
+
+  const handleSetPassword = (text: string) => {
+      clearMessage();
+      setPassword(text);
+  };
+
+  const handleSetConfirmPassword = (text: string) => {
+      clearMessage();
+      setConfirmPassword(text);
+  };
 
   return (
     <View style={[
@@ -80,51 +101,56 @@ export default function RegisterScreen() {
               <ThemedText type="titleSmall">✉️</ThemedText>
               <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_email}</ThemedText>
             </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-                <TextInput 
-                    placeholder={strings.register_email_example} 
-                    placeholderTextColor={theme.lowContrast} 
-                    style={[styles.textInput, {color: theme.highContrast}]}
-                    onChangeText={setEmail}
-                    value={email}
-                    keyboardType='email-address'
-                    autoCapitalize='none'
-                />
-            </TouchableOpacity>
+              <TextInput 
+                  placeholder={strings.register_email_example} 
+                  placeholderTextColor={theme.lowContrast} 
+                  style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast }]}
+                  onChangeText={handleSetEmail}
+                  value={email}
+                  keyboardType='email-address'
+                  autoCapitalize='none'
+              />
           </View>
           <View style={styles.singleInputContainer}>
             <View style={styles.titleSmallContainer}>
                 <ThemedText type="titleSmall">🔑</ThemedText>
                 <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_password}</ThemedText>
             </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-                <TextInput 
-                    placeholder={strings.register_password_example} 
-                    placeholderTextColor={theme.lowContrast} 
-                    style={[styles.textInput, {color: theme.highContrast}]}
-                    onChangeText={setPassword}
-                    value={password}
-                    secureTextEntry={true}
-                />
-            </TouchableOpacity>
+              <TextInput 
+                  placeholder={strings.register_password_example} 
+                  placeholderTextColor={theme.lowContrast} 
+                  style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast }]}
+                  onChangeText={handleSetPassword}
+                  value={password}
+                  secureTextEntry={true}
+              />
           </View>
           <View style={styles.singleInputContainer}>
             <View style={styles.titleSmallContainer}>
                 <ThemedText type="titleSmall">🔁</ThemedText>
                 <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_repeat_password}</ThemedText>
             </View>  
-            <TouchableOpacity style={[styles.textInputWrapper, { borderColor: theme. lowContrast}]}>
-                <TextInput
-                    placeholder={strings.register_password_example} 
-                    placeholderTextColor={theme.lowContrast} 
-                    style={[styles.textInput, {color: theme.highContrast}]}
-                    onChangeText={setConfirmPassword}
-                    value={confirmPassword}
-                    secureTextEntry={true}
-                />
-            </TouchableOpacity>
+            <TextInput
+                placeholder={strings.register_password_example} 
+                placeholderTextColor={theme.lowContrast} 
+                style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast}]}
+                onChangeText={handleSetConfirmPassword}
+                value={confirmPassword}
+                secureTextEntry={true}
+            />
           </View>
         </View>
+
+        {message.type && message.text ? (
+          <View style={ styles.messageContainer }>
+            <ThemedText 
+              type="default"
+              style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
+            >
+              {message.text}  
+            </ThemedText>  
+          </View>
+        ) : null}
 
         <TouchableOpacity 
             style={[styles.button, {backgroundColor: theme.buttonBg}]}
@@ -161,7 +187,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '10%', 
+    top: '4%', 
     left: '8%',
   },
   titleContainer: {
@@ -184,11 +210,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular, 
     fontSize: 16, 
     lineHeight: 20,
-  },
-  textInputWrapper: {
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderWidth: 3,
+    borderWidth: 2,
     borderRadius: 32,
   },
   inputsContainer: {
@@ -197,6 +221,13 @@ const styles = StyleSheet.create({
   },
   singleInputContainer: {
     gap: 4,
+  },
+  messageContainer: {
+    marginVertical: 10, 
+    paddingHorizontal: 20
+  },
+  message: {
+    textAlign: 'center',
   },
   button: {
     paddingVertical: 12,
