@@ -94,9 +94,6 @@ export default function RegisterScreen() {
         ]}
         keyboardShouldPersistTaps="handled" 
       >
-        <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
-          <ThemedText>🙍‍♂️</ThemedText>
-        </TouchableOpacity>
         <View style={styles.titleContainer}>
           <ThemedText type="titleMid" style={{color: theme.highContrast}}>{strings.register_title}</ThemedText>
           <ThemedText type="subtitle" style={{color: theme.midContrast}}>{strings.register_subtitle}</ThemedText>

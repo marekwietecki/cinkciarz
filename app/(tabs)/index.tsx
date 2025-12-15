@@ -15,6 +15,9 @@ export default function DashboardScreen() {
       styles.container,
       { backgroundColor: theme.background }
     ]}>
+      <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
+        <ThemedText>🙍‍♂️</ThemedText>
+      </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('./auth/register')}>
           <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>
         </TouchableOpacity>
