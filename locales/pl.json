@@ -23,7 +23,6 @@
     "login_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
     "login_loading": "Trwa logowanie..",
 
-
     "register_title": "Zarejestruj się!",
     "register_subtitle": "Zarejestruj się do internetowego serwisu wymiany walut - eWalutka.pl",
     "register_email": "E-mail",
@@ -41,7 +40,7 @@
     "register_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
     "register_loading": "Trwa rejestracja..",
 
-
+    "profile_logged_in": "Zalogowany",
     "profile_choose_avatar": "Wybierz swój awatar",
     "profile_choose_language": "Wybierz język",
     "profile_polish": "Polski",

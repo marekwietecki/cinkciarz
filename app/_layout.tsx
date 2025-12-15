@@ -3,8 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import React, { useContext, useEffect } from 'react';
-import { LanguageProvider } from '../contexts/languageContext';
-import { ThemeProvider } from '../contexts/themeContext';
+import { LanguageProvider, LanguageContext } from '../contexts/languageContext';
+import { ThemeProvider, ThemeContext } from '../contexts/themeContext';
 import { useFonts } from 'expo-font';
 
 export const Fonts = {
@@ -25,6 +25,8 @@ export const unstable_settings = {
 
 
 export default function RootLayout() {
+  const { theme } = useContext(ThemeContext);
+  const { strings } = useContext(LanguageContext); 
 
   const [loaded] = useFonts({
     [Fonts.thin]: require('../assets/fonts/Lexend-Thin.ttf'),
@@ -74,7 +76,8 @@ export default function RootLayout() {
           <Stack.Screen 
             name="profile" 
             options={{ 
-              headerShown: true, title: 'Profil Uzytkownika' }} 
+              headerShown: false
+            }}   
           />
         </Stack>
         <StatusBar style="auto" />

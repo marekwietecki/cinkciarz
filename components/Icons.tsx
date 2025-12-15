@@ -1,4 +1,4 @@
-import { Languages, Contrast, User, WalletCards, List, ArrowLeftRight, History  } from 'lucide-react-native';
+import { Languages, Contrast, User, WalletCards, List, ArrowLeftRight, History, ChevronLeft  } from 'lucide-react-native';
 
 export const LanguagesIcon = Languages;
 export const ContrastIcon = Contrast;
@@ -7,3 +7,4 @@ export const WalletIcon = WalletCards;
 export const RatesIcon = List;
 export const TransationIcon = ArrowLeftRight;
 export const HistoryIcon = History;
+export const BackIcon = ChevronLeft;

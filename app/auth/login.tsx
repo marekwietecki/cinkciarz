@@ -46,7 +46,7 @@ export default function LoginScreen() {
         const token = data.token;
         if(token) {
           await AsyncStorage.setItem('userToken', token);
-
+          //success
           setMessage({ text: strings.login_success_message, type: 'success' })
           router.replace('/');
         } else {
@@ -60,7 +60,7 @@ export default function LoginScreen() {
         setPassword('');
       }
     } catch (error) {
-      //sieci
+      //network
       console.error("Błąd logowania:", error);
       setMessage({ text: strings.login_network_error, type: 'error'})
     } finally {

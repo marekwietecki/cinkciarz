@@ -1,23 +1,60 @@
 import { useRouter } from 'expo-router';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
 import { ThemedText } from '@/components/themed-text';
-import { UserIcon, LanguagesIcon, ContrastIcon } from '../components/Icons';
+import { UserIcon, LanguagesIcon, ContrastIcon, BackIcon } from '../components/Icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const AVATAR_KEY = '@user_avatar';
 
-
-export default function WelcomeScreen() {
+export default function ProfileScreen() {
     const router = useRouter();
     const { lang, setLang, strings } = useContext(LanguageContext);
     const { themeName, setThemeName, theme } = useContext(ThemeContext);
     const [ avatar, setAvatar ] = useState('');
     
+    useEffect(() => {
+        const loadAvatar = async () => {
+            try {
+                const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
+                if (storedAvatar) {
+                    setAvatar(storedAvatar);
+                }
+            } catch (e) {
+                console.error('Błąd ładowania avatara:', e);
+            }
+        }
+        loadAvatar();
+    }, []);
+
+   const handleSetAvatar = useCallback(async (newAvatar: string) => {
+        try {
+            await AsyncStorage.setItem(AVATAR_KEY, newAvatar);
+            setAvatar(newAvatar);
+        } catch (e) {
+            console.error('Błąd zapisu avatara:', e);
+        }
+    }, [setAvatar]);
+
+    const handleGoBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace('/'); 
+            console.warn("Nie można się cofnąć, stos nawigacji jest pusty - przeniesiono do ekranu początkowego.");
+        }
+    };
+
     return (
         <View style={[ styles.container, { backgroundColor: theme.background }]}>
+            <TouchableOpacity onPress={handleGoBack} style={styles.back}>
+                <BackIcon color={theme.highContrast} size={30}></BackIcon>
+            </TouchableOpacity>
             
+
             <View style={styles.userContainer}>
                 <ThemedText type="titleBig">{avatar}</ThemedText>
                 if{ avatar === '' &&(<UserIcon size={32} color={theme.highContrast} strokeWidth={3.5}/>)}
@@ -25,7 +62,7 @@ export default function WelcomeScreen() {
                     NAZWA UŻYTKOWNIKA
                 </ThemedText>
                 <ThemedText type="subtitle" style={{ color: theme.midContrast }}>
-                    Zalogowany {/* ?? */}
+                    {strings.profile_logged_in}
                 </ThemedText> 
             </View>
 
@@ -44,7 +81,7 @@ export default function WelcomeScreen() {
                     <View style={styles.row}>
                         <TouchableOpacity 
                             style={[styles.picker, {borderColor: theme.highContrast, borderBottomWidth: avatar === '👨🏻' ? 3 : 0, }]} 
-                            onPress={() => setAvatar('👨🏻')}
+                            onPress={() => handleSetAvatar('👨🏻')}
                         >
                             <Text style={{ color: avatar === '👨🏻' ? theme.accentDark : theme.highContrast, fontSize: 20 }}>
                                 👨🏻
@@ -52,7 +89,7 @@ export default function WelcomeScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity 
                             style={[styles.picker, {borderColor: theme.highContrast, borderBottomWidth: avatar === '👩🏻' ? 3 : 0, }]} 
-                            onPress={() => setAvatar('👩🏻')}
+                            onPress={() => handleSetAvatar('👩🏻')}
                         >
                             <Text style={{ color: avatar === '👨🏻' ? theme.accentDark : theme.highContrast, fontSize: 20 }}>
                                 👩🏻
@@ -60,7 +97,7 @@ export default function WelcomeScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity 
                             style={[styles.picker, {borderColor: theme.highContrast, borderBottomWidth: avatar === '👱🏻‍♀️' ? 3 : 0, }]} 
-                            onPress={() => setAvatar('👱🏻‍♀️')}
+                            onPress={() => handleSetAvatar('👱🏻‍♀️')}
                         >
                             <Text 
                                 style={{ color: avatar === '👱🏻‍♀️' ? theme.accentDark : theme.highContrast, fontSize: 20 }}
@@ -70,7 +107,7 @@ export default function WelcomeScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity 
                             style={[styles.picker, {borderColor: theme.highContrast, borderBottomWidth: avatar === '👱🏻‍♂️' ? 3 : 0,  }]} 
-                            onPress={() => setAvatar('👱🏻‍♂️')}
+                            onPress={() => handleSetAvatar('👱🏻‍♂️')}
                         >
                             <Text 
                                 style={{ color: avatar === '👱🏻‍♂️' ? theme.accentDark : theme.highContrast, fontSize: 20 }}
@@ -80,7 +117,7 @@ export default function WelcomeScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity 
                             style={[styles.picker, {borderColor: theme.highContrast, borderBottomWidth: avatar === '👨🏻‍🦲' ? 3 : 0,  }]} 
-                            onPress={() => setAvatar('👨🏻‍🦲')}
+                            onPress={() => handleSetAvatar('👨🏻‍🦲')}
                         >
                             <Text 
                                 style={{ color: avatar === '👨🏻‍🦲' ? theme.accentDark : theme.highContrast, fontSize: 20 }}
@@ -158,6 +195,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 20,
+  },
+  back: {
+    position: 'absolute', 
+    top: '8%', 
+    left: '4%',
   },
   userContainer: {
     marginBottom: '20%',

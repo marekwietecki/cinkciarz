@@ -40,6 +40,7 @@
     "register_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
     "register_loading": "Registration in progress..",
 
+    "profile_logged_in": "Logged In",
     "profile_choose_avatar": "Choose your avatar",
     "profile_choose_language": "Choose language",
     "profile_polish": "Polish",
