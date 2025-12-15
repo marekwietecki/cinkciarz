@@ -1,16 +1,17 @@
 import { ThemedText } from '@/components/themed-text';
-import React, { useContext, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const BASE_URL = 'http://192.168.18.9:19000/api/auth';
 
-export default function HomeScreen() {
+export default function LoginScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
@@ -85,12 +86,15 @@ export default function HomeScreen() {
     <KeyboardAvoidingView 
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0} 
+      keyboardVerticalOffset={-64}
     >
-      <View style={[
-        styles.container,
-        { backgroundColor: theme.background } 
-      ]}>
+      <ScrollView 
+        contentContainerStyle={[ 
+          styles.container,
+          { backgroundColor: theme.background, flexGrow: 1 }
+        ]}
+        keyboardShouldPersistTaps="handled" 
+      >
         <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
           <ThemedText>🙍‍♂️</ThemedText>
         </TouchableOpacity>
@@ -161,7 +165,7 @@ export default function HomeScreen() {
           </View>
 
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -172,20 +176,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingHorizontal: '8%',
-    paddingBottom: '8%',
+    paddingBottom: '4%',
   },
   profileLink: {
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '10%', 
+    top: '8%', 
     left: '8%',
   },
   titleContainer: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    gap: 8,
   },
   titleSmallContainer: {
     flexDirection: 'row',
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     gap: 8,
     marginBottom: 24,
-    marginTop: 40,
+    marginTop: 36,
     width: '100%',
   },
   textInput: {
@@ -209,7 +212,7 @@ const styles = StyleSheet.create({
   },
   inputsContainer: {
     gap: 16,
-    marginBottom: 28,
+    marginBottom: 12,
   },
   singleInputContainer: {
     gap: 4,

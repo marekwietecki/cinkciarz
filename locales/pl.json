@@ -2,6 +2,11 @@
     "error": "Błąd",
     "success": "Sukces",
 
+    "nav_wallet": "Portfel",
+    "nav_rates": "Kursy",
+    "nav_transaction": "Transakcja",
+    "nav_history": "Historia",
+
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
     "login_email": "E-mail",
@@ -37,6 +42,7 @@
     "register_loading": "Trwa rejestracja..",
 
 
+    "profile_choose_avatar": "Wybierz swój awatar",
     "profile_choose_language": "Wybierz język",
     "profile_polish": "Polski",
     "profile_english": "Angielski",

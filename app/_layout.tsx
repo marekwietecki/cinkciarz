@@ -2,10 +2,9 @@ import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/languageContext';
 import { ThemeProvider } from '../contexts/themeContext';
-
 import { useFonts } from 'expo-font';
 
 export const Fonts = {
@@ -52,12 +51,34 @@ export default function RootLayout() {
     <LanguageProvider>
       <ThemeProvider>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          <Stack.Screen 
+            name="auth/login" 
+            options={{ 
+              headerShown: false 
+            }}
+          />
+          <Stack.Screen 
+            name="auth/register" 
+            options={{ 
+              headerShown: false 
+            }}
+          />
+          <Stack.Screen 
+            name="(tabs)" 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="modal" 
+            options={{ presentation: 'modal', title: 'Modal' }} 
+          />
+          <Stack.Screen 
+            name="profile" 
+            options={{ 
+              headerShown: true, title: 'Profil Uzytkownika' }} 
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
     </LanguageProvider>
-
   );
 }

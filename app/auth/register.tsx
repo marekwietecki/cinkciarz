@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import React, { useContext, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
@@ -82,95 +82,104 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={[
-      styles.container,
-      { backgroundColor: theme.background }
-    ]}>
-      <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
-        <ThemedText>🙍‍♂️</ThemedText>
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <ThemedText type="titleMid" style={{color: theme.highContrast}}>{strings.register_title}</ThemedText>
-        <ThemedText type="subtitle" style={{color: theme.midContrast}}>{strings.register_subtitle}</ThemedText>
-      </View>
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={-64}
+    >
+      <ScrollView 
+        contentContainerStyle={[ 
+          styles.container,
+          { backgroundColor: theme.background, flexGrow: 1 } 
+        ]}
+        keyboardShouldPersistTaps="handled" 
+      >
+        <TouchableOpacity style={[styles.profileLink, {backgroundColor: theme.veryLowContrast}]} onPress={() => router.push('../profile')}>
+          <ThemedText>🙍‍♂️</ThemedText>
+        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <ThemedText type="titleMid" style={{color: theme.highContrast}}>{strings.register_title}</ThemedText>
+          <ThemedText type="subtitle" style={{color: theme.midContrast}}>{strings.register_subtitle}</ThemedText>
+        </View>
 
-      <View style={styles.mainContainer}>
-        <View style={styles.inputsContainer}>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-              <ThemedText type="titleSmall">✉️</ThemedText>
-              <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_email}</ThemedText>
-            </View>  
-              <TextInput 
-                  placeholder={strings.register_email_example} 
-                  placeholderTextColor={theme.lowContrast} 
-                  style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast }]}
-                  onChangeText={handleSetEmail}
-                  value={email}
-                  keyboardType='email-address'
-                  autoCapitalize='none'
-              />
-          </View>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-                <ThemedText type="titleSmall">🔑</ThemedText>
-                <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_password}</ThemedText>
-            </View>  
-              <TextInput 
+        <View style={styles.mainContainer}>
+          <View style={styles.inputsContainer}>
+            <View style={styles.singleInputContainer}>
+              <View style={styles.titleSmallContainer}>
+                <ThemedText type="titleSmall">✉️</ThemedText>
+                <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_email}</ThemedText>
+              </View>  
+                <TextInput 
+                    placeholder={strings.register_email_example} 
+                    placeholderTextColor={theme.lowContrast} 
+                    style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast }]}
+                    onChangeText={handleSetEmail}
+                    value={email}
+                    keyboardType='email-address'
+                    autoCapitalize='none'
+                />
+            </View>
+            <View style={styles.singleInputContainer}>
+              <View style={styles.titleSmallContainer}>
+                  <ThemedText type="titleSmall">🔑</ThemedText>
+                  <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_password}</ThemedText>
+              </View>  
+                <TextInput 
+                    placeholder={strings.register_password_example} 
+                    placeholderTextColor={theme.lowContrast} 
+                    style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast }]}
+                    onChangeText={handleSetPassword}
+                    value={password}
+                    secureTextEntry={true}
+                />
+            </View>
+            <View style={styles.singleInputContainer}>
+              <View style={styles.titleSmallContainer}>
+                  <ThemedText type="titleSmall">🔁</ThemedText>
+                  <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_repeat_password}</ThemedText>
+              </View>  
+              <TextInput
                   placeholder={strings.register_password_example} 
                   placeholderTextColor={theme.lowContrast} 
-                  style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast }]}
-                  onChangeText={handleSetPassword}
-                  value={password}
+                  style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast}]}
+                  onChangeText={handleSetConfirmPassword}
+                  value={confirmPassword}
                   secureTextEntry={true}
               />
+            </View>
           </View>
-          <View style={styles.singleInputContainer}>
-            <View style={styles.titleSmallContainer}>
-                <ThemedText type="titleSmall">🔁</ThemedText>
-                <ThemedText type="titleSmall" style={{color: theme.highContrast}}>{strings.register_repeat_password}</ThemedText>
-            </View>  
-            <TextInput
-                placeholder={strings.register_password_example} 
-                placeholderTextColor={theme.lowContrast} 
-                style={[styles.textInput, {color: theme.highContrast, borderColor: theme. lowContrast}]}
-                onChangeText={handleSetConfirmPassword}
-                value={confirmPassword}
-                secureTextEntry={true}
-            />
+
+          {message.type && message.text ? (
+            <View style={ styles.messageContainer }>
+              <ThemedText 
+                type="default"
+                style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
+              >
+                {message.text}  
+              </ThemedText>  
+            </View>
+          ) : null}
+
+          <TouchableOpacity 
+              style={[styles.button, {backgroundColor: theme.buttonBg}]}
+              onPress={handleRegister}
+              disabled={loading}    
+          >
+              <ThemedText type='default' style={{ color: theme.buttonText }}>
+                  {loading ? strings.register_loading : strings.register_button}
+              </ThemedText>
+          </TouchableOpacity>
+
+          <View style={styles.textsSmallContainer}>
+              <ThemedText type='textSmall' style={{color: theme.highContrast}}>{strings.register_have_an_account}</ThemedText>
+              <TouchableOpacity onPress={() => router.push('./login')}>
+                  <ThemedText type='textSmallSemiBold' style={{color: theme.highContrast}}>{strings.register_login}</ThemedText>
+              </TouchableOpacity>
           </View>
+
         </View>
-
-        {message.type && message.text ? (
-          <View style={ styles.messageContainer }>
-            <ThemedText 
-              type="default"
-              style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
-            >
-              {message.text}  
-            </ThemedText>  
-          </View>
-        ) : null}
-
-        <TouchableOpacity 
-            style={[styles.button, {backgroundColor: theme.buttonBg}]}
-            onPress={handleRegister}
-            disabled={loading}    
-        >
-            <ThemedText type='default' style={{ color: theme.buttonText }}>
-                {loading ? strings.register_loading : strings.register_button}
-            </ThemedText>
-        </TouchableOpacity>
-
-        <View style={styles.textsSmallContainer}>
-            <ThemedText type='textSmall' style={{color: theme.highContrast}}>{strings.register_have_an_account}</ThemedText>
-            <TouchableOpacity onPress={() => router.push('./login')}>
-                <ThemedText type='textSmallSemiBold' style={{color: theme.highContrast}}>{strings.register_login}</ThemedText>
-            </TouchableOpacity>
-        </View>
-
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -180,20 +189,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingHorizontal: '8%',
-    paddingBottom: '8%',
+    paddingBottom: '4%',
   },
   profileLink: {
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '4%', 
+    top: '8%', 
     left: '8%',
   },
   titleContainer: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    gap: 8,
   },
   titleSmallContainer: {
     flexDirection: 'row',
@@ -203,7 +211,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     gap: 8,
     marginBottom: 24,
-    marginTop: 48,
+    marginTop: 36,
     width: '100%',
   },
   textInput: {
@@ -217,7 +225,7 @@ const styles = StyleSheet.create({
   },
   inputsContainer: {
     gap: 16,
-    marginBottom: 40,
+    marginBottom: 12,
   },
   singleInputContainer: {
     gap: 4,

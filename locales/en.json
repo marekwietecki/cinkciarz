@@ -1,6 +1,11 @@
 {
     "error": "Error",
     "success": "Success",
+
+    "nav_wallet": "Wallet",
+    "nav_rates": "Rates",
+    "nav_transaction": "Transaction",
+    "nav_history": "History",
     
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
@@ -35,6 +40,7 @@
     "register_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
     "register_loading": "Registration in progress..",
 
+    "profile_choose_avatar": "Choose your avatar",
     "profile_choose_language": "Choose language",
     "profile_polish": "Polish",
     "profile_english": "English",
