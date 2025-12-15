@@ -7,7 +7,7 @@ const THEME_KEY = '@app_theme';
 
 export const ThemeContext = createContext({
     themeName: 'light',
-    setThemeName: () => {},
+    setThemeName: (newThemeName) => {},
     theme: light
 });
 

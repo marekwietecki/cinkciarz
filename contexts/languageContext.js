@@ -7,7 +7,7 @@ const LANGUAGE_KEY = '@app_language';
 
 export const LanguageContext = createContext({
     lang: 'en',
-    setLang: () => {},
+    setLang: (newLangName) => {},
     strings: en
 });
 
