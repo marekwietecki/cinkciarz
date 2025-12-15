@@ -9,13 +9,34 @@ import { UserIcon, LanguagesIcon, ContrastIcon, BackIcon } from '../components/I
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AVATAR_KEY = '@user_avatar';
+const AUTH_TOKEN_KEY = 'userToken';
 
 export default function ProfileScreen() {
     const router = useRouter();
     const { lang, setLang, strings } = useContext(LanguageContext);
     const { themeName, setThemeName, theme } = useContext(ThemeContext);
     const [ avatar, setAvatar ] = useState('');
+    const [ isLoggedIn, setIsLoggedIn ] = useState(false);
     
+    useEffect(() => {
+        const loadProfileData = async () => {
+            try {
+                const storedToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+                if (storedToken) {
+                    setIsLoggedIn(true); 
+                }
+                
+                const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
+                if (storedAvatar) {
+                    setAvatar(storedAvatar);
+                }
+            } catch (e) {
+                console.error('Błąd ładowania danych profilu:', e);
+            }
+        }
+        loadProfileData();
+    }, []);
+
     useEffect(() => {
         const loadAvatar = async () => {
             try {
@@ -30,7 +51,21 @@ export default function ProfileScreen() {
         loadAvatar();
     }, []);
 
-   const handleSetAvatar = useCallback(async (newAvatar: string) => {
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
+
+            router.replace('/auth/login'); 
+            
+            console.log('Użytkownik wylogowany pomyślnie.');
+        } catch (e) {
+            console.error('Błąd podczas wylogowywania:', e);
+            router.replace('/auth/login'); 
+        }
+    };
+
+
+    const handleSetAvatar = useCallback(async (newAvatar: string) => {
         try {
             await AsyncStorage.setItem(AVATAR_KEY, newAvatar);
             setAvatar(newAvatar);
@@ -56,19 +91,24 @@ export default function ProfileScreen() {
             
 
             <View style={styles.userContainer}>
-                <ThemedText type="titleBig">{avatar}</ThemedText>
-                if{ avatar === '' &&(<UserIcon size={32} color={theme.highContrast} strokeWidth={3.5}/>)}
+                {avatar === '' ? (
+                    <UserIcon size={32} color={theme.highContrast} strokeWidth={3.5} />
+                ) : (
+                    <ThemedText type="titleBig">{avatar}</ThemedText>
+                )}
                 <ThemedText type="titleMid" style={{ color: theme.highContrast, fontSize: 24 }}>
                     NAZWA UŻYTKOWNIKA
                 </ThemedText>
                 <ThemedText type="subtitle" style={{ color: theme.midContrast }}>
-                    {strings.profile_logged_in}
+                {isLoggedIn 
+                    ? strings.profile_logged_in        
+                    : strings.profile_not_logged_in     
+                }                    
                 </ThemedText> 
             </View>
 
             <View style={styles.contextPickers}>
                 
-                {/* Dodać wybieranie awatara */}
                 <View style={styles.pickerContainer}>
                     <View style={styles.rowTitle}>         
                         {/*👨🏻👩🏻👨🏻‍🦲👱🏻‍♀️👱🏻*/}
@@ -172,7 +212,7 @@ export default function ProfileScreen() {
                 </View>    
             </View>
 
-            <TouchableOpacity style={[styles.button, { borderColor: theme.midContrast}]} onPress={() => router.push('/auth/login')}>
+            <TouchableOpacity style={[styles.button, { borderColor: theme.midContrast}]} onPress={handleLogout}>
                 <ThemedText type="default" style={{ color: theme.midContrast}}>
                     {strings.profile_log_out}
                 </ThemedText>

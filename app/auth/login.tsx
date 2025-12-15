@@ -10,6 +10,7 @@ import { Fonts } from '../_layout';
 
 
 const BASE_URL = 'http://192.168.18.9:19000/api/auth';
+const AUTH_TOKEN_KEY = 'userToken';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function LoginScreen() {
       if (response.ok) {
         const token = data.token;
         if(token) {
-          await AsyncStorage.setItem('userToken', token);
+          await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
           //success
           setMessage({ text: strings.login_success_message, type: 'success' })
           router.replace('/');
@@ -140,7 +141,7 @@ export default function LoginScreen() {
             <View style={ styles.messageContainer }>
               <ThemedText 
                 type="default"
-                style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success || 'green',}]} 
+                style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
               >
                 {message.text}  
               </ThemedText>  

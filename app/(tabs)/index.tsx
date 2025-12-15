@@ -6,10 +6,9 @@ import { useRouter } from 'expo-router';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
-export default function HomeScreen() {
+export default function DashboardScreen() {
   const router = useRouter();
   const { theme } = useContext(ThemeContext);
- 
   
   return (
     <View style={[

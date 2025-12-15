@@ -41,6 +41,7 @@
     "register_loading": "Registration in progress..",
 
     "profile_logged_in": "Logged In",
+    "profile_not_logged_in": "Not Logged In",
     "profile_choose_avatar": "Choose your avatar",
     "profile_choose_language": "Choose language",
     "profile_polish": "Polish",
