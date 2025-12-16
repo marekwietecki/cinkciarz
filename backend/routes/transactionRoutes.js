@@ -13,8 +13,6 @@ async function addTransaction(walletId, type, from_currency = null, to_currency 
                 if (!walletId || !!from_currency || !to_currency || !!from_amount || !to_amount || to_amount <= 0 || !!rate) { 
                     throw new Error('Invalid transaction data');
                 }
-                console.log(date);
-                console.log(checkISOSQLiteFormat(date));
                 // checks if date is in right format
                 if (date && !checkISOSQLiteFormat(date)) {
                     throw new Error('Invalid date format');
