@@ -10,6 +10,11 @@ const WRONG_DATA = 'PIPAPAPIAPAPO';
 const AMOUNT_SMALL = 1;
 const AMOUNT_NORMAL = 10;
 const AMOUNT_BIG = 100;
+const DATE_1 = '2025-12-17';
+const DATE_2 = '2025-12-19';
+const LIMIT = 2;
+const ORDER_ASC = 'ASC';
+const ORDER_DESC = 'DESC';
 
 //-----------------------------------------------------------------------------
 // Tests for transactions
@@ -114,7 +119,7 @@ describe('Transactions works corectly with correct data', () => {
         const response = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`);
         expect(response.statusCode).toBe(200);
         
-        const response11 = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`).query({ limit: 2, order: 'asc' });
+        const response11 = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`).query({ limit: LIMIT, order: ORDER_ASC });
         expect(response11.statusCode).toBe(200);
         // {
         //   id: 249,
@@ -146,7 +151,7 @@ describe('Transactions works corectly with correct data', () => {
         );
 
 
-        const response12 = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`).query({ limit: 2, order: 'desc' });
+        const response12 = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`).query({ limit: LIMIT, order: ORDER_DESC });
         expect(response12.statusCode).toBe(200);
         //     {
         //       id: 219,
@@ -177,6 +182,67 @@ describe('Transactions works corectly with correct data', () => {
             ])
         );
     });
+
+   it('Gets transaction history with a 200 status code while using all params', async () => {
+        const response0 = await request(app).post(`/api/auth/login`).send({ email: `${EMAIL}`, password: `${PASSWORD}` });
+        const token = response0.body.token;
+        
+        const response11 = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`)
+            .query({ limit: LIMIT, order: ORDER_ASC, startDate: DATE_1, endDate: DATE_2, currencyCode: CURRENCY_CODE_1 });
+
+        expect(response11.statusCode).toBe(200);
+        // {
+        //   id: 408,
+        //   wallet_id: 353,
+        //   type: 'deposit',
+        //   from_currency: null,
+        //   to_currency: 'USD',
+        //   from_amount: null,
+        //   to_amount: 1,
+        //   rate: null,
+        //   date: '2025-12-18T19:47:35.035'
+        // },
+        // {
+        //   id: 409,
+        //   wallet_id: 353,
+        //   type: 'deposit',
+        //   from_currency: null,
+        //   to_currency: 'USD',
+        //   from_amount: null,
+        //   to_amount: 1,
+        //   rate: null,
+        //   date: '2025-12-18T19:47:35.098'
+        // },
+        expect(response11.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ id: expect.any(Number), wallet_id: expect.any(Number), type: 'deposit', from_currency: null, to_currency: `${CURRENCY_CODE_1}`, from_amount: null, to_amount: AMOUNT_SMALL, rate: null, date: expect.any(String) }),
+                expect.objectContaining({ id: expect.any(Number), wallet_id: expect.any(Number), type: 'deposit', from_currency: null, to_currency: `${CURRENCY_CODE_1}`, from_amount: null, to_amount: AMOUNT_SMALL, rate: null, date: expect.any(String) }),
+            ])
+        );
+
+
+        const response12 = await request(app).get(`/api/transaction/history`).set('Authorization', `Bearer ${token}`)
+            .query({ limit: LIMIT, order: ORDER_DESC, startDate: DATE_2, endDate: DATE_1, currencyCode: CURRENCY_CODE_2 });
+        expect(response12.statusCode).toBe(200);
+        // {
+        //   id: 414,
+        //   wallet_id: 353,
+        //   type: 'exchange',
+        //   from_currency: 'USD',
+        //   to_currency: 'EUR',
+        //   from_amount: 1,
+        //   to_amount: 10,
+        //   rate: 10,
+        //   date: '2025-12-18T19:47:35.243'
+        // }
+        expect(response12.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ id: expect.any(Number), wallet_id: expect.any(Number), type: 'exchange', from_currency: `${CURRENCY_CODE_1}`, to_currency: `${CURRENCY_CODE_2}`, from_amount: AMOUNT_SMALL, to_amount: AMOUNT_NORMAL, rate: RATE_1_2, date: expect.any(String) }),
+            ])
+        );
+    });
+
+    
 });
 
 

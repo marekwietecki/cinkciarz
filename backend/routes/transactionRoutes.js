@@ -173,8 +173,13 @@ function checkISOSQLiteFormat(date) {
     return regex.test(date);
 }
 function getISOSQLiteDate(date = null) {
-    if (date === null) date = new Date();
+    date === null ? date = new Date() : date = new Date(date);
     return date.toISOString().slice(0, -1);
+}
+function compareDates(date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
+    return date1.getTime() - date2.getTime();
 }
 
 async function getTransactionsHistory(walletId, startDate = null, endDate = null, limit = null, currencyCode = null, orderBy = null) {
@@ -214,9 +219,6 @@ async function getTransactionsHistory(walletId, startDate = null, endDate = null
         queryParams.push(limit);
     }
 
-    console.log(query);
-    console.log(queryParams);
-
     try {
         return await dbAll(query, queryParams);
     } catch (error) {
@@ -228,7 +230,9 @@ async function getTransactionsHistory(walletId, startDate = null, endDate = null
 
 router.get('/history', authenticateToken, async (req, res) => {
     try {
-        const { startDate, endDate, limit, code, currency, currencyCode, order } = req.query;
+        let startDate = req.query.startDate;
+        let endDate = req.query.endDate;
+        const { limit, code, currency, currencyCode, order } = req.query;
         const userId = req.user.userId;
         
         
@@ -248,6 +252,14 @@ router.get('/history', authenticateToken, async (req, res) => {
         const wallet = await getWallet(req.user.userId);
         if (!wallet) {
             return res.status(404).json({ message: 'Wallet not found' });
+        }
+
+        if (startDate && endDate) {
+            if (compareDates(startDate, endDate) > 0) {
+                const tempDate = startDate;
+                startDate = endDate;
+                endDate = tempDate;
+            }
         }
 
         const history = await getTransactionsHistory(wallet.id, startDate, endDate, limit, fixedCurrencyCode, order);
