@@ -40,6 +40,18 @@
     "register_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
     "register_loading": "Trwa rejestracja..",
 
+    "delete_fields_required": "Wypełnij wszystkie pola",
+    "delete_error_auth": "Błąd Autoryzacji. Zaloguj się.",
+    "delete_success": "Konto zostało pomyślnie usunięte",
+    "delete_unknown_error": "Wystąpił nieznany błąd podczas usuwania konta",
+    "delete_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
+    "delete_title": "Usuwanie konta",
+    "delete_warning": "Wszystkie Twoje dane zostaną trwale usunięte. Aby kontynuować, potwierdź swój email i hasło.",
+    "delete_loading": "Trwa usuwanie konta..",
+    "delete_button": "Usuń Konto",
+
+
+
     "profile_logged_in": "Zalogowano",
     "profile_not_logged_in": "Nie Zalogowano",
     "profile_choose_avatar": "Wybierz swój awatar",

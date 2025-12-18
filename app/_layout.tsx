@@ -64,6 +64,12 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen 
+            name="auth/deleteAccount" 
+            options={{ 
+              headerShown: false 
+            }}
+          />
+          <Stack.Screen 
             name="(tabs)" 
             options={{ headerShown: false }} 
           />

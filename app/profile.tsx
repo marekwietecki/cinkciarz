@@ -8,7 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { UserIcon, LanguagesIcon, ContrastIcon, BackIcon } from '../components/Icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const AVATAR_KEY = '@user_avatar';
+const AVATAR_KEY = 'userAvatar';
 const AUTH_TOKEN_KEY = 'userToken';
 
 export default function ProfileScreen() {
@@ -218,7 +218,7 @@ export default function ProfileScreen() {
                 </ThemedText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.smallButton}>
+            <TouchableOpacity style={styles.smallButton} onPress={() => router.push('./auth/deleteAccount')}>
                 <ThemedText type="textSmall" style={{color: theme.midContrast}}>
                     {strings.profile_delete_account}
                 </ThemedText>

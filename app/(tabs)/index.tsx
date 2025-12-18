@@ -1,22 +1,47 @@
 import { ThemedText } from '@/components/themed-text';
-import React, { useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const AVATAR_KEY = 'userAvatar';
 
 export default function DashboardScreen() {
   const router = useRouter();
   const { theme } = useContext(ThemeContext);
+      
+  const [ avatar, setAvatar ] = useState('');
   
+  const loadAvatar = async () => {
+    try {
+      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
+      if (storedAvatar) {
+        setAvatar(storedAvatar);
+      } else {
+        setAvatar('');
+      }
+    } catch (e) {
+      console.error('Błąd ładowania avatara:', e);
+    }
+  };
+
+  // To jest "magiczny" hook, który naprawi Twój problem
+  useFocusEffect(
+    useCallback(() => {
+      loadAvatar();
+    }, [])
+  );
+
   return (
     <View style={[
       styles.container,
       { backgroundColor: theme.background }
     ]}>
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-        <ThemedText>🙍‍♂️</ThemedText>
+        <ThemedText type="titleSmall">{avatar}</ThemedText>
       </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('./auth/register')}>
           <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>

@@ -40,6 +40,17 @@
     "register_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
     "register_loading": "Registration in progress..",
 
+    "delete_fields_required": "Fill in all items",
+    "delete_error_auth": "Authorization failure. Log In.",
+    "delete_success": "Account deleted succefully",
+    "delete_unknown_error": "Unknown error of deliting account occurred",
+    "delete_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "delete_title": "Deliting Account",
+    "delete_warning": "All your data will be permanently deleted. To continue, confirm your email and password.",
+    "delete_loading": "Deleting account in progress..",
+    "delete_button": "Delete account",
+
+
     "profile_logged_in": "Logged In",
     "profile_not_logged_in": "Not Logged In",
     "profile_choose_avatar": "Choose your avatar",
