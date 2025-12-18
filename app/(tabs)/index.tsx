@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -28,7 +28,6 @@ export default function DashboardScreen() {
     }
   };
 
-  // To jest "magiczny" hook, który naprawi Twój problem
   useFocusEffect(
     useCallback(() => {
       loadAvatar();
