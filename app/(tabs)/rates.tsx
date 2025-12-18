@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { Collapsible } from '@/components/ui/collapsible';
 import { ExternalLink } from '@/components/external-link';
@@ -12,16 +12,10 @@ import React from 'react';
 
 export default function RatesScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
+    <View style={[
+          styles.container,
+          { backgroundColor: theme.background }
+        ]}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText
           type="titleBig"
@@ -95,7 +89,7 @@ export default function RatesScreen() {
           ),
         })}
       </Collapsible>
-    </ParallaxScrollView>
+    </View>
   );
 }
 
