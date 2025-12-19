@@ -15,6 +15,10 @@ app.get('/api/ping', (req, res) => {
     res.status(200).json({ message: 'Pong' });
 });
 
+app.get('/api/wallet/test', (req, res) => {
+    res.json({ message: "DEBUG: Główny app.js widzi tę ścieżkę!" });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/nbp', nbpRoutes);
 app.use('/api/wallet', walletRoutes);
