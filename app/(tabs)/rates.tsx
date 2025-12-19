@@ -20,21 +20,17 @@ const getPastDate = () => {
 
 const fetchExchangeData = async () => {
     try {
-        // 1. Pobieramy dzisiejsze kursy
         const currentRes = await fetch(`${BASE_URL}/api/nbp/table/A`);
         const currentData = await currentRes.json();
 
-        // 2. Pobieramy kursy sprzed 3 miesięcy (do trendu)
         const pastDate = getPastDate();
         const pastRes = await fetch(`${BASE_URL}/api/nbp/table/A?startDate=${pastDate}&endDate=${pastDate}`);
         const pastData = await pastRes.json();
 
         if (currentData.success) {
             const joinedData = currentData.data.map((curr: any) => {
-                // Szukamy dodatkowych info w JSONie (flaga, symbol, nazwa)
                 const extraInfo = currenciesData.find(c => c.code === curr.code);
                 
-                // Szukamy kursu historycznego dla tej samej waluty
                 const historyCurr = pastData.success 
                     ? pastData.data.find((h: any) => h.code === curr.code) 
                     : null;
@@ -42,7 +38,6 @@ const fetchExchangeData = async () => {
                 const currentRate = Math.round(curr.mid * 100) / 100;                
                 const pastRate = historyCurr ? historyCurr.mid : currentRate;
                 
-                // Obliczamy trend %
                 const trend = Math.round(((currentRate - pastRate) / pastRate) * 100 * 10) / 10;
                 
                 return {
@@ -59,11 +54,13 @@ const fetchExchangeData = async () => {
                 'EUR': 1, 
                 'USD': 2, 
                 'GBP': 3, 
-                'CHF': 4 
+                'CHF': 4,
+                'CAD': 5,
+                'CZK': 6 
             };
 
             const finalData = joinedData
-                .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) // Twój warunek na kurs > 0
+                .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) 
                 .sort((a: CurrencyItem, b: CurrencyItem) => {
                     const valA = priority[a.code] || 999;
                     const valB = priority[b.code] || 999;
@@ -155,6 +152,7 @@ export default function RatesScreen() {
         data={currencies}
         alwaysBounceHorizontal={false} // Blokuje odbijanie w poziomie
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingVertical: 12 }}
         keyExtractor={(item) => item.code}
         renderItem={({ item }) => (
           <CurrencyCard 
@@ -186,13 +184,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '10%', 
+    top: '11%', 
     left: '8%',
   },
   title: {
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
-    marginBottom: '6%',
+    marginBottom: '4%',
     marginTop: '2%',
   },
 });
