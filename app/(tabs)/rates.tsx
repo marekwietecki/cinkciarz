@@ -50,12 +50,31 @@ const fetchExchangeData = async () => {
                     code: curr.code,
                     symbol: extraInfo?.symbol || '',
                     flag: extraInfo?.flag || '🏳️',
-                    currentRate: currentRate,
+                    currentRate: currentRate.toFixed(2),
                     trend: trend
                 };
             });
 
-            return joinedData;
+            const priority: Record<string, number> = { 
+                'EUR': 1, 
+                'USD': 2, 
+                'GBP': 3, 
+                'CHF': 4 
+            };
+
+            const finalData = joinedData
+                .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) // Twój warunek na kurs > 0
+                .sort((a: CurrencyItem, b: CurrencyItem) => {
+                    const valA = priority[a.code] || 999;
+                    const valB = priority[b.code] || 999;
+
+                    if (valA !== valB) {
+                        return valA - valB;
+                    }
+                    return a.code.localeCompare(b.code);
+                });
+
+            return finalData;
         }
     } catch (error) {
         console.error("Błąd przy pobieraniu kursów:", error);
@@ -67,7 +86,7 @@ interface CurrencyItem {
   code: string;
   symbol: string;
   flag: string;
-  currentRate: number;
+  currentRate: string;
   trend: number;
 }
 
@@ -93,21 +112,29 @@ export default function RatesScreen() {
     }
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
-    await loadAvatar(); // Twoja stara funkcja
     
-    const data = await fetchExchangeData(); // Wywołujemy pobieranie z NBP
-    if (data) {
-      setCurrencies(data);
+    try {
+      const [data] = await Promise.all([
+        fetchExchangeData(),
+        loadAvatar()
+      ]);
+
+      if (data) {
+        setCurrencies(data);
+      }
+    } catch (error) {
+      console.error("Błąd ładowania danych:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
+  }, []); 
 
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [])
+    }, [loadData]) 
   );
 
   return (
@@ -120,9 +147,7 @@ export default function RatesScreen() {
       </TouchableOpacity>
       <ThemedText
         type="titleMid"
-        style={{
-          fontFamily: Fonts.bold, color: theme.highContrast, alignSelf: 'flex-start', paddingLeft: '6%', marginBottom: '6%' 
-        }}>
+        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
         {strings.rates_title}
       </ThemedText>
 
@@ -163,5 +188,11 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: '10%', 
     left: '8%',
+  },
+  title: {
+    alignSelf: 'flex-start', 
+    paddingLeft: '6%', 
+    marginBottom: '6%',
+    marginTop: '2%',
   },
 });

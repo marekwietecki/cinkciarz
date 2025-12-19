@@ -2,13 +2,14 @@ import React, { useContext } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { ThemedText } from './themed-text'; 
 import { ThemeContext } from '../contexts/themeContext';
+import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowRightIcon } from './Icons';
 
 interface CurrencyCardProps {
     name: string;
     code: string;
     symbol: string;
     flag: string;
-    currentRate: number;   
+    currentRate: string;   
     trend: number;                 
 }
 
@@ -21,20 +22,41 @@ export function CurrencyCard({ name, code, symbol, flag, currentRate, trend }: C
         return trendValue > 0 ? theme.success : theme.failure; 
     };
 
+    const renderTrendIcon = (trendValue: number) => {
+        const size = 20;
+
+        const color = Math.abs(trendValue) < 0.5 
+            ? theme.midContrast 
+            : (trendValue > 0 ? theme.success : theme.failure);
+
+        if (Math.abs(trendValue) < 0.5) {
+            return <ArrowRightIcon size={size} color={color} />;
+        }
+        
+        return trendValue > 0 
+            ? <ArrowUpRightIcon size={size} color={color} /> 
+            : <ArrowDownRightIcon size={size} color={color} />;
+    };
+
     return (
-        <TouchableOpacity style={[styles.card, { backgroundColor: theme.veryLowContrast }]}>
+        <TouchableOpacity style={[styles.card, { backgroundColor: theme.background, borderColor: theme.highContrast }]}>
             <View style={styles.row}>
-                <View style={{flexDirection: 'row', alignItems: 'center', gap: 12}}>                        
-                    <ThemedText type="titleBig" style={{ color: theme.midContrast }}>{flag}</ThemedText>
-                    <ThemedText type="titleSmall" style={{ color: theme.midContrast }}>{symbol}</ThemedText>
+                <View style={styles.currency}>                        
+                    <ThemedText type="titleMid" style={{ color: theme.midContrast }}>{flag}</ThemedText>
+                    <ThemedText type="textSmallSemiBold" style={{ color: theme.midContrast  }}>
+                        {symbol}
+                    </ThemedText>
                 </View>
 
                 <ThemedText type="titleMid" style={{color: theme.highContrast}}>{currentRate}</ThemedText>
 
-                <View style={{ alignItems: 'flex-end' }}>
-                <ThemedText type="textSmallSemiBold" style={{ color: getTrendColor(trend) }}>
-                    {trend > 0 ? `+${trend}%` : `${trend}%`}
-                </ThemedText>
+                <View style={{ alignItems: 'center', width: 40 }}>
+                    <ThemedText>
+                        {renderTrendIcon(trend)}
+                    </ThemedText>
+                    <ThemedText type="textSmallSemiBold" style={{ color: getTrendColor(trend) }}>
+                        {trend > 0 ? `+${trend}%` : `${trend}%`}
+                    </ThemedText>
                 </View>
             </View>
         </TouchableOpacity>
@@ -42,19 +64,27 @@ export function CurrencyCard({ name, code, symbol, flag, currentRate, trend }: C
 }
 
 const styles = StyleSheet.create({
-  card: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 28,
-    marginBottom: 16,
-    marginHorizontal: 16,
-    alignSelf: 'stretch',
-    maxWidth: '100%',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
+    card: {
+        paddingVertical: 16,
+        paddingHorizontal: 36,
+        borderRadius: 28,
+        marginBottom: 20,
+        marginHorizontal: 16,
+        alignSelf: 'stretch',
+        maxWidth: '100%',
+        borderWidth: .5
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+    },
+    currency: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        gap: 12, 
+        width: 56
+    },
+  
 });
