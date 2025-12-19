@@ -125,27 +125,5 @@ router.delete('/delete', authenticateToken, async (req, res) => {
     }
 })
 
-//Get transaction history
-router.get('/history', authenticateToken, async (req, res) => {
-    try {
-        const wallet = await dbGet('SELECT id FROM wallets WHERE user_id = ? LIMIT 1', [req.user.userId]);
-        
-        if (!wallet) return res.status(404).json({ message: 'Wallet not found' });
-
-        const query = `
-            SELECT * FROM transactions 
-            WHERE wallet_id = ? 
-            ORDER BY datetime(date) DESC
-        `;
-        
-        const history = await dbAll(query, [wallet.id]);
-        
-        res.status(200).json(history);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
 
 module.exports = router;

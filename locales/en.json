@@ -7,13 +7,8 @@
     "nav_transaction": "Transaction",
     "nav_history": "History",
     
-    "wallet_title": "Currency Wallet",
-
     "rates_title": "Current Rates",
 
-    "transaction_title": "Transaction",
-
-    "history_title": "Historic Transactions",
 
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
