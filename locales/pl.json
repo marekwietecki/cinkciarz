@@ -7,6 +7,8 @@
     "nav_transaction": "Transakcja",
     "nav_history": "Historia",
 
+    "rates_title": "Bieżące kursy",
+
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
     "login_email": "E-mail",
@@ -49,8 +51,6 @@
     "delete_warning": "Wszystkie Twoje dane zostaną trwale usunięte. Aby kontynuować, potwierdź swój email i hasło.",
     "delete_loading": "Trwa usuwanie konta..",
     "delete_button": "Usuń Konto",
-
-
 
     "profile_logged_in": "Zalogowano",
     "profile_not_logged_in": "Nie Zalogowano",

@@ -7,6 +7,9 @@
     "nav_transaction": "Transaction",
     "nav_history": "History",
     
+    "rates_title": "Current Rates",
+
+
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
     "login_email": "E-mail",
