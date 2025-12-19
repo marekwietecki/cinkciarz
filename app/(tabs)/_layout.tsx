@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { ThemeContext } from '@/contexts/themeContext';
-import { LanguageContext } from '@/contexts/languageContext';
+import { ThemeContext } from '../../contexts/themeContext';
+import { LanguageContext } from '../../contexts/languageContext';
 import { WalletIcon, RatesIcon, TransationIcon, HistoryIcon } from '../../components/Icons'
 
 export default function TabLayout() {
