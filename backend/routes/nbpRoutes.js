@@ -57,6 +57,11 @@ function getISODate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+function compareDates(date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
+    return date1.getTime() - date2.getTime();
+}
 
 async function getTable(tableType, startDate = null, endDate = null) {
     tableType = tableType.toUpperCase();
@@ -112,6 +117,7 @@ async function getTable(tableType, startDate = null, endDate = null) {
 
 async function getCurrencyRate(tableType, code, startDate = null, endDate = null) {
     tableType = tableType.toUpperCase();
+    console.warn(endDate);
     
     const baseUrl = `https://api.nbp.pl/api/exchangerates/rates/${tableType}/${code}/`;
     const url = startDate && endDate
@@ -119,8 +125,6 @@ async function getCurrencyRate(tableType, code, startDate = null, endDate = null
         : startDate && !endDate
         ? `${baseUrl}/${getISODate(startDate)}/?format=json`
         : `${baseUrl}/?format=json`;
-
-        
     try {
         const response = await axios.get(url);
         const { rates } = response.data;
@@ -171,13 +175,20 @@ async function getCurrencyRate(tableType, code, startDate = null, endDate = null
 router.get('/table/:tableLetter', async (req, res) => {
     try {
         const { tableLetter } = req.params;
-        const { startDate, endDate } = req.query;
-
+        let { startDate, endDate } = req.query;
+        
         if (!['A', 'B', 'C'].includes(tableLetter.toUpperCase())) {
             return res.status(400).json({ 
                 success: false,
                 message: 'Invalid table type' 
             });            
+        }
+        if (startDate && endDate) {
+            if (compareDates(startDate, endDate) > 0) {
+                const tempDate = startDate;
+                startDate = endDate;
+                endDate = tempDate;
+            }
         }
 
         const result = await getTable(tableLetter.toUpperCase(), startDate, endDate);
@@ -205,13 +216,20 @@ router.get('/table/:tableLetter', async (req, res) => {
 router.get('/rate/:tableLetter/:currencyCode', async (req, res) => {
     try {
         const { tableLetter, currencyCode } = req.params;
-        const { startDate, endDate } = req.query;
+        let { startDate, endDate } = req.query;
         
         if (!['A', 'B', 'C'].includes(tableLetter.toUpperCase())) {
             return res.status(400).json({ 
                 success: false,
                 message: 'Invalid table type' 
             });
+        }
+        if (startDate && endDate) {
+            if (compareDates(startDate, endDate) > 0) {
+                const tempDate = startDate;
+                startDate = endDate;
+                endDate = tempDate;
+            }
         }
 
         const result = await getCurrencyRate(tableLetter.toUpperCase(), currencyCode, startDate, endDate);

@@ -70,7 +70,7 @@ router.post('/create/:currencyCode', authenticateToken, async (req, res) => {
             return res.status(400).json({ message: 'Currency wallet already exists' });
         }
 
-        const currencyWallet = await dbRun('INSERT INTO currency_wallets (wallet_id, currency) VALUES (?, ?)', [walletAlreadyExists.id, req.params.currencyCode]);
+        const currencyWallet = await dbRun('INSERT INTO currency_wallets (wallet_id, currency, amount) VALUES (?, ?, ?)', [walletAlreadyExists.id, req.params.currencyCode, 0]);
         res.status(201).json({ message: `Currency wallet (${req.params.currencyCode}) created successfully` });
     } catch (error) {
         console.error(error);

@@ -9,6 +9,8 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes');
 const nbpRoutes = require('./routes/nbpRoutes');
 const walletRoutes = require('./routes/walletRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
+const currencyRoutes = require('./routes/currencyRoutes');
 
 // Ping route
 app.get('/api/ping', (req, res) => {
@@ -22,5 +24,7 @@ app.get('/api/wallet/test', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/nbp', nbpRoutes);
 app.use('/api/wallet', walletRoutes);
+app.use('/api/transaction', transactionRoutes);
+app.use('/api/currency', currencyRoutes);
 
 module.exports = app;
