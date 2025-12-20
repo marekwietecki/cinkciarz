@@ -1,166 +1,200 @@
 [
     {
-    "name": "bat (Tajlandia)",
+    "name": "Bat (Tajlandia)",
     "code": "THB",
-    "symbol": "฿"
+    "symbol": "฿",
+    "flag": "🇹🇭"
     },
     {
-    "name": "dolar amerykański",
+    "name": "Dolar Amerykański",
     "code": "USD",
-    "symbol": "$"
+    "symbol": "$",
+    "flag": "🇺🇸"
     },
     {
-    "name": "dolar australijski",
+    "name": "Dolar Australijski",
     "code": "AUD",
-    "symbol": "AU$"
+    "symbol": "AU$",
+    "flag": "🇦🇺"
     },
     {
-    "name": "dolar Hongkongu",
+    "name": "Dolar Hongkongu",
     "code": "HKD",
-    "symbol": "HK$"
+    "symbol": "HK$",
+    "flag": "🇭🇰"
     },
     {
-    "name": "dolar kanadyjski",
+    "name": "Dolar Kanadyjski",
     "code": "CAD",
-    "symbol": "CA$"
+    "symbol": "CA$",
+    "flag": "🇨🇦"
     },
     {
-    "name": "dolar nowozelandzki",
+    "name": "Folar Nowozelandzki",
     "code": "NZD",
-    "symbol": "NZ$"
+    "symbol": "NZ$",
+    "flag": "🇳🇿"
     },
     {
-    "name": "dolar singapurski",
+    "name": "Dolar Singapurski",
     "code": "SGD",
-    "symbol": "S$"
+    "symbol": "S$",
+    "flag": "🇸🇬"
     },
     {
-    "name": "euro",
+    "name": "Euro",
     "code": "EUR",
-    "symbol": "€"
+    "symbol": "€",
+    "flag": "🇪🇺"
     },
     {
-    "name": "forint (Węgry)",
+    "name": "Forint (Węgry)",
     "code": "HUF",
-    "symbol": "Ft"
+    "symbol": "Ft",
+    "flag": "🇭🇺"
     },
     {
-    "name": "frank szwajcarski",
+    "name": "Frank Szwajcarski",
     "code": "CHF",
-    "symbol": "Fr"
+    "symbol": "Fr",
+    "flag": "🇨🇭"
     },
     {
-    "name": "funt szterling",
+    "name": "Funt Szterling",
     "code": "GBP",
-    "symbol": "£"
+    "symbol": "£",
+    "flag": "🇬🇧"
     },
     {
-    "name": "hrywna (Ukraina)",
+    "name": "Hrywna (Ukraina)",
     "code": "UAH",
-    "symbol": "₴"
+    "symbol": "₴",
+    "flag": "🇺🇦"
     },
     {
-    "name": "jen (Japonia)",
+    "name": "Jen (Japonia)",
     "code": "JPY",
-    "symbol": "¥"
+    "symbol": "¥",
+    "flag": "🇯🇵"
     },
     {
-    "name": "korona czeska",
+    "name": "Korona Czeska",
     "code": "CZK",
-    "symbol": "Kč <3"
+    "symbol": "Kč",
+    "flag": "🇨🇿"
     },
     {
-    "name": "korona duńska",
+    "name": "Korona Duńska",
     "code": "DKK",
-    "symbol": "kr."
+    "symbol": "kr.",
+    "flag": "🇩🇰"
     },
     {
-    "name": "korona islandzka",
+    "name": "Dorona Islandzka",
     "code": "ISK",
-    "symbol": "kr"
+    "symbol": "kr",
+    "flag": "🇮🇸"
     },
     {
-    "name": "korona norweska",
+    "name": "Korona Norweska",
     "code": "NOK",
-    "symbol": "kr"
+    "symbol": "kr",
+    "flag": "🇳🇴"
     },
     {
-    "name": "korona szwedzka",
+    "name": "Korona Szwedzka",
     "code": "SEK",
-    "symbol": "kr"
+    "symbol": "kr",
+    "flag": "🇸🇪"
     },
     {
-    "name": "lej rumuński",
+    "name": "Lej Rumuński",
     "code": "RON",
-    "symbol": "lei"
+    "symbol": "lei",
+    "flag": "🇷🇴"
     },
     {
-    "name": "lew (Bułgaria)",
+    "name": "Lew (Bułgaria)",
     "code": "BGN",
-    "symbol": "лв"
+    "symbol": "лв",
+    "flag": "🇧🇬"
     },
     {
-    "name": "lira turecka",
+    "name": "Lira Turecka",
     "code": "TRY",
-    "symbol": "₺"
+    "symbol": "₺",
+    "flag": "🇹🇷"
     },
     {
-    "name": "nowy izraelski szekel",
+    "name": "Nowy Izraelski Szekel",
     "code": "ILS",
-    "symbol": "₪"
+    "symbol": "₪",
+    "flag": "🇮🇱"
     },
     {
-    "name": "peso chilijskie",
+    "name": "Peso Chilijskie",
     "code": "CLP",
-    "symbol": "$"
+    "symbol": "$",
+    "flag": "🇨🇱"
     },
     {
-    "name": "peso filipińskie",
+    "name": "Peso Filipińskie",
     "code": "PHP",
-    "symbol": "₱"
+    "symbol": "₱",
+    "flag": "🇵🇭"
     },
     {
-    "name": "peso meksykańskie",
+    "name": "Peso Meksykańskie",
     "code": "MXN",
-    "symbol": "M$"
+    "symbol": "M$",
+    "flag": "🇲🇽"
     },
     {
-    "name": "rand (Republika Południowej Afryki)",
+    "name": "Rand (RPA)",
     "code": "ZAR",
-    "symbol": "Rp"
+    "symbol": "Rp",
+    "flag": "🇿🇦"
     },
     {
-    "name": "real (Brazylia)",
+    "name": "Real (Brazylia)",
     "code": "BRL",
-    "symbol": "R$"
+    "symbol": "R$",
+    "flag": "🇧🇷"
     },
     {
-    "name": "ringgit (Malezja)",
+    "name": "Ringgit (Malezja)",
     "code": "MYR",
-    "symbol": "RM"
+    "symbol": "RM",
+    "flag": "🇲🇾"
     },
     {
-    "name": "rupia indonezyjska",
+    "name": "Rupia Indonezyjska",
     "code": "IDR",
-    "symbol": "Rp"
+    "symbol": "Rp",
+    "flag": "🇮🇩"
     },
     {
-    "name": "rupia indyjska",
+    "name": "Rupia Indyjska",
     "code": "INR",
-    "symbol": "₹"
+    "symbol": "₹",
+    "flag": "🇮🇳"
     },
     {
-    "name": "won południowokoreański",
+    "name": "Won Południowokoreański",
     "code": "KRW",
-    "symbol": "₩"
+    "symbol": "₩",
+    "flag": "🇰🇷"
     },
     {
-    "name": "yuan renminbi (Chiny)",
+    "name": "Yuan Renminbi (Chiny)",
     "code": "CNY",
-    "symbol": "¥"
+    "symbol": "¥",
+    "flag": "🇨🇳"
     },
     {
     "name": "SDR (MFW)",
-    "code": "XDR"
+    "code": "XDR",
+    "symbol": "XDR",
+    "flag": ""
     }
 ]

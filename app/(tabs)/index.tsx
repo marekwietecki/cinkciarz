@@ -1,98 +1,122 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useCallback, useContext, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-export default function HomeScreen() {
+import { useRouter, useFocusEffect } from 'expo-router';
+import { ThemeContext } from '../../contexts/themeContext';
+import { Fonts } from '../_layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const AVATAR_KEY = 'userAvatar';
+
+export default function DashboardScreen() {
+  const router = useRouter();
+  const { theme } = useContext(ThemeContext);
+      
+  const [ avatar, setAvatar ] = useState('');
+  
+  const loadAvatar = async () => {
+    try {
+      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
+      if (storedAvatar) {
+        setAvatar(storedAvatar);
+      } else {
+        setAvatar('');
+      }
+    } catch (e) {
+      console.error('Błąd ładowania avatara:', e);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadAvatar();
+    }, [])
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={[
+      styles.container,
+      { backgroundColor: theme.background }
+    ]}>
+      <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
+        <ThemedText type="titleSmall">{avatar}</ThemedText>
+      </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('./auth/register')}>
+          <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('./auth/login')}>
+          <ThemedText type='titleMid' style={{color: theme.highContrast}}>Login</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('./profile')}>
+          <ThemedText type='titleMid' style={{color: theme.highContrast}}>Profile</ThemedText>
+        </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: '8%',
+    paddingBottom: '8%',
+  },
+  profileLink: {
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+    borderRadius: 50,
+    position: 'absolute', 
+    top: '10%', 
+    left: '8%',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  titleSmallContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap:8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  mainContainer: {
+    gap: 8,
+    marginBottom: 24,
+    marginTop: 48,
+    width: '100%',
+  },
+  textInput: {
+    fontFamily: Fonts.regular, 
+    fontSize: 16, 
+    lineHeight: 20,
+  },
+  textInputWrapper: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderWidth: 3,
+    borderRadius: 32,
+  },
+  inputsContainer: {
+    gap: 16,
+    marginBottom: 40,
+  },
+  singleInputContainer: {
+    gap: 4,
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textsSmallContainer: {
+    flexDirection: 'row',
+    marginTop: 12,
+    gap: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

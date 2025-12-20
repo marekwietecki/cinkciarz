@@ -1,0 +1,73 @@
+{
+    "error": "Error",
+    "success": "Success",
+
+    "nav_wallet": "Wallet",
+    "nav_rates": "Rates",
+    "nav_transaction": "Transaction",
+    "nav_history": "History",
+    
+    "wallet_title": "Currency Wallet",
+
+    "rates_title": "Current Rates",
+
+    "transaction_title": "Transaction",
+
+    "history_title": "Historic Transactions",
+
+    "login_title": "Log In!",
+    "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
+    "login_email": "E-mail",
+    "login_email_example": "your@mail.com",
+    "login_password": "Password",
+    "login_password_example": "Password123!",
+    "login_button": "Log In",
+    "login_fields_required": "Fill in all items",
+    "login_no_account": "No account?",
+    "login_register": "Register",
+    "login_success_message": "Logged In succefully",
+    "login_token_error": "Authorization failure. Try again.",
+    "login_unknown_error": "Unknown Login error occurred",
+    "login_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "login_loading": "Login in progress..",
+
+    "register_title": "Register!",
+    "register_subtitle": "Register to our online currency exchange service - eWalutka.pl",
+    "register_email": "E-mail",
+    "register_email_example": "your@mail.com",
+    "register_password": "Password",
+    "register_password_example": "Password123!",
+    "register_repeat_password": "Repeat Password",
+    "register_button": "Register",
+    "register_fields_required": "Fill in all items",
+    "register_password_mismatch": "Given passwords are not the same",
+    "register_have_an_account": "Have an account?",
+    "register_login": "Log In",
+    "register_success_message": "Registered succefully",
+    "register_unknown_error": "Unknown Registration error occurred",
+    "register_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "register_loading": "Registration in progress..",
+
+    "delete_fields_required": "Fill in all items",
+    "delete_error_auth": "Authorization failure. Log In.",
+    "delete_success": "Account deleted succefully",
+    "delete_unknown_error": "Unknown error of deliting account occurred",
+    "delete_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "delete_title": "Deleting Account",
+    "delete_warning": "All your data will be permanently deleted. To continue, confirm your email and password.",
+    "delete_loading": "Deleting account in progress..",
+    "delete_button": "Delete account",
+
+
+    "profile_logged_in": "Logged In",
+    "profile_not_logged_in": "Not Logged In",
+    "profile_choose_avatar": "Choose your avatar",
+    "profile_choose_language": "Choose language",
+    "profile_polish": "Polish",
+    "profile_english": "English",
+    "profile_choose_theme": "Choose theme",
+    "profile_dark_theme": "Dark",
+    "profile_light_theme": "Light",
+    "profile_log_out": "Log Out",
+    "profile_delete_account": "Delete Account"
+}

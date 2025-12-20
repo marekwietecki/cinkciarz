@@ -1,33 +1,62 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ThemeContext } from '../../contexts/themeContext';
+import { LanguageContext } from '../../contexts/languageContext';
+import { WalletIcon, RatesIcon, TransationIcon, HistoryIcon } from '../../components/Icons'
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+  const { theme } = useContext(ThemeContext);
+  const { strings } = useContext(LanguageContext);
+  
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: theme.highContrast,
+        tabBarInactiveTintColor: theme.lowContrast,
         headerShown: false,
         tabBarButton: HapticTab,
-      }}>
+        tabBarStyle: {
+          backgroundColor: theme.background,
+          borderTopColor: theme.lowContrast,
+        }
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Dashboard',
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={ color } />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="wallet"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: strings.nav_wallet,
+          tabBarIcon: ({ color }) => <WalletIcon size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="rates"
+        options={{
+          title: strings.nav_rates,
+          tabBarIcon: ({ color }) => <RatesIcon size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="transaction"
+        options={{
+          title: strings.nav_transaction,
+          tabBarIcon: ({ color }) => <TransationIcon size={24}  color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: strings.nav_history,
+          tabBarIcon: ({ color }) => <HistoryIcon size={24}  color={color} />,
         }}
       />
     </Tabs>
