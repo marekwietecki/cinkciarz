@@ -55,8 +55,8 @@ const fetchExchangeData = async () => {
                 'USD': 2, 
                 'GBP': 3, 
                 'CHF': 4,
-                'CAD': 5,
-                'CZK': 6 
+                'CZK': 5,
+                'CAD': 6 
             };
 
             const finalData = joinedData
@@ -148,6 +148,12 @@ export default function RatesScreen() {
         {strings.rates_title}
       </ThemedText>
 
+      <ThemedText
+        type="textSmall"
+        style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}>
+        {strings.rates_disclaimer}
+      </ThemedText>
+
       <FlatList
         data={currencies}
         alwaysBounceHorizontal={false} // Blokuje odbijanie w poziomie
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: 'absolute', 
     top: '11%', 
-    left: '8%',
+    right: '8%',
   },
   title: {
     alignSelf: 'flex-start', 
@@ -193,4 +199,10 @@ const styles = StyleSheet.create({
     marginBottom: '4%',
     marginTop: '2%',
   },
+  disclaimer: {
+    alignSelf: 'center',
+    textAlign: 'center', 
+    marginBottom: '4%',
+    paddingHorizontal: '10%',
+  }
 });

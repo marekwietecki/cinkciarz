@@ -146,11 +146,11 @@ export default function LoginScreen() {
           ) : null}
 
           <TouchableOpacity 
-            style={[styles.button, {backgroundColor: theme.buttonBg}]}
+            style={[styles.button, {backgroundColor: theme.highContrast}]}
             onPress={handleLogin}
             disabled={loading}
           >
-            <ThemedText type='default' style={{ color: theme.buttonText }}>
+            <ThemedText type='default' style={{ color: theme.accentDark}}>
               {loading ? strings.login_loading : strings.login_button}
             </ThemedText>
           </TouchableOpacity>

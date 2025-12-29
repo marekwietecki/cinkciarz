@@ -20,8 +20,8 @@ const gold700 = '#B78212';
 const gold800 = '#A4720A';
 const gold900 = '#906201';
 
-const green500 = '#11BA62'
-const red500 = '#ee173bff';
+const green500 = '#20CB72'
+const red500 = '#DC2544';
 
 export default {
   highContrast: gray100,
@@ -33,8 +33,6 @@ export default {
   accentLight: gold600,
   tabIconDefault: gray500,
   tabIconSelected: gray100,
-  buttonBg: gray100,
-  buttonText: gold900,
   failure: red500,
   success: green500,
 };

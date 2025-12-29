@@ -158,11 +158,11 @@ export default function RegisterScreen() {
           ) : null}
 
           <TouchableOpacity 
-              style={[styles.button, {backgroundColor: theme.buttonBg}]}
+              style={[styles.button, {backgroundColor: theme.highContrast}]}
               onPress={handleRegister}
               disabled={loading}    
           >
-              <ThemedText type='default' style={{ color: theme.buttonText }}>
+              <ThemedText type='default' style={{ color: theme.accentDark }}>
                   {loading ? strings.register_loading : strings.register_button}
               </ThemedText>
           </TouchableOpacity>
