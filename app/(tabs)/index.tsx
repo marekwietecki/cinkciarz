@@ -8,7 +8,7 @@ import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:19000';
+const BASE_URL = 'http://192.168.18.9:4000';
 
 
 export default function WalletScreen() {
@@ -46,7 +46,12 @@ export default function WalletScreen() {
         style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
         {strings.wallet_title}
       </ThemedText>
-      
+      <TouchableOpacity onPress={() => router.push('./auth/register')}>
+        <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('./auth/login')}>
+        <ThemedText type='titleMid' style={{color: theme.highContrast}}>Login</ThemedText>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -7,7 +7,7 @@ import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
-const BASE_URL = 'http://192.168.18.9:19000/api/auth';
+const BASE_URL = 'http://192.168.18.9:4000/api/auth';
 
 export default function RegisterScreen() {
   const router = useRouter();

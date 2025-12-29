@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:19000/api/wallet';
+const BASE_URL = 'http://192.168.18.9:4000/api/wallet';
 const AUTH_TOKEN_KEY = 'userToken';
 
 

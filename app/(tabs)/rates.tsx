@@ -10,7 +10,7 @@ import currenciesData from '../../backend/currencies.json';
 import { CurrencyCard } from '@/components/CurrencyCard';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:19000';
+const BASE_URL = 'http://192.168.18.9:4000';
 
 const getPastDate = () => {
     const d = new Date();

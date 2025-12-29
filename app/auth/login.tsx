@@ -9,7 +9,7 @@ import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
 
-const BASE_URL = 'http://192.168.18.9:19000/api/auth';
+const BASE_URL = 'http://192.168.18.9:4000/api/auth';
 const AUTH_TOKEN_KEY = 'userToken';
 
 export default function LoginScreen() {

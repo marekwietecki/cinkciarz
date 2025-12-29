@@ -14,6 +14,9 @@
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
 
     "topup_title": "Doładuj swoje konto",
+    "topup_loading": "Trwa doładowywanie..",
+    "topup_button": "Doładuj",
+
 
     "transaction_title": "Transakcja",
 

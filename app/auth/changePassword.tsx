@@ -13,7 +13,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api/auth';
 const AUTH_TOKEN_KEY = 'userToken'; 
 const AVATAR_KEY = '@user_avatar';
 
-export default function DeleteAccountScreen() {
+export default function ChangePasswordScreen() {
     const router = useRouter();
     const { strings } = useContext(LanguageContext);
     const { theme } = useContext(ThemeContext);

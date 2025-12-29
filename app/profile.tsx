@@ -5,7 +5,7 @@ import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
 import { ThemedText } from '@/components/themed-text';
-import { UserIcon, LanguagesIcon, ContrastIcon, BackIcon } from '../components/Icons';
+import { UserIcon, LanguagesIcon, ContrastIcon, ChevronLeftIcon } from '../components/Icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AVATAR_KEY = 'userAvatar';
@@ -86,7 +86,7 @@ export default function ProfileScreen() {
     return (
         <View style={[ styles.container, { backgroundColor: theme.background }]}>
             <TouchableOpacity onPress={handleGoBack} style={styles.back}>
-                <BackIcon color={theme.highContrast} size={30}></BackIcon>
+                <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
             </TouchableOpacity>
             
 

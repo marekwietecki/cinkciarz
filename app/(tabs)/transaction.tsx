@@ -8,7 +8,7 @@ import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:19000';
+const BASE_URL = 'http://192.168.18.9:4000';
 
 
 export default function WalletScreen() {
