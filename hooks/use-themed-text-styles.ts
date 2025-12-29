@@ -28,6 +28,6 @@ export function useThemedTextStyles(type: NonNullable<ThemedTextProps['type']>) 
      case 'tiny':
       return { fontFamily: Fonts.regular, fontSize: 9, lineHeight: 12, color: lowContrast };
     default:
-      return { fontFamily: Fonts.semiBold, fontSize: 18, lineHeight: 20, color: lowContrast };
+      return { fontFamily: Fonts.medium, fontSize: 18, lineHeight: 20, color: lowContrast };
   }
 }

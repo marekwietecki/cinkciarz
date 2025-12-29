@@ -33,8 +33,6 @@ export default {
     accentLight: gold400,
     tabIconDefault: gray400,
     tabIconSelected: gray1000,
-    buttonBg: gray800,
-    buttonText: gold700,
     failure: red500,
     success: green500,
 };

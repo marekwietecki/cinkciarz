@@ -4,12 +4,16 @@
 
     "nav_wallet": "Portfel",
     "nav_rates": "Kursy",
+    "nav_topup": "Doładuj",
     "nav_transaction": "Transakcja",
     "nav_history": "Historia",
 
-    "wallet_title": "Portfel Walutowy",
+    "wallet_title": "Portfel",
 
     "rates_title": "Bieżące kursy",
+    "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
+
+    "topup_title": "Doładuj swoje konto",
 
     "transaction_title": "Transakcja",
 

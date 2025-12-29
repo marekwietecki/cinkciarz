@@ -65,7 +65,7 @@ export function CurrencyCard({ name, code, symbol, flag, currentRate, trend }: C
 
 const styles = StyleSheet.create({
     card: {
-        paddingVertical: 16,
+        paddingVertical: 20,
         paddingHorizontal: 36,
         borderRadius: 28,
         marginBottom: 20,

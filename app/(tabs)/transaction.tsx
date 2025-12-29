@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: 'absolute', 
     top: '11%', 
-    left: '8%',
+    right: '8%',
   },
   title: {
     alignSelf: 'flex-start', 

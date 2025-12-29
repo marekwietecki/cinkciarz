@@ -21,12 +21,11 @@ export function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  // pobieramy styl z hooka
   const themedStyle = useThemedTextStyles(type);
 
   return (
     <Text
-      style={[themedStyle, style]} // łączymy styl z hooka + ewentualny dodatkowy styl z propsów
+      style={[themedStyle, style]} 
       {...rest}
     />
   );

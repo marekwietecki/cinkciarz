@@ -38,14 +38,20 @@ export default function WalletScreen() {
           styles.container,
           { backgroundColor: theme.background }
         ]}>
-      <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-        <ThemedText type="titleSmall">{avatar}</ThemedText>
-      </TouchableOpacity>
-      <ThemedText
-        type="titleMid"
-        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-        {strings.wallet_title}
-      </ThemedText>
+        <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
+            <ThemedText type="titleSmall">{avatar}</ThemedText>
+        </TouchableOpacity>
+        <ThemedText
+            type="titleMid"
+            style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+            {strings.topup_title}
+        </ThemedText>
+        <TouchableOpacity onPress={() => router.push('./auth/register')}>
+                <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('./auth/login')}>
+            <ThemedText type='titleMid' style={{color: theme.highContrast}}>Login</ThemedText>
+        </TouchableOpacity>
     </View>
   );
 }
@@ -64,7 +70,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: 'absolute', 
     top: '11%', 
-    left: '8%',
+    right: '8%',
   },
   title: {
     alignSelf: 'flex-start', 

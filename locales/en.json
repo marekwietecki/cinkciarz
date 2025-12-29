@@ -4,12 +4,16 @@
 
     "nav_wallet": "Wallet",
     "nav_rates": "Rates",
+    "nav_topup": "Top Up",
     "nav_transaction": "Transaction",
     "nav_history": "History",
     
-    "wallet_title": "Currency Wallet",
+    "wallet_title": "Wallet",
 
     "rates_title": "Current Rates",
+    "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
+
+    "topup_title": "Top Up Your Account",
 
     "transaction_title": "Transaction",
 
@@ -57,7 +61,6 @@
     "delete_warning": "All your data will be permanently deleted. To continue, confirm your email and password.",
     "delete_loading": "Deleting account in progress..",
     "delete_button": "Delete account",
-
 
     "profile_logged_in": "Logged In",
     "profile_not_logged_in": "Not Logged In",
