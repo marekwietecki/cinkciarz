@@ -20,7 +20,7 @@ export function useThemedTextStyles(type: NonNullable<ThemedTextProps['type']>) 
     case 'numbersBig':
       return { fontFamily: Fonts.bold, fontSize: 32, lineHeight: 48, color: highContrast };
     case 'numbersSmall':
-      return { fontFamily: Fonts.bold, fontSize: 24, lineHeight: 36, color: highContrast };
+      return { fontFamily: Fonts.bold, fontSize: 24, lineHeight: 24, color: highContrast };
     case 'textSmall':
       return { fontFamily: Fonts.light, fontSize: 12, lineHeight: 18, color: midContrast };
      case 'textSmallSemiBold':

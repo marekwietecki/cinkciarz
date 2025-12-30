@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
   topUpWrapper: {
     flexDirection: 'row', 
     alignItems: "center", 
-    marginTop: '50%', 
-    marginBottom: '4%', 
+    marginTop: '58%', 
+    marginBottom: '2%', 
     marginLeft: '25%', 
     gap: 16
   },
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 32
+    bottom: 24
   },
   buttonText: {
 

@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -6,10 +6,17 @@ import { LanguageContext } from '../../contexts/languageContext';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CurrencyWalletCard } from '@/components/CurrencyWalletCard';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000';
+const BASE_URL = 'http://192.168.18.9:4000/api';
 
+interface CurrencyWalletCardProps {
+  id: number;
+  wallet_id: number;
+  currency: string; 
+  amount: number;      
+}
 
 export default function WalletScreen() {
   const router = useRouter();
@@ -17,6 +24,8 @@ export default function WalletScreen() {
   const { theme } = useContext(ThemeContext);
   
   const [ avatar, setAvatar ] = useState('');
+  const [ loading, setLoading ] = useState(false);
+  const [ wallets, setWallets ] = useState<CurrencyWalletCardProps[]>([]);
   
     const loadAvatar = useCallback(async () => {
     try {
@@ -27,10 +36,39 @@ export default function WalletScreen() {
     }
   }, []);
 
+  const fetchWallets = useCallback(async () => {
+    try {
+      setLoading(true);
+      const userToken = await AsyncStorage.getItem('userToken');
+      
+      const response = await fetch(`${BASE_URL}/wallet`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("SUROWE DANE Z SERWERA:", data); // Test
+        setWallets(data);
+      } else {
+        console.error('Błąd pobierania portfeli');
+      }
+    } catch (error) {
+      console.error('Błąd sieci:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+
   useFocusEffect(
     useCallback(() => {
       loadAvatar();
-    }, [loadAvatar])
+      fetchWallets();
+    }, [loadAvatar, fetchWallets])
   );
 
   return (
@@ -52,6 +90,48 @@ export default function WalletScreen() {
       <TouchableOpacity onPress={() => router.push('./auth/login')}>
         <ThemedText type='titleMid' style={{color: theme.highContrast}}>Login</ThemedText>
       </TouchableOpacity>
+      <ScrollView
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ 
+          paddingHorizontal: '4%', 
+          paddingVertical: 24 
+        }}
+      >
+        {loading ? (
+          <ActivityIndicator color={theme.highContrast} />
+        ) : wallets.filter(w => (w.amount ?? 0) > 0).length > 0 ? ( 
+          wallets
+            .filter(wallet => (wallet.amount ?? 0) > 0) 
+            .map((wallet, index, array) => (
+              <React.Fragment key={wallet.id}>
+                <CurrencyWalletCard
+                  wallet_id={wallet.wallet_id}
+                  id={wallet.id}
+                  currency_code={wallet.currency}
+                  balance={wallet.amount}
+                />
+                {index < array.length - 1 && (
+                  <View 
+                    style={{
+                      width: 1,
+                      height: 40, 
+                      backgroundColor: theme.midContrast, 
+                      opacity: 0.2, 
+                      alignSelf: 'flex-start',
+                      marginTop: '4%',
+                      marginHorizontal: 10 
+                    }} 
+                  />
+                )}
+              </React.Fragment>
+            ))
+        ) : (
+          <ThemedText style={{ color: theme.highContrast, textAlign: 'center' }}>
+            Nie masz jeszcze żadnych środków.
+          </ThemedText>
+        )}
+      </ScrollView>
     </View>
   );
 }
