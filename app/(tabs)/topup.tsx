@@ -23,6 +23,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
         const [amount, setAmount] = useState('');
         const [currency, setCurrency] = useState('PLN');
         const [loading, setLoading] = useState(false);
+        const [pickerVisibility, setPickerVisibility] = useState(false);
 
         const loadAvatar = useCallback(async () => {
             try {
@@ -95,39 +96,42 @@ const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
                     style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
                     {strings.topup_title}
                 </ThemedText>
-                <View style={{flexDirection: 'row', alignItems: "center", marginTop: '50%', marginBottom: '4%', marginLeft: '26%', gap: 16}}>
-                    <TextInput
-                        style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
-                        placeholder="0.00"
-                        placeholderTextColor={theme.lowContrast}
-                        keyboardType="decimal-pad"
-                        value={amount}
-                        onChangeText={setAmount}
-                    />
-                    <View style={{flexDirection: 'row', alignItems: "center"}}>
-                        <ThemedText
-                            type="titleSmall"
-                            style={[{fontFamily: Fonts.medium, color: theme.lowContrast}, styles.title]}>
-                            {currency}
-                        </ThemedText>
-                        <ChevronDownIcon color={theme.lowContrast} size={24}></ChevronDownIcon>
+                    <View style={styles.topUpWrapper}>
+                        <TextInput
+                            style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
+                            placeholder="0.00"
+                            placeholderTextColor={theme.lowContrast}
+                            keyboardType="decimal-pad"
+                            value={amount}
+                            onChangeText={setAmount}
+                        />
+                        <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center"}}>
+                            <ThemedText
+                                type="titleSmall"
+                                style={[{fontFamily: Fonts.medium, color: theme.lowContrast}, styles.title]}>
+                                {currency}
+                            </ThemedText>
+                            <ChevronDownIcon color={theme.lowContrast} size={24}></ChevronDownIcon>
+                        </TouchableOpacity>
                     </View>
-                </View>
 
-                <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
-                    <Picker
-                        selectedValue={currency}
-                        onValueChange={(itemValue) => setCurrency(itemValue)}
-                        style={{ color: theme.highContrast }}
-                        dropdownIconColor={theme.highContrast}
-                    >
-                        <Picker.Item label="Polski Złoty (PLN)" value="PLN" color={theme.highContrast}/>
-                        <Picker.Item label="Euro (EUR)" value="EUR" color={theme.highContrast}/>
-                        <Picker.Item label="Dolar Amerykański (USD)" value="USD" color={theme.highContrast}/>
-                        <Picker.Item label="Funt Brytyjski (GBP)" value="GBP" color={theme.highContrast}/>
-                        <Picker.Item label="Frank Szwajcarski (CHF)" value="CHF" color={theme.highContrast}/>
-                    </Picker>
-                </View>
+                    {pickerVisibility && (
+                    <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
+                        <Picker
+                            selectedValue={currency}
+                            onValueChange={(itemValue) => setCurrency(itemValue)}
+                            style={{ color: theme.highContrast }}
+                            dropdownIconColor={theme.highContrast}
+                        >
+                            <Picker.Item label="Polski Złoty (PLN)" value="PLN" color={theme.highContrast}/>
+                            <Picker.Item label="Euro (EUR)" value="EUR" color={theme.highContrast}/>
+                            <Picker.Item label="Dolar Amerykański (USD)" value="USD" color={theme.highContrast}/>
+                            <Picker.Item label="Funt Brytyjski (GBP)" value="GBP" color={theme.highContrast}/>
+                            <Picker.Item label="Frank Szwajcarski (CHF)" value="CHF" color={theme.highContrast}/>
+                        </Picker>
+                    </View>
+                    )}
+                
 
                 <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.highContrast }]} 
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
     alignItems: "center", 
     marginTop: '50%', 
     marginBottom: '4%', 
-    marginLeft: '26%', 
+    marginLeft: '25%', 
     gap: 16
   },
   textInput: {
@@ -194,11 +198,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
 },
   button: {
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
+    bottom: 32
   },
   buttonText: {
 

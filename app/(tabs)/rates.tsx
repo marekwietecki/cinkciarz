@@ -7,7 +7,7 @@ import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import currenciesData from '../../backend/currencies.json';
-import { CurrencyCard } from '@/components/CurrencyCard';
+import { CurrencyRateCard } from '@/components/CurrencyRateCard';
 
 const AVATAR_KEY = 'userAvatar';
 const BASE_URL = 'http://192.168.18.9:4000';
@@ -161,7 +161,7 @@ export default function RatesScreen() {
         contentContainerStyle={{ paddingVertical: 12 }}
         keyExtractor={(item) => item.code}
         renderItem={({ item }) => (
-          <CurrencyCard 
+          <CurrencyRateCard 
               name={item.name}    
               code={item.code}
               symbol={item.symbol}

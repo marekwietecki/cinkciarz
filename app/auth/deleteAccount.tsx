@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         borderRadius: 32,
       },
     button: {
-        paddingVertical: 12,
+        paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 32,
         justifyContent: 'center',

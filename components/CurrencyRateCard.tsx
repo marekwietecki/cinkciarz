@@ -4,7 +4,7 @@ import { ThemedText } from './themed-text';
 import { ThemeContext } from '../contexts/themeContext';
 import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowRightIcon } from './Icons';
 
-interface CurrencyCardProps {
+interface CurrencyRateCardProps {
     name: string;
     code: string;
     symbol: string;
@@ -14,7 +14,7 @@ interface CurrencyCardProps {
 }
 
 
-export function CurrencyCard({ name, code, symbol, flag, currentRate, trend }: CurrencyCardProps) {
+export function CurrencyRateCard({ name, code, symbol, flag, currentRate, trend }: CurrencyRateCardProps) {
     const { theme } = useContext(ThemeContext);
   
     const getTrendColor = (trendValue: number) => {
