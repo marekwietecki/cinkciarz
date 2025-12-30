@@ -12,7 +12,8 @@ import {
     ArrowDownRight, 
     ArrowRight, 
     ArrowUpDown, 
-    Plus  
+    Plus,
+    MoveRight  
 } from 'lucide-react-native';
 
 export const LanguagesIcon = Languages;
@@ -29,3 +30,4 @@ export const ArrowUpRightIcon = ArrowUpRight;
 export const ArrowDownRightIcon = ArrowDownRight;
 export const ArrowRightIcon = ArrowRight;
 export const ArrowUpDownIcon = ArrowUpDown;
+export const MoveRightIcon = MoveRight;

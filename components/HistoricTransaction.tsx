@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { ThemedText } from "./themed-text";
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
+import { MoveRightIcon } from "./Icons";
 
 export interface TransactionExtended extends Transaction {
   fromFlag: string;
@@ -25,24 +26,28 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   
-  const isBuy = transaction.type === 'BUY';
-  
   return (
     <View style={[styles.card, {borderColor: theme.lowContrast}]}>
-      <View style={styles.row}>
-        <View style={styles.leftSection}>
-          <ThemedText style={styles.typeText}>
-            {transaction.type === 'BUY' ? '📥 Kupno' : transaction.type === 'SELL' ? '📤 Sprzedaż' : '🔄 Wymiana'}
+      <ThemedText type="tiny" style={styles.dateText}>
+        {new Date(transaction.date).toLocaleDateString()}
+      </ThemedText>
+      
+      <View style={styles.mainSection}>
+        <View style={styles.currencyAmountWrapper}>  
+          <ThemedText type="titleMid" style={{ color: theme.lowContrast}}>
+            {transaction.from_amount}
           </ThemedText>
-          <ThemedText style={styles.dateText}>{new Date(transaction.date).toLocaleDateString()}</ThemedText>
-        </View>
-        
-        <View style={styles.rightSection}>
-          <ThemedText style={[styles.amountText, { color: isBuy ? '#4CAF50' : '#FF5252' }]}>
-            {isBuy ? '+' : '-'}{transaction.to_amount} {transaction.to_currency} {transaction.toFlag}
+          <ThemedText type="textSmall" style={{ color: theme.midContrast}}>
+            {transaction.fromFlag}{transaction.from_currency}
           </ThemedText>
-          <ThemedText style={styles.subAmountText}>
-            {transaction.from_amount} {transaction.from_currency} {transaction.fromFlag}
+        </View>  
+        <MoveRightIcon size={16} color={theme.lowContrast}></MoveRightIcon>
+        <View style={styles.currencyAmountWrapper}>  
+          <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
+            {'+'}{transaction.to_amount}
+          </ThemedText>
+          <ThemedText type="textSmall" style={{ color: theme.highContrast }}>
+            {transaction.toFlag}{transaction.to_currency}
           </ThemedText>
         </View>
       </View>
@@ -57,39 +62,27 @@ const styles = StyleSheet.create({
       borderRadius: 28,
       marginBottom: 20,
       marginHorizontal: 16,
-      alignSelf: 'stretch',
-      maxWidth: '100%',
-      borderWidth: .5
-    },
-    row: {
-      flexDirection: 'row',
       justifyContent: 'space-between',
+      alignItems: 'stretch',
+      alignSelf: 'stretch',
+      maxWidth: '90%',
+    },
+    mainSection: {
       alignItems: 'center',
-      width: '100%',
-    },
-    leftSection: {
       flex: 1,
+      flexDirection: 'row',
+      alignSelf: 'center',
     },
-    rightSection: {
-      alignItems: 'flex-end',
-      flex: 1,
-    },
-    typeText: {
-      fontSize: 16,
-      fontWeight: 'bold',
+    currencyAmountWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      width: '44%',
     },
     dateText: {
       fontSize: 12,
       opacity: 0.6,
       marginTop: 4,
+      alignSelf: 'center',
     },
-    amountText: {
-      fontSize: 16,
-      fontWeight: '700',
-    },
-    subAmountText: {
-      fontSize: 12,
-      opacity: 0.5,
-      marginTop: 4,
-    }
 });

@@ -132,6 +132,11 @@ export default function WalletScreen() {
           </ThemedText>
         )}
       </ScrollView>
+      <TouchableOpacity onPress={() => router.push('./history')}>
+        <ThemedText type='textSmall' style={[ styles.historyLink, {color: theme.midContrast}]}>
+          {strings.wallet_history_link}
+        </ThemedText>
+      </TouchableOpacity> 
     </View>
   );
 }
@@ -157,5 +162,9 @@ const styles = StyleSheet.create({
     paddingLeft: '6%', 
     marginBottom: '6%',
     marginTop: '2%',
+  },
+  historyLink: {
+    textDecorationLine: 'underline',
+    marginBottom: '4%',
   },
 });

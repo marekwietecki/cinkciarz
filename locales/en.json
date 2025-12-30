@@ -9,6 +9,7 @@
     "nav_history": "History",
     
     "wallet_title": "Wallet",
+    "wallet_history_link": "See full transaction history", 
 
     "rates_title": "Current Rates",
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
