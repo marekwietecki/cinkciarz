@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -17,8 +17,9 @@ export default function WalletScreen() {
   const { theme } = useContext(ThemeContext);
   
   const [ avatar, setAvatar ] = useState('');
+  const [ loading, setLoading ] = useState('');
   
-    const loadAvatar = useCallback(async () => {
+  const loadAvatar = useCallback(async () => {
     try {
       const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
       setAvatar(storedAvatar || '');
@@ -46,6 +47,30 @@ export default function WalletScreen() {
         style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
         {strings.transaction_title}
       </ThemedText>
+
+      <View style={styles.transactionWrapper}>
+        <ThemedText
+          type="tiny"
+          style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.info]}>
+          {strings.transaction_sell}
+        </ThemedText>
+        <View style={styles.dataWrapper}>
+
+        </View>
+      </View>
+      <TouchableOpacity 
+          style={[styles.button, { backgroundColor: theme.highContrast }]} 
+          //onPress={handleDeposit}
+          //disabled={loading}
+      >
+          {loading ? (
+              <ActivityIndicator color={theme.background} />
+          ) : (
+              <ThemedText type='default' style={{ color: theme.accentDark}}>
+                  {loading ? strings.transaction_loading : strings.transaction_button}
+              </ThemedText>                
+          )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -71,5 +96,25 @@ const styles = StyleSheet.create({
     paddingLeft: '6%', 
     marginBottom: '6%',
     marginTop: '2%',
+  },
+  transactionWrapper: {
+    width: '88%',
+  },
+  info: {
+    alignSelf: 'flex-end',
+    marginRight: '8%',
+  },
+  dataWrapper: {
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+  },
+  button: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 24
   },
 });

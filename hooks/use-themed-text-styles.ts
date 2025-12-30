@@ -9,7 +9,8 @@ export function useThemedTextStyles(type: NonNullable<ThemedTextProps['type']>) 
   const lowContrast = useThemeColor({}, 'lowContrast');
 
   switch (type) {
-    //every font gets 1/3 extra place, so that the flags will have space
+    //every font gets 1/3 extra lineHeight place, 
+    //so that the flags will have space to be fully visible
     case 'titleBig':
       return { fontFamily: Fonts.semiBold, fontSize: 40, lineHeight: 53.2, color: highContrast };
     case 'titleMid':

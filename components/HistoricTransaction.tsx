@@ -26,6 +26,10 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   
+  console.log("KOMPONENT WIDZI ID:", transaction?.id, "KWOTA:", transaction?.to_amount, "Kwota2", transaction?.from_amount, "from currency", transaction?.from_currency, "to currency", transaction?.to_currency);
+
+  if (!transaction) return null;
+
   return (
     <View style={[styles.card, {borderColor: theme.lowContrast}]}>
       <ThemedText type="tiny" style={styles.dateText}>
@@ -34,20 +38,22 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
       
       <View style={styles.mainSection}>
         <View style={styles.currencyAmountWrapper}>  
-          <ThemedText type="titleMid" style={{ color: theme.lowContrast}}>
-            {transaction.from_amount}
-          </ThemedText>
-          <ThemedText type="textSmall" style={{ color: theme.midContrast}}>
-            {transaction.fromFlag}{transaction.from_currency}
+          {transaction.from_amount !== null && (
+            <ThemedText type="titleMid" style={{ color: theme.lowContrast }}>
+              {transaction.from_amount}
+            </ThemedText>
+          )}
+          <ThemedText type="textSmall" style={{ color: theme.lowContrast, marginTop: 3}}>
+            {transaction.from_currency ? `${transaction.fromFlag} ${transaction.from_currency}` : strings.history_deposit}          
           </ThemedText>
         </View>  
-        <MoveRightIcon size={16} color={theme.lowContrast}></MoveRightIcon>
-        <View style={styles.currencyAmountWrapper}>  
+        <MoveRightIcon size={16} color={theme.lowContrast} style={{paddingHorizontal: '4%'}}></MoveRightIcon>
+        <View style={[styles.currencyAmountWrapper, {justifyContent: 'flex-end'}]}>  
           <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
-            {'+'}{transaction.to_amount}
+            {transaction.to_amount ?? '0'}          
           </ThemedText>
-          <ThemedText type="textSmall" style={{ color: theme.highContrast }}>
-            {transaction.toFlag}{transaction.to_currency}
+          <ThemedText type="textSmall" style={{ color: theme.midContrast, marginTop: 3 }}>
+            {transaction.toFlag} {transaction.to_currency ?? ''}
           </ThemedText>
         </View>
       </View>
@@ -58,26 +64,29 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
 const styles = StyleSheet.create({
     card: {
       paddingVertical: 18,
-      paddingHorizontal: 36,
+      paddingHorizontal: 32,
       borderRadius: 28,
       marginBottom: 20,
-      marginHorizontal: 16,
       justifyContent: 'space-between',
       alignItems: 'stretch',
       alignSelf: 'stretch',
-      maxWidth: '90%',
+      maxWidth: '100%',
+      gap: 12,
     },
     mainSection: {
       alignItems: 'center',
       flex: 1,
       flexDirection: 'row',
-      alignSelf: 'center',
+      justifyContent: 'space-between',
+      alignSelf: 'stretch',
+      width: '100%'
     },
     currencyAmountWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 8,
-      width: '44%',
+      flex: 1,
+      paddingHorizontal: '1%',
     },
     dateText: {
       fontSize: 12,

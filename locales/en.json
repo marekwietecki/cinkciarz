@@ -9,6 +9,7 @@
     "nav_history": "History",
     
     "wallet_title": "Wallet",
+    "wallet_history": "Transaction History",
     "wallet_history_link": "See full transaction history", 
 
     "rates_title": "Current Rates",
@@ -20,8 +21,14 @@
 
 
     "transaction_title": "Transaction",
+    "transaction_sell": "You are selling",
+    "transaction_buy": "You are buying",
+    "transaction_loading": "Transaction in progress..",
+    "transaction_button": "Exchange",
 
-    "history_title": "Historic Transactions",
+
+    "history_title": "History",
+    "history_deposit": "Account Top-Up",
 
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",

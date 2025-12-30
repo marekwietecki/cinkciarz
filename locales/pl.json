@@ -9,6 +9,7 @@
     "nav_history": "Historia",
 
     "wallet_title": "Portfel",
+    "wallet_history": "Historia Transakcji",
     "wallet_history_link": "Zobacz całą historię transakcji", 
 
     "rates_title": "Bieżące kursy",
@@ -20,8 +21,14 @@
 
 
     "transaction_title": "Transakcja",
+    "transaction_sell": "Sprzedajesz",
+    "transaction_buy": "Kupujesz",
+    "transaction_loading": "Transakcja w toku..",
+    "transaction_button": "Wymień Walutę",
 
-    "history_title": "Historyczne Transakcje",
+    "history_title": "Historia",
+    "history_deposit": "Doładowanie Konta",
+
 
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
