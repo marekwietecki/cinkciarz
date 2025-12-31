@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView, FlatList } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView, FlatList, Image } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -31,6 +31,7 @@ export default function WalletScreen() {
   const [ loading, setLoading ] = useState(false);
   const [ wallets, setWallets ] = useState<CurrencyWalletCardProps[]>([]);
   const [ history, setHistory ] = useState<TransactionExtended[]>([]);
+  const [ totalBalance, setTotalBalance ] = useState(0);
   
   const loadAvatar = useCallback(async () => {
     try {
@@ -41,32 +42,69 @@ export default function WalletScreen() {
     }
   }, []);
 
-  const fetchWallets = useCallback(async () => {
-    try {
-      setLoading(true);
-      const userToken = await AsyncStorage.getItem('userToken');
-      
-      const response = await fetch(`${BASE_URL}/wallet`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${userToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
+const fetchRate = useCallback(async (currencyCode: string) => {
+  if (currencyCode === 'PLN') return 1; 
+  try {
+    const response = await fetch(`${BASE_URL}/nbp/rate/A/${currencyCode}`);
+    if (!response.ok) return 0;
+    const result = await response.json();
+    return result.success ? result.data[result.data.length - 1].rate : 0;
+  } catch (e) { return 0; }
+}, []);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("SUROWE DANE Z SERWERA:", data); // Test
-        setWallets(data);
-      } else {
-        console.error('Błąd pobierania portfeli');
-      }
-    } catch (error) {
-      console.error('Błąd sieci:', error);
-    } finally {
-      setLoading(false);
+const fetchWallets = useCallback(async () => {
+  try {
+    setLoading(true);
+    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY); 
+
+    if (!userToken) {
+      console.error("Brak tokena!");
+      return; 
     }
-  }, []);
+
+    const response = await fetch(`${BASE_URL}/wallet`, {
+      headers: { 'Authorization': `Bearer ${userToken}` },
+    });
+    
+    const walletsData = await response.json();
+    const uniqueCurrencies = [...new Set(walletsData.map((w: any) => w.currency as string))]
+  .filter(curr => curr !== 'PLN');
+
+    const ratesArray = await Promise.all(
+      uniqueCurrencies.map(async (currCode) => {
+        
+        const code = String(currCode); 
+        
+        const rate = await fetchRate(code);
+        
+        return { 
+          code: code, 
+          mid: rate || 0 
+        };
+      })
+    );
+
+    const total = calculateTotal(walletsData, ratesArray);
+    
+    setWallets(walletsData);
+    setTotalBalance(total);
+  } finally {
+    setLoading(false);
+  }
+}, [fetchRate]);
+
+  const calculateTotal = (wallets: any[], rates: any[]) => {
+    return wallets.reduce((sum: number, wallet: { currency: string; amount: number; }) => {
+      if (wallet.currency === 'PLN') {
+        return sum + wallet.amount;
+      }
+
+      const rateObj = rates.find((r: { code: any; }) => r.code === wallet.currency);
+      const rate = rateObj ? rateObj.mid : 0;
+      
+      return sum + (wallet.amount * rate);
+    }, 0);
+  };
 
   const ensureWallet = async () => {
     const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
@@ -107,7 +145,7 @@ export default function WalletScreen() {
       
       const enhanced = rawTransactions
         .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 2)
+        .slice(0, 1)
         .map((tx: any) => {
           const fromCode = tx.from_currency?.toUpperCase();
           const toCode = tx.to_currency?.toUpperCase();
@@ -152,18 +190,32 @@ export default function WalletScreen() {
         style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
         {strings.wallet_title}
       </ThemedText>
-      <TouchableOpacity onPress={() => router.push('./auth/register')}>
-        <ThemedText type='titleMid' style={{color: theme.highContrast}}>Register</ThemedText>
+
+      <Image source={require('@/assets/images/Wallet.png')} 
+        style={{ width: 264 , height: 169 , marginTop: 16}} 
+      />
+
+      <ThemedText
+        type="titleSmall"
+        style={[{ color: '#EBECEC'}, styles.totalWealth]}
+      >
+        {'TOTAL WEALTH:'+'\n'+totalBalance.toFixed(2)+'zł'} {}
+      </ThemedText>
+      <TouchableOpacity onPress={() => router.push('./topup')} style={styles.topUpLink}>
+        <ThemedText
+          type="textSmall"
+          style={{ color: '#5D5D61', textDecorationLine: 'underline' }}>
+          {strings.wallet_top_up_link}
+        </ThemedText>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('./auth/login')}>
-        <ThemedText type='titleMid' style={{color: theme.highContrast}}>Login</ThemedText>
-      </TouchableOpacity>
+
       <ScrollView
         horizontal 
+        style={{marginTop: '7%'}}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ 
           paddingHorizontal: '4%', 
-          paddingVertical: 24 
+          paddingVertical: 8 
         }}
       >
         {loading ? (
@@ -196,7 +248,7 @@ export default function WalletScreen() {
             ))
         ) : (
           <ThemedText style={{ color: theme.highContrast, textAlign: 'center' }}>
-            Nie masz jeszcze żadnych środków.
+            {strings.wallet_no_funds}
           </ThemedText>
         )}
       </ScrollView>
@@ -206,7 +258,7 @@ export default function WalletScreen() {
         style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.titleSmall]}>
         {strings.wallet_history}
       </ThemedText>
-      <View style={{ width: '100%', height: 280 }}>
+      <View style={{ width: '100%', height: 136 }}>
         <FlatList
           data={history}
           keyExtractor={(item) => item.id.toString()}
@@ -216,19 +268,9 @@ export default function WalletScreen() {
               <HistoricTransaction transaction={item} />
             </View>
           )}
-          ItemSeparatorComponent={() => (
-            <View style={{
-              height: 1,
-              width: '64%',
-              backgroundColor: theme.lowContrast,
-              opacity: 0.15,
-              alignSelf: 'center',
-              marginVertical: 4
-            }} />
-          )}
           ListEmptyComponent={() => (
             <ThemedText style={{ textAlign: 'center', opacity: 0.5, marginTop: 20 }}>
-              Brak transakcji
+              {strings.wallet_no_transactions}
             </ThemedText>
           )}
         />
@@ -264,13 +306,22 @@ const styles = StyleSheet.create({
     marginBottom: '6%',
     marginTop: '2%',
   },
+  totalWealth: {
+    position: 'absolute',
+    top: '44%',
+    textAlign: 'center'
+  },
+  topUpLink: {
+    position: 'absolute',
+    top: '52%',
+  },
   titleSmall: {
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
-    marginTop: '2%',
+    marginVertical: '3%',
   },
   historyLink: {
     textDecorationLine: 'underline',
-    marginBottom: '6%',
+    marginBottom: '12%',
   },
 });

@@ -1,13 +1,13 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { Collapsible } from '@/components/collapsible';
+import { ThemedText } from '@/components/themed-text';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ChevronLeftIcon, ContrastIcon, LanguagesIcon, UserIcon } from '../components/Icons';
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
-import { ThemedText } from '@/components/themed-text';
-import { UserIcon, LanguagesIcon, ContrastIcon, ChevronLeftIcon } from '../components/Icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Collapsible } from '@/components/ui/collapsible';
 
 
 const AVATAR_KEY = 'userAvatar';
@@ -141,18 +141,6 @@ export default function ProfileScreen() {
                 }                    
                 </ThemedText>
 
-                <Collapsible title={strings.profile_account_settings}>
-                    <TouchableOpacity onPress={() => router.push('./auth/changePassword')}>
-                        <ThemedText type="textSmall" style={{color: theme.midContrast}}>
-                            {strings.profile_change_password}
-                        </ThemedText>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.push('./auth/deleteAccount')}>
-                        <ThemedText type="textSmall" style={{color: theme.midContrast}}>
-                            {strings.profile_delete_account}
-                        </ThemedText>
-                    </TouchableOpacity>
-                </Collapsible> 
             </View>
 
             
@@ -259,6 +247,20 @@ export default function ProfileScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>    
+                <View style={styles.pickerContainer}>
+                    <Collapsible title={strings.profile_account_settings}>
+                        <TouchableOpacity onPress={() => router.push('./auth/changePassword')}>
+                            <ThemedText type="titleSmall" style={{color: theme.highContrast}}>
+                                {strings.profile_change_password}
+                            </ThemedText>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => router.push('./auth/deleteAccount')}>
+                            <ThemedText type="titleSmall" style={{color: theme.highContrast}}>
+                                {strings.profile_delete_account}
+                            </ThemedText>
+                        </TouchableOpacity>
+                    </Collapsible> 
+                </View>
             </View>
 
             <TouchableOpacity style={[styles.button, { borderColor: theme.midContrast}]} onPress={handleLogout}>
@@ -310,21 +312,21 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   contextPickers: {
-    gap: '10%',
-    backgroundColor: 'red',
+    gap: 40,
   },
   pickerContainer: {
     width: '100%',
+    alignSelf: 'center'
   },
   picker: { 
     flex: 1, 
-    paddingVertical: 10, 
-    paddingHorizontal: 0,
+    paddingVertical: 8, 
     margin: 6,
     alignItems: 'center' 
   },
   button: {
     marginBottom: '8%',
+    marginTop: '16%',
     paddingVertical: 12,
     paddingHorizontal: 20, 
     borderRadius: 40, 

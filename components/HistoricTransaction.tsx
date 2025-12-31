@@ -31,19 +31,19 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
   if (!transaction) return null;
 
   return (
-    <View style={[styles.card, {borderColor: theme.lowContrast}]}>
+    <View style={[styles.card, {borderColor: theme.veryLowContrast}]}>
       <ThemedText type="tiny" style={styles.dateText}>
         {new Date(transaction.date).toLocaleDateString()}
       </ThemedText>
       
       <View style={styles.mainSection}>
-        <View style={styles.currencyAmountWrapper}>  
+        <View style={[styles.currencyAmountWrapper, { opacity: 0.64 }]}>  
           {transaction.from_amount !== null && (
-            <ThemedText type="titleMid" style={{ color: theme.lowContrast }}>
+            <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
               {transaction.from_amount}
             </ThemedText>
           )}
-          <ThemedText type="textSmall" style={{ color: theme.lowContrast, marginTop: 3}}>
+          <ThemedText type="textSmall" style={{ color: theme.midContrast, textAlign: 'center' }}>
             {transaction.from_currency ? `${transaction.fromFlag} ${transaction.from_currency}` : strings.history_deposit}          
           </ThemedText>
         </View>  
@@ -54,7 +54,7 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
           <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
             {transaction.to_amount ?? '0'}          
           </ThemedText>
-          <ThemedText type="textSmall" style={{ color: theme.midContrast, marginTop: 3 }}>
+          <ThemedText type="textSmall" style={{ color: theme.midContrast }}>
             {transaction.toFlag} {transaction.to_currency ?? ''}
           </ThemedText>
         </View>
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
       paddingVertical: 18,
       paddingHorizontal: 20,
       borderRadius: 28,
-      marginBottom: 20,
       justifyContent: 'space-between',
       alignItems: 'stretch',
       alignSelf: 'stretch',

@@ -131,11 +131,11 @@ export default function HistoryScreen() {
             <View 
               style={{
                 height: 1,
-                width: '64%',         
+                width: '56%',         
                 backgroundColor: theme.lowContrast,
                 opacity: 0.15,
                 alignSelf: 'center',    
-                marginVertical: 4      
+                marginVertical:  4      
               }} 
             />
           )}

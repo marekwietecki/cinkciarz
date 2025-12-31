@@ -7,6 +7,7 @@ import {
     ArrowLeftRight, 
     History, 
     ChevronLeft,
+    ChevronRight,
     ChevronDown, 
     ArrowUpRight, 
     ArrowDownRight, 
@@ -26,6 +27,7 @@ export const TopUpIcon = Plus;
 export const TransationIcon = ArrowLeftRight;
 export const HistoryIcon = History;
 export const ChevronLeftIcon = ChevronLeft;
+export const ChevronRightIcon = ChevronRight;
 export const ChevronDownIcon = ChevronDown;
 export const ArrowUpRightIcon = ArrowUpRight;
 export const ArrowDownRightIcon = ArrowDownRight;

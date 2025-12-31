@@ -215,7 +215,7 @@ const fetchRate = useCallback(async (currencyCode: string) => {
               <View style={[styles.transactionWrapper, {backgroundColor: theme.veryLowContrast, borderRadius: 28, paddingTop: 20 }]}>
                 <ThemedText
                   type="tiny"
-                  style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.info]}>
+                  style={[{fontFamily: Fonts.bold, color: theme.midContrast}, styles.info]}>
                   {strings.transaction_sell}
                 </ThemedText>
                 <View style={styles.dataWrapper}>
@@ -231,10 +231,10 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                         </ThemedText>
                         <ThemedText
                             type="titleSmall"
-                            style={{fontFamily: Fonts.medium, color: theme.lowContrast, paddingLeft: 6}}>
+                            style={{fontFamily: Fonts.medium, color: theme.midContrast, paddingLeft: 6}}>
                             {fromCurrency}
                         </ThemedText>
-                        <ChevronDownIcon color={theme.lowContrast} size={24}></ChevronDownIcon>
+                        <ChevronDownIcon color={theme.midContrast} size={24}></ChevronDownIcon>
                     </TouchableOpacity>
                   
                   </View>
@@ -282,7 +282,7 @@ const fetchRate = useCallback(async (currencyCode: string) => {
               <View style={[styles.transactionWrapper, {backgroundColor: theme.veryLowContrast, borderRadius: 28, paddingTop: 20 }]}>
                 <ThemedText
                   type="tiny"
-                  style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.info]}>
+                  style={[{fontFamily: Fonts.bold, color: theme.midContrast}, styles.info]}>
                   {strings.transaction_buy}
                 </ThemedText>
                 <View style={styles.dataWrapper}>
@@ -301,10 +301,10 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                         </ThemedText>
                         <ThemedText
                             type="titleSmall"
-                            style={{fontFamily: Fonts.medium, color: theme.lowContrast, paddingLeft: 6}}>
+                            style={{fontFamily: Fonts.medium, color: theme.midContrast, paddingLeft: 6}}>
                             {toCurrency}
                         </ThemedText>
-                        <ChevronDownIcon color={theme.lowContrast} size={24}></ChevronDownIcon>
+                        <ChevronDownIcon color={theme.midContrast} size={24}></ChevronDownIcon>
                     </TouchableOpacity>
                   
                   </View>

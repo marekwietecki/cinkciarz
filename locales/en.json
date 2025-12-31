@@ -9,8 +9,11 @@
     "nav_history": "History",
     
     "wallet_title": "Wallet",
-    "wallet_history": "Transaction History",
-    "wallet_history_link": "See full transaction history", 
+    "wallet_top_up_link": "Top Up the Account",
+    "wallet_no_funds": "You don't have any funds..",
+    "wallet_history": "Last Transaction",
+    "wallet_history_link": "See full transaction history",
+    "wallet_no_transactions": "No Transactions", 
 
     "rates_title": "Current Rates",
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
@@ -36,7 +39,7 @@
 
 
     "history_title": "History",
-    "history_deposit": "Account Top-Up",
+    "history_deposit": "Account\nTop-Up",
 
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",

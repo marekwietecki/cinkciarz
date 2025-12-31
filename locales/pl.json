@@ -9,8 +9,12 @@
     "nav_history": "Historia",
 
     "wallet_title": "Portfel",
-    "wallet_history": "Historia Transakcji",
+    "wallet_top_up_link": "Doładuj Konto",
+    "wallet_no_funds": "Nie masz na koncie żadnych środków..",
+    "wallet_history": "Ostatnia Transakcja",
     "wallet_history_link": "Zobacz całą historię transakcji", 
+    "wallet_no_transactions": "Brak Transakcji", 
+
 
     "rates_title": "Bieżące kursy",
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
@@ -35,7 +39,7 @@
     "transaction_success": "Wymiana zakończona pomyślnie",
 
     "history_title": "Historia",
-    "history_deposit": "Doładowanie Konta",
+    "history_deposit": "Doładowanie\nKonta",
 
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
