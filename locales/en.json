@@ -9,6 +9,7 @@
     "nav_history": "History",
     
     "wallet_title": "Wallet",
+    "wallet_total_wealth": "Total Wealth",
     "wallet_top_up_link": "Top Up the Account",
     "wallet_no_funds": "You don't have any funds..",
     "wallet_history": "Last Transaction",
@@ -58,7 +59,7 @@
     "login_loading": "Login in progress..",
 
     "register_title": "Register!",
-    "register_subtitle": "Register to our online currency exchange service - eWalutka.pl",
+    "register_subtitle": "Register to eWalutka.pl - your online currency exchange service.",
     "register_email": "E-mail",
     "register_email_example": "your@mail.com",
     "register_password": "Password",

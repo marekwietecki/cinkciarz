@@ -100,9 +100,11 @@ export default function HistoryScreen() {
   }, []);
   
 
-  useEffect(() => {
-    loadHistory();
-  }, [loadHistory]);
+  useFocusEffect(
+    useCallback(() => {
+      loadHistory();
+    }, [])
+  );
   
   return (
     <View style={[

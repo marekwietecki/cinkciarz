@@ -199,7 +199,7 @@ const fetchWallets = useCallback(async () => {
         type="titleSmall"
         style={[{ color: '#EBECEC'}, styles.totalWealth]}
       >
-        {'TOTAL WEALTH:'+'\n'+totalBalance.toFixed(2)+'zł'} {}
+        {strings.wallet_total_wealth}{':'+'\n'+totalBalance.toFixed(2)+'zł'} {}
       </ThemedText>
       <TouchableOpacity onPress={() => router.push('./topup')} style={styles.topUpLink}>
         <ThemedText

@@ -9,6 +9,7 @@
     "nav_history": "Historia",
 
     "wallet_title": "Portfel",
+    "wallet_total_wealth": "Środki Łącznie",
     "wallet_top_up_link": "Doładuj Konto",
     "wallet_no_funds": "Nie masz na koncie żadnych środków..",
     "wallet_history": "Ostatnia Transakcja",
@@ -42,7 +43,7 @@
     "history_deposit": "Doładowanie\nKonta",
 
     "login_title": "Zaloguj się",
-    "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
+    "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut eWalutka.pl.",
     "login_email": "E-mail",
     "login_email_example": "twój@mail.com",
     "login_password": "Hasło",
@@ -58,7 +59,7 @@
     "login_loading": "Trwa logowanie..",
 
     "register_title": "Zarejestruj się!",
-    "register_subtitle": "Zarejestruj się do internetowego serwisu wymiany walut - eWalutka.pl",
+    "register_subtitle": "Zarejestruj się w eWalutka.pl - twoim internetowym serwisie wymiany walut.",
     "register_email": "E-mail",
     "register_email_example": "twój@mail.com",
     "register_password": "Hasło",
