@@ -23,7 +23,7 @@
     "topup_CHF": "Swiss Frank - CHF",
     "topup_CZK": "Czech Koruna - CZK",
     "topup_loading": "Top Up in progress..",
-    "topup_button": "Top Up",
+    "topup_button": "Top Up the Account",
 
     "transaction_title": "Transaction",
     "transaction_sell": "You are selling",
@@ -31,6 +31,9 @@
     "transaction_disclaimer": "Conversion includes 0.5% service commission.",
     "transaction_loading": "Transaction in progress..",
     "transaction_button": "Exchange",
+    "transaction_invalid_amount": "Enter correct amount",
+    "transaction_success": "Exchanged succefully",
+
 
     "history_title": "History",
     "history_deposit": "Account Top-Up",
@@ -88,5 +91,7 @@
     "profile_dark_theme": "Dark",
     "profile_light_theme": "Light",
     "profile_log_out": "Log Out",
+    "profile_account_settings": "Account Settings",
+    "profile_change_password": "Change Password",
     "profile_delete_account": "Delete Account"
 }

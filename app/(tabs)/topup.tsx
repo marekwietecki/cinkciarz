@@ -35,7 +35,6 @@ const BASE_URL = 'http://192.168.18.9:4000/api';
         }, []);
 
         const handleDeposit = async () => {
-        // 1. Walidacja lokalna
         const cleanAmount = amount.replace(',', '.');
         if (!cleanAmount || parseFloat(cleanAmount) <= 0 || isNaN(parseFloat(cleanAmount))) {
             Alert.alert("Błąd", "Wpisz poprawną kwotę (np. 10.50)");
@@ -99,7 +98,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api';
                         <TextInput
                             style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
                             placeholder="0.00"
-                            placeholderTextColor={theme.lowContrast}
+                            placeholderTextColor={theme.highContrast}
                             keyboardType="decimal-pad"
                             value={amount}
                             onChangeText={setAmount}
@@ -181,21 +180,21 @@ const styles = StyleSheet.create({
         gap: 16
     },
     textInput: {
-        fontFamily: Fonts.regular, 
-        fontSize: 20, 
-        lineHeight: 24,
+        fontFamily: Fonts.bold, 
+        fontSize: 28, 
+        lineHeight: 34,
         paddingVertical: 12,
         paddingHorizontal: 24,
-        borderWidth: 2,
-        borderRadius: 32,
     },
     pickerContainer: {
-        width: '88%',
+        width: '80%',
+        height: 160,
         borderWidth: 2,
         borderRadius: 24,
-        marginBottom: 30,
         overflow: 'hidden',
         justifyContent: 'center', 
+        alignSelf: 'center',
+        marginBottom: 4,
     },
     button: {
         paddingVertical: 16,

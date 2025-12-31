@@ -47,7 +47,9 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
             {transaction.from_currency ? `${transaction.fromFlag} ${transaction.from_currency}` : strings.history_deposit}          
           </ThemedText>
         </View>  
+        
         <MoveRightIcon size={16} color={theme.lowContrast} style={{paddingHorizontal: '4%'}}></MoveRightIcon>
+
         <View style={[styles.currencyAmountWrapper, {justifyContent: 'flex-end'}]}>  
           <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
             {transaction.to_amount ?? '0'}          
@@ -63,8 +65,9 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
 
 const styles = StyleSheet.create({
     card: {
+      width: '100%',
       paddingVertical: 18,
-      paddingHorizontal: 32,
+      paddingHorizontal: 20,
       borderRadius: 28,
       marginBottom: 20,
       justifyContent: 'space-between',
@@ -72,6 +75,7 @@ const styles = StyleSheet.create({
       alignSelf: 'stretch',
       maxWidth: '100%',
       gap: 12,
+      backgroundColor: 'transparent',
     },
     mainSection: {
       alignItems: 'center',
@@ -82,9 +86,7 @@ const styles = StyleSheet.create({
       width: '100%'
     },
     currencyAmountWrapper: {
-      flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
       flex: 1,
       paddingHorizontal: '1%',
     },

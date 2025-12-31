@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
@@ -7,8 +7,11 @@ import { ThemeContext } from '../contexts/themeContext';
 import { ThemedText } from '@/components/themed-text';
 import { UserIcon, LanguagesIcon, ContrastIcon, ChevronLeftIcon } from '../components/Icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Collapsible } from '@/components/ui/collapsible';
+
 
 const AVATAR_KEY = 'userAvatar';
+const BASE_URL = 'http://192.168.18.9:4000/api';
 const AUTH_TOKEN_KEY = 'userToken';
 
 export default function ProfileScreen() {
@@ -17,7 +20,39 @@ export default function ProfileScreen() {
     const { themeName, setThemeName, theme } = useContext(ThemeContext);
     const [ avatar, setAvatar ] = useState('');
     const [ isLoggedIn, setIsLoggedIn ] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
     
+    const fetchUserProfile = async () => {
+    try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (!token) return;
+
+        const response = await fetch(`${BASE_URL}/auth/me`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+        });
+
+        if (response.ok) {
+        const userData = await response.json();
+        console.log("CO PRZYSZŁO Z BACKENDU:", userData); 
+        setUserEmail(userData.email || 'Brak maila w tokenie');
+        } else {
+        console.warn("Serwer odpowiedział błędem:", response.status);
+        }
+    } catch (error) {
+        console.error("Błąd pobierania profilu:", error);
+    }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchUserProfile();
+        }, [])
+    );
+
     useEffect(() => {
         const loadProfileData = async () => {
             try {
@@ -96,19 +131,33 @@ export default function ProfileScreen() {
                 ) : (
                     <ThemedText type="titleBig">{avatar}</ThemedText>
                 )}
-                <ThemedText type="titleMid" style={{ color: theme.highContrast, fontSize: 24 }}>
-                    NAZWA UŻYTKOWNIKA
+                <ThemedText type="titleSmall" style={{ color: theme.highContrast, fontSize: 18 }}>
+                    {userEmail}
                 </ThemedText>
                 <ThemedText type="subtitle" style={{ color: theme.midContrast }}>
                 {isLoggedIn 
                     ? strings.profile_logged_in        
                     : strings.profile_not_logged_in     
                 }                    
-                </ThemedText> 
+                </ThemedText>
+
+                <Collapsible title={strings.profile_account_settings}>
+                    <TouchableOpacity onPress={() => router.push('./auth/changePassword')}>
+                        <ThemedText type="textSmall" style={{color: theme.midContrast}}>
+                            {strings.profile_change_password}
+                        </ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push('./auth/deleteAccount')}>
+                        <ThemedText type="textSmall" style={{color: theme.midContrast}}>
+                            {strings.profile_delete_account}
+                        </ThemedText>
+                    </TouchableOpacity>
+                </Collapsible> 
             </View>
 
+            
+
             <View style={styles.contextPickers}>
-                
                 <View style={styles.pickerContainer}>
                     <View style={styles.rowTitle}>         
                         {/*👨🏻👩🏻👨🏻‍🦲👱🏻‍♀️👱🏻*/}
@@ -217,12 +266,6 @@ export default function ProfileScreen() {
                     {strings.profile_log_out}
                 </ThemedText>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.smallButton} onPress={() => router.push('./auth/deleteAccount')}>
-                <ThemedText type="textSmall" style={{color: theme.midContrast}}>
-                    {strings.profile_delete_account}
-                </ThemedText>
-            </TouchableOpacity>
         </View>
     );
 }
@@ -242,11 +285,10 @@ const styles = StyleSheet.create({
     left: '4%',
   },
   userContainer: {
-    marginBottom: '20%',
-  },
-  title: {
-    fontSize: 20,
-    paddingBottom: 16,
+    marginBottom: '16%',
+    alignSelf: 'flex-start',
+    marginLeft: '8%',
+    gap: 2,
   },
   label: { 
     fontSize: 16, 
@@ -269,6 +311,7 @@ const styles = StyleSheet.create({
   },
   contextPickers: {
     gap: '10%',
+    backgroundColor: 'red',
   },
   pickerContainer: {
     width: '100%',
@@ -281,14 +324,11 @@ const styles = StyleSheet.create({
     alignItems: 'center' 
   },
   button: {
-    marginBottom: '6%',
+    marginBottom: '8%',
     paddingVertical: 12,
     paddingHorizontal: 20, 
     borderRadius: 40, 
     alignItems: 'center',
     borderWidth: 3,
   },
-  smallButton: {
-    marginBottom: '6%',
-  }
 });

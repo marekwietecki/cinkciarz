@@ -75,7 +75,7 @@ export default function DeleteAccountScreen() {
     
     return (
         <KeyboardAvoidingView 
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: theme.background }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView contentContainerStyle={[ styles.container, { backgroundColor: theme.background, flexGrow: 1 }]}>

@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView, FlatList } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -88,53 +88,48 @@ export default function WalletScreen() {
   };
 
   const loadHistory = useCallback(async () => {
-    try {
-      await ensureWallet();
-      const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+  try {
+    await ensureWallet();
+    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+    if (!userToken) return;
 
-      if (!userToken) {
-        console.warn("Brak tokena, użytkownik prawdopodobnie niezalogowany");
-        return;
+    const response = await fetch(`${BASE_URL}/wallet/history`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+        'Content-Type': 'application/json'
       }
+    });
 
-      const response = await fetch(`${BASE_URL}/wallet/history`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${userToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        console.log("Status błędu:", response.status);
-        throw new Error('Błąd pobierania');
-      }
-
+    if (response.ok) {
       const rawTransactions = await response.json();
-      console.log("HISTORIA Z SERWERA:", rawTransactions); // Test  
-      const enhancedHistory = rawTransactions.map((tx: any) => {
-        // Szukamy info tylko jeśli kod waluty istnieje
-        const fromInfo = tx.from_currency 
-          ? currenciesJson.find(c => c.code === tx.from_currency) 
-          : null;
-          
-        const toInfo = tx.to_currency 
-          ? currenciesJson.find(c => c.code === tx.to_currency) 
-          : null;
+      console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk"); //TEST
+      
+      const enhanced = rawTransactions
+        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 2)
+        .map((tx: any) => {
+          const fromCode = tx.from_currency?.toUpperCase();
+          const toCode = tx.to_currency?.toUpperCase();
 
-        return {
-          ...tx,
-          // Jeśli fromInfo nie istnieje (bo to wpłata), dajemy pusty string lub ikonę portfela
-          fromFlag: fromInfo?.flag || (tx.type === 'deposit' ? '🏦' : '🏳️'),
-          toFlag: toInfo?.flag || '🏳️',
-        };
-      });
-        
-      setHistory(enhancedHistory.slice(0, 2));
-      } catch (e) {
-        console.error("Błąd historii:", e);
-      }
-  }, []);
+          const fromInfo = currenciesJson.find(c => c.code === fromCode);
+          const toInfo = currenciesJson.find(c => c.code === toCode);
+
+          return {
+            ...tx, 
+            fromFlag: fromInfo?.flag || '🏳️',
+            toFlag: toInfo?.flag || '🏳️',
+            from_currency: fromCode,
+            to_currency: toCode,
+          };
+        });
+
+      setHistory(enhanced);
+    }
+  } catch (error) {
+    console.error("Błąd ładowania historii:", error);
+  }
+}, []);
   
   useFocusEffect(
     useCallback(() => {
@@ -208,31 +203,35 @@ export default function WalletScreen() {
       
       <ThemedText
         type="titleSmall"
-        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.titleSmall]}>
         {strings.wallet_history}
       </ThemedText>
-      <View style={{ width: '100%', alignItems: 'stretch' }}>
-        {history.length > 0 ? (
-          history.map((tx, index) => (
-            /* Zmieniamy Fragment na View ze stylem stretch */
-            <View key={tx.id} style={{ alignSelf: 'stretch', width: '100%' }}>
-              <HistoricTransaction transaction={tx} />
-              
-              {index === 0 && history.length > 1 && (
-                <View style={{
-                  height: 1,
-                  width: '64%',
-                  backgroundColor: theme.lowContrast,
-                  opacity: 0.15,
-                  alignSelf: 'center',
-                  marginVertical: 4
-                }} />
-              )}
+      <View style={{ width: '100%', height: 280 }}>
+        <FlatList
+          data={history}
+          keyExtractor={(item) => item.id.toString()}
+          scrollEnabled={false} 
+          renderItem={({ item }) => (
+            <View style={{ alignSelf: 'stretch', width: '100%' }}>
+              <HistoricTransaction transaction={item} />
             </View>
-          ))
-        ) : (
-          <ThemedText style={{ textAlign: 'center', opacity: 0.5 }}>Brak transakcji</ThemedText>
-        )}
+          )}
+          ItemSeparatorComponent={() => (
+            <View style={{
+              height: 1,
+              width: '64%',
+              backgroundColor: theme.lowContrast,
+              opacity: 0.15,
+              alignSelf: 'center',
+              marginVertical: 4
+            }} />
+          )}
+          ListEmptyComponent={() => (
+            <ThemedText style={{ textAlign: 'center', opacity: 0.5, marginTop: 20 }}>
+              Brak transakcji
+            </ThemedText>
+          )}
+        />
       </View>
       <TouchableOpacity onPress={() => router.push('./history')}>
         <ThemedText type='textSmall' style={[ styles.historyLink, {color: theme.lowContrast}]}>
@@ -263,6 +262,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
     marginBottom: '6%',
+    marginTop: '2%',
+  },
+  titleSmall: {
+    alignSelf: 'flex-start', 
+    paddingLeft: '6%', 
     marginTop: '2%',
   },
   historyLink: {

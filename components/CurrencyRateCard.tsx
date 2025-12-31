@@ -42,8 +42,8 @@ export function CurrencyRateCard({ name, code, symbol, flag, currentRate, trend 
         <TouchableOpacity style={[styles.card, { backgroundColor: theme.background, borderColor: theme.lowContrast }]}>
             <View style={styles.row}>
                 <View style={styles.currency}>                        
-                    <ThemedText type="titleMid" style={{ color: theme.midContrast }}>{flag}</ThemedText>
-                    <ThemedText type="textSmallSemiBold" style={{ color: theme.midContrast  }}>
+                    <ThemedText type="titleMid" style={{ color: theme.midContrast, marginTop: 3 }}>{flag}</ThemedText>
+                    <ThemedText type="titleSmall" style={{ color: theme.midContrast  }}>
                         {symbol}
                     </ThemedText>
                 </View>
@@ -71,8 +71,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginHorizontal: 16,
         alignSelf: 'stretch',
-        maxWidth: '100%',
-        borderWidth: .5
+        maxWidth: '88%',
+        borderWidth: .5,
+        alignItems: 'center'
     },
     row: {
         flexDirection: 'row',

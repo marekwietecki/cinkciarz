@@ -1,13 +1,13 @@
-import { ActivityIndicator, Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import { ChevronDownIcon, MoveDownIcon } from '@/components/Icons';
+import { ChevronDownIcon, ArrowDownUpIcon } from '@/components/Icons';
 import currenciesJson from '../../backend/currencies.json';
 
 const AVATAR_KEY = 'userAvatar';
@@ -23,7 +23,9 @@ export default function WalletScreen() {
   
   const [avatar, setAvatar] = useState('');
   const [loading, setLoading] = useState(false);
-  const [pickerVisibility, setPickerVisibility] = useState(false);
+  const [pickerFirstVisibility, setPickerFirstVisibility] = useState(false);
+  const [pickerSecondVisibility, setPickerSecondVisibility] = useState(false);
+
 
   const [fromCurrency, setFromCurrency] = useState('PLN');
   const [toCurrency, setToCurrency] = useState('EUR');
@@ -31,7 +33,7 @@ export default function WalletScreen() {
   const [fromRate, setFromRate] = useState<number | null>(null);
   const [transactionRate, setTransactionRate] = useState<number | null>(null);
   const [amount, setAmount] = useState('');
-  const [convertedAmount, setConvertedAmount] = useState('0.00');
+  const [lastChanged, setLastChanged] = useState<'from' | 'to'>('from');
 
   const getCurrencyData = (code: string) => {
     const currency = currenciesJson.find(c => c.code === code);
@@ -56,24 +58,37 @@ export default function WalletScreen() {
     }, [loadAvatar])
   );
 
-  const fetchRate = useCallback(async (fromCurrency: string) => {
-    if (fromCurrency === 'PLN') return 1; 
-    try {
-      setLoading(true);
-      const response = await fetch(`${BASE_URL}/rate/A/${fromCurrency}`);
-      const result = await response.json();
+const fetchRate = useCallback(async (currencyCode: string) => {
+  if (currencyCode === 'PLN') return 1; 
+  
+  try {
+    setLoading(true);
+    const response = await fetch(`${BASE_URL}/nbp/rate/A/${currencyCode}`);
 
-      if (result.success && result.data.length > 0) {
-        return result.data[result.data.length - 1].rate;
-      }
-      return 1;
-    } catch (error) {
-      console.error(`Błąd kursu ${fromCurrency}:`, error);
-      return 1;
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      console.warn(`Serwer zwrócił błąd dla ${currencyCode}: status ${response.status}`);
+      return 0; 
     }
-  }, []);
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.error("Serwer nie zwrócił JSON-a!");
+      return 0;
+    }
+
+    const result = await response.json();
+
+    if (result.success && result.data && result.data.length > 0) {
+      return result.data[result.data.length - 1].rate;
+    }
+    return 0;
+  } catch (error) {
+    console.error(`Błąd sieci dla ${currencyCode}:`, error);
+    return 0;
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
 
   const calculateTransactionRate = useCallback(async () => {
@@ -89,6 +104,94 @@ export default function WalletScreen() {
 
   }, [fromCurrency, toCurrency, fetchRate]);
 
+  useEffect(() => {
+    calculateTransactionRate();
+  }, [fromCurrency, toCurrency, calculateTransactionRate]);
+
+  const getDisplayValues = () => {
+    const numAmount = parseFloat(amount.replace(',', '.')) || 0;
+    if (!transactionRate) return { from: amount, to: '' };
+
+    if (lastChanged === 'from') {
+      return {
+        from: amount,
+        to: numAmount === 0 ? '' : (numAmount * transactionRate).toFixed(2)
+      };
+    } else {
+      return {
+        from: numAmount === 0 ? '' : (numAmount / transactionRate).toFixed(2),
+        to: amount
+      };
+    }
+  };
+
+  const { from: displayFrom, to: displayTo } = getDisplayValues();
+
+  const swapCurrencies = () => {
+    const prevFrom = fromCurrency;
+    setFromCurrency(toCurrency);
+    setToCurrency(prevFrom);
+    setLastChanged(lastChanged === 'from' ? 'to' : 'from');
+    setPickerFirstVisibility(false);
+    setPickerSecondVisibility(false);
+    Keyboard.dismiss();
+  };
+
+  const handleTransaction = async () => {
+    const fAmount = parseFloat(displayFrom);
+    const tAmount = parseFloat(displayTo);
+
+    if (!fAmount || fAmount <= 0) {
+      Alert.alert(strings.error, strings.transaction_invalid_amount || "Wpisz poprawną kwotę");
+      return;
+    }
+
+    if (!transactionRate) {
+      Alert.alert("Błąd", "Nie udało się pobrać kursu walut.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const token = await AsyncStorage.getItem('userToken'); 
+
+      const response = await fetch(`${BASE_URL}/transaction/exchange`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          fromCurrency: fromCurrency,
+          fromAmount: fAmount,
+          toCurrency: toCurrency,
+          toAmount: tAmount,
+          rate: transactionRate
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Alert.alert(
+          strings.success, 
+          strings.transaction_success,
+          [{ text: "OK", onPress: () => {
+            setAmount(''); 
+            router.replace('./'); 
+          }}]
+        );
+      } else {
+        Alert.alert("Błąd transakcji", result.message || "Coś poszło nie tak");
+      }
+    } catch (error) {
+      console.error("Handle Transaction Error:", error);
+      Alert.alert("Błąd sieci", "Nie można połączyć się z serwerem");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -117,7 +220,12 @@ export default function WalletScreen() {
                 </ThemedText>
                 <View style={styles.dataWrapper}>
                   <View>  
-                    <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
+                    <TouchableOpacity  onPress={() => {
+                        setPickerFirstVisibility(!pickerFirstVisibility);
+                        if (!pickerFirstVisibility) { 
+                          setPickerSecondVisibility(false);
+                        }
+                      }} style={{flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
                         <ThemedText type="titleSmall" style={{ color: theme.highContrast, marginTop: 3 }}>
                           {getCurrencyData(fromCurrency).flag}
                         </ThemedText>
@@ -132,20 +240,23 @@ export default function WalletScreen() {
                   </View>
                   <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>  
                     <TextInput
-                        style={[styles.textInput, { color: theme.highContrast }]}
-                        placeholder="0.00"
-                        placeholderTextColor={theme.highContrast}
-                        keyboardType="decimal-pad"
-                        value={amount}
-                        onChangeText={setAmount}
+                      style={[styles.textInput, { color: theme.highContrast }]}
+                      placeholder="0.00"
+                      placeholderTextColor={theme.highContrast}
+                      keyboardType="decimal-pad"
+                      value={displayFrom} 
+                      onChangeText={(val) => {
+                        setAmount(val);
+                        setLastChanged('from'); 
+                      }}
                     />
-                    <ThemedText type="titleMid" style={{ color: theme.highContrast, marginTop: 3, paddingLeft: 3 }}>
+                    <ThemedText type="titleMid" style={{ color: theme.highContrast, paddingLeft: 3, lineHeight: 32}}>
                       {getCurrencyData(fromCurrency).symbol}
                     </ThemedText>
                   </View>
                 </View>
 
-                {pickerVisibility && (
+                {pickerFirstVisibility && (
                 <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
                     <Picker
                         selectedValue={fromCurrency}
@@ -164,7 +275,9 @@ export default function WalletScreen() {
                 )}
               </View>
 
-              <MoveDownIcon color={theme.lowContrast} size={24}></MoveDownIcon>
+              <TouchableOpacity onPress={swapCurrencies}>
+                <ArrowDownUpIcon color={theme.lowContrast} size={24} />
+              </TouchableOpacity>
 
               <View style={[styles.transactionWrapper, {backgroundColor: theme.veryLowContrast, borderRadius: 28, paddingTop: 20 }]}>
                 <ThemedText
@@ -174,7 +287,15 @@ export default function WalletScreen() {
                 </ThemedText>
                 <View style={styles.dataWrapper}>
                   <View>  
-                    <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
+                    <TouchableOpacity 
+                      onPress={() => {
+                        setPickerSecondVisibility(!pickerSecondVisibility);
+                        if (!pickerSecondVisibility) { 
+                          setPickerFirstVisibility(false);
+                        }
+                      }} 
+                      style={{flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}
+                    >
                         <ThemedText type="titleSmall" style={{ color: theme.highContrast, marginTop: 3 }}>
                           {getCurrencyData(toCurrency).flag}
                         </ThemedText>
@@ -189,24 +310,27 @@ export default function WalletScreen() {
                   </View>
                   <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>  
                     <TextInput
-                        style={[styles.textInput, { color: theme.highContrast }]}
-                        placeholder="0.00"
-                        placeholderTextColor={theme.highContrast}
-                        keyboardType="decimal-pad"
-                        value={amount}
-                        onChangeText={setAmount}
+                      style={[styles.textInput, { color: theme.highContrast }]}
+                      placeholder="0.00"
+                      placeholderTextColor={theme.highContrast}
+                      keyboardType="decimal-pad"
+                      value={displayTo} 
+                      onChangeText={(val) => {
+                        setAmount(val);
+                        setLastChanged('to'); 
+                      }}
                     />
-                    <ThemedText type="titleMid" style={{ color: theme.highContrast, marginTop: 3, paddingLeft: 3 }}>
+                    <ThemedText type="titleMid" style={{ color: theme.highContrast, paddingLeft: 3, lineHeight: 32}}>
                       {getCurrencyData(toCurrency).symbol}
                     </ThemedText>
                   </View>
                 </View>
 
-                {pickerVisibility && (
+                {pickerSecondVisibility && (
                 <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
                     <Picker
-                        selectedValue={fromCurrency}
-                        onValueChange={(itemValue) => setFromCurrency(itemValue)}
+                        selectedValue={toCurrency}
+                        onValueChange={(itemValue) => setToCurrency(itemValue)}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
@@ -227,11 +351,12 @@ export default function WalletScreen() {
                 {strings.transaction_disclaimer}
               </ThemedText>
             </View>
+            
           </ScrollView>
           <View style={styles.buttonWrapper}>
             <TouchableOpacity 
               style={[styles.button, { backgroundColor: theme.highContrast }]} 
-              //onPress={{handleTransaction}}
+              onPress={handleTransaction}
               disabled={loading}
             >
               {loading ? (
@@ -277,6 +402,7 @@ const styles = StyleSheet.create({
   },
   transactionWrapper: {
     width: '88%',
+    paddingVertical: 12,
   },
   info: {
     alignSelf: 'flex-end',
@@ -292,27 +418,26 @@ const styles = StyleSheet.create({
   textInput: {
     fontFamily: Fonts.bold, 
     fontSize: 28, 
-    lineHeight: 37.24,
-    paddingVertical: 12,
+    lineHeight: 34,
     paddingHorizontal: 2,
   },
   pickerContainer: {
     width: '88%',
-    height: '36%',
+    height: 160,
     borderWidth: 2,
     borderRadius: 24,
     overflow: 'hidden',
     justifyContent: 'center', 
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginBottom: 4,
   },
   disclaimer: {
     alignSelf: 'center',
     textAlign: 'center', 
-    marginBottom: '4%',
     paddingHorizontal: '10%',
   }, 
   buttonWrapper: {
-    paddingVertical: 20,
+    paddingVertical: 24,
     paddingHorizontal: '6%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -320,10 +445,8 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 16,
     paddingHorizontal: 32,
-    marginVertical: 16,
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: 24
   },
 });
