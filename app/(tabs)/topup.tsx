@@ -11,7 +11,7 @@ import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon } from 'lucide-react-native';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
+const BASE_URL = 'http://192.168.18.9:4000/api';
 
 
     export default function WalletScreen() {
@@ -19,7 +19,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
         const { strings } = useContext(LanguageContext);
         const { theme } = useContext(ThemeContext);
 
-        const [ avatar, setAvatar ] = useState('');
+        const [avatar, setAvatar] = useState('');
         const [amount, setAmount] = useState('');
         const [currency, setCurrency] = useState('PLN');
         const [loading, setLoading] = useState(false);
@@ -46,8 +46,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
         try {
             const userToken = await AsyncStorage.getItem('userToken');
             
-            // PAMIĘTAJ: Sprawdź w index.js czy to na pewno /api/wallet czy /api/transactions
-            const response = await fetch(`${BASE_URL}/deposit`, {
+            const response = await fetch(`${BASE_URL}/transaction/deposit`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
@@ -123,11 +122,12 @@ const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
                             style={{ color: theme.highContrast }}
                             dropdownIconColor={theme.highContrast}
                         >
-                            <Picker.Item label="Polski Złoty (PLN)" value="PLN" color={theme.highContrast}/>
-                            <Picker.Item label="Euro (EUR)" value="EUR" color={theme.highContrast}/>
-                            <Picker.Item label="Dolar Amerykański (USD)" value="USD" color={theme.highContrast}/>
-                            <Picker.Item label="Funt Brytyjski (GBP)" value="GBP" color={theme.highContrast}/>
-                            <Picker.Item label="Frank Szwajcarski (CHF)" value="CHF" color={theme.highContrast}/>
+                            <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
+                            <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
+                            <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
+                            <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
+                            <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
+                            <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
                         </Picker>
                     </View>
                     )}
@@ -151,62 +151,62 @@ const BASE_URL = 'http://192.168.18.9:4000/api/transaction';
     )};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: '4%',
-    paddingTop: '32%',
-  },
-  profileLink: {
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-    borderRadius: 50,
-    position: 'absolute', 
-    top: '11%', 
-    right: '8%',
-  },
-  title: {
-    alignSelf: 'flex-start', 
-    paddingLeft: '6%', 
-    marginBottom: '6%',
-    marginTop: '2%',
-  },
-  topUpWrapper: {
-    flexDirection: 'row', 
-    alignItems: "center", 
-    marginTop: '58%', 
-    marginBottom: '2%', 
-    marginLeft: '25%', 
-    gap: 16
-  },
-  textInput: {
-    fontFamily: Fonts.regular, 
-    fontSize: 20, 
-    lineHeight: 24,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderWidth: 2,
-    borderRadius: 32,
-  },
-  pickerContainer: {
-    width: '88%',
-    borderWidth: 2,
-    borderRadius: 24,
-    marginBottom: 30,
-    overflow: 'hidden',
-    justifyContent: 'center', 
-},
-  button: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 24
-  },
-  buttonText: {
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingHorizontal: '4%',
+        paddingTop: '32%',
+    },
+    profileLink: {
+        paddingVertical: 11,
+        paddingHorizontal: 14,
+        borderRadius: 50,
+        position: 'absolute', 
+        top: '11%', 
+        right: '8%',
+    },
+    title: {
+        alignSelf: 'flex-start', 
+        paddingLeft: '6%', 
+        marginBottom: '6%',
+        marginTop: '2%',
+    },
+    topUpWrapper: {
+        flexDirection: 'row', 
+        alignItems: "center", 
+        marginTop: '58%', 
+        marginBottom: '2%', 
+        marginLeft: '25%', 
+        gap: 16
+    },
+    textInput: {
+        fontFamily: Fonts.regular, 
+        fontSize: 20, 
+        lineHeight: 24,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderWidth: 2,
+        borderRadius: 32,
+    },
+    pickerContainer: {
+        width: '88%',
+        borderWidth: 2,
+        borderRadius: 24,
+        marginBottom: 30,
+        overflow: 'hidden',
+        justifyContent: 'center', 
+    },
+    button: {
+        paddingVertical: 16,
+        paddingHorizontal: 32,
+        borderRadius: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 24
+    },
+    buttonText: {
 
-  }
+    }
 });

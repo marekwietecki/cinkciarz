@@ -9,7 +9,7 @@ import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
 
-const BASE_URL = 'http://192.168.18.9:4000/api/auth';
+const BASE_URL = 'http://192.168.18.9:4000/api';
 const AUTH_TOKEN_KEY = 'userToken';
 
 export default function LoginScreen() {
@@ -33,7 +33,7 @@ export default function LoginScreen() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${BASE_URL}/login`, {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

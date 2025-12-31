@@ -5,8 +5,6 @@ import { ThemeContext } from '../contexts/themeContext';
 import { Fonts } from '../app/_layout';
 import currencies from '../backend/currencies.json'
 
-const BASE_URL = 'http://192.168.18.9:4000/api/';
-
 interface CurrencyWalletCardProps {
     id: number;
     wallet_id: number;

@@ -10,7 +10,7 @@ import currenciesData from '../../backend/currencies.json';
 import { CurrencyRateCard } from '@/components/CurrencyRateCard';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000';
+const BASE_URL = 'http://192.168.18.9:4000/api';
 
 const getPastDate = () => {
     const d = new Date();
@@ -20,11 +20,11 @@ const getPastDate = () => {
 
 const fetchExchangeData = async () => {
     try {
-        const currentRes = await fetch(`${BASE_URL}/api/nbp/table/A`);
+        const currentRes = await fetch(`${BASE_URL}/nbp/table/A`);
         const currentData = await currentRes.json();
 
         const pastDate = getPastDate();
-        const pastRes = await fetch(`${BASE_URL}/api/nbp/table/A?startDate=${pastDate}&endDate=${pastDate}`);
+        const pastRes = await fetch(`${BASE_URL}/nbp/table/A?startDate=${pastDate}&endDate=${pastDate}`);
         const pastData = await pastRes.json();
 
         if (currentData.success) {
@@ -162,12 +162,12 @@ export default function RatesScreen() {
         keyExtractor={(item) => item.code}
         renderItem={({ item }) => (
           <CurrencyRateCard 
-              name={item.name}    
-              code={item.code}
-              symbol={item.symbol}
-              flag={item.flag}
-              currentRate={item.currentRate}
-              trend={item.trend}
+            name={item.name}    
+            code={item.code}
+            symbol={item.symbol}
+            flag={item.flag}
+            currentRate={item.currentRate}
+            trend={item.trend}
           />
         )}
         refreshing={loading}

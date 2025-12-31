@@ -11,7 +11,8 @@ import {
     ArrowUpRight, 
     ArrowDownRight, 
     ArrowRight, 
-    ArrowUpDown, 
+    ArrowUpDown,
+    MoveDown, 
     Plus,
     MoveRight  
 } from 'lucide-react-native';
@@ -30,4 +31,5 @@ export const ArrowUpRightIcon = ArrowUpRight;
 export const ArrowDownRightIcon = ArrowDownRight;
 export const ArrowRightIcon = ArrowRight;
 export const ArrowUpDownIcon = ArrowUpDown;
+export const MoveDownIcon = MoveDown;
 export const MoveRightIcon = MoveRight;

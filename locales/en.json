@@ -16,16 +16,21 @@
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
 
     "topup_title": "Top Up",
+    "topup_PLN": "Polish Złoty - PLN",
+    "topup_EUR": "Euro - EUR",
+    "topup_USD": "American Dollar - USD",
+    "topup_GBP": "British Pound - GBP",
+    "topup_CHF": "Swiss Frank - CHF",
+    "topup_CZK": "Czech Koruna - CZK",
     "topup_loading": "Top Up in progress..",
     "topup_button": "Top Up",
-
 
     "transaction_title": "Transaction",
     "transaction_sell": "You are selling",
     "transaction_buy": "You are buying",
+    "transaction_disclaimer": "Conversion includes 0.5% service commission.",
     "transaction_loading": "Transaction in progress..",
     "transaction_button": "Exchange",
-
 
     "history_title": "History",
     "history_deposit": "Account Top-Up",

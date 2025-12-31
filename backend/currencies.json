@@ -1,5 +1,11 @@
 [
     {
+    "name": "Złoty Polski",
+    "code": "PLN",
+    "symbol": "zł",
+    "flag": "🇵🇱"
+    },
+    {
     "name": "Bat (Tajlandia)",
     "code": "THB",
     "symbol": "฿",

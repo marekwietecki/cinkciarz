@@ -16,19 +16,24 @@
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
 
     "topup_title": "Doładuj",
+    "topup_PLN": "Polski Złoty - PLN",
+    "topup_EUR": "Euro - EUR",
+    "topup_USD": "Dolar Amerykański - USD",
+    "topup_GBP": "Funt Brytyjski - GBP",
+    "topup_CHF": "Frank Szwajcarski - CHF",
+    "topup_CZK": "Czeska Korona - CZK",
     "topup_loading": "Trwa doładowywanie..",
     "topup_button": "Doładuj",
-
 
     "transaction_title": "Transakcja",
     "transaction_sell": "Sprzedajesz",
     "transaction_buy": "Kupujesz",
+    "transaction_disclaimer": "Przeliczenie uwzględnia 0.5% prowizji serwisowej.",
     "transaction_loading": "Transakcja w toku..",
     "transaction_button": "Wymień Walutę",
 
     "history_title": "Historia",
     "history_deposit": "Doładowanie Konta",
-
 
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
