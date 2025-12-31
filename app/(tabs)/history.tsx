@@ -11,9 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:19000/api/wallet';
+const BASE_URL = 'http://192.168.18.9:4000/api';
 const AUTH_TOKEN_KEY = 'userToken';
-
 
 
 export default function HistoryScreen() {
@@ -22,13 +21,13 @@ export default function HistoryScreen() {
     const { theme } = useContext(ThemeContext);
     
     const [ avatar, setAvatar ] = useState('');
-    const [history, setHistory] = useState<TransactionExtended[]>([]);
+    const [ history, setHistory ] = useState<TransactionExtended[]>([]);
 
   const ensureWallet = async () => {
     const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
     if (!userToken) return;
 
-    const response = await fetch(`${BASE_URL}/create`, {
+    const response = await fetch(`${BASE_URL}/wallet/create`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${userToken}`,
@@ -68,7 +67,7 @@ export default function HistoryScreen() {
         return;
       }
 
-      const response = await fetch(`${BASE_URL}/history`, {
+      const response = await fetch(`${BASE_URL}/wallet/history`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${userToken}`,
@@ -119,16 +118,29 @@ export default function HistoryScreen() {
         {strings.history_title}
       </ThemedText>
       {history.length === 0 ? (
-        <ThemedText style={{ textAlign: 'center', marginTop: 20 }}>Brak historii transakcji</ThemedText>
+        <ThemedText style={{ textAlign: 'center', marginTop: 20 }}>
+          Brak historii transakcji
+        </ThemedText>
       ) : (
         <FlatList
           data={history}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <HistoricTransaction transaction={item} />}
+          renderItem={({ item }) => <HistoricTransaction transaction={item}/>}
           contentContainerStyle={{ paddingVertical: 12 }}
+          ItemSeparatorComponent={() => (
+            <View 
+              style={{
+                height: 1,
+                width: '56%',         
+                backgroundColor: theme.lowContrast,
+                opacity: 0.15,
+                alignSelf: 'center',    
+                marginVertical:  4      
+              }} 
+            />
+          )}
         />
-      )}
-      
+      )}  
     </View>
   );
 }

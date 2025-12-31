@@ -70,6 +70,12 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen 
+            name="auth/changePassword" 
+            options={{ 
+              headerShown: false 
+            }}
+          />
+          <Stack.Screen 
             name="(tabs)" 
             options={{ headerShown: false }} 
           />

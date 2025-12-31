@@ -9,15 +9,37 @@
     "nav_history": "History",
     
     "wallet_title": "Wallet",
+    "wallet_top_up_link": "Top Up the Account",
+    "wallet_no_funds": "You don't have any funds..",
+    "wallet_history": "Last Transaction",
+    "wallet_history_link": "See full transaction history",
+    "wallet_no_transactions": "No Transactions", 
 
     "rates_title": "Current Rates",
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
 
-    "topup_title": "Top Up Your Account",
+    "topup_title": "Top Up",
+    "topup_PLN": "Polish Złoty - PLN",
+    "topup_EUR": "Euro - EUR",
+    "topup_USD": "American Dollar - USD",
+    "topup_GBP": "British Pound - GBP",
+    "topup_CHF": "Swiss Frank - CHF",
+    "topup_CZK": "Czech Koruna - CZK",
+    "topup_loading": "Top Up in progress..",
+    "topup_button": "Top Up the Account",
 
     "transaction_title": "Transaction",
+    "transaction_sell": "You are selling",
+    "transaction_buy": "You are buying",
+    "transaction_disclaimer": "Conversion includes 0.5% service commission.",
+    "transaction_loading": "Transaction in progress..",
+    "transaction_button": "Exchange",
+    "transaction_invalid_amount": "Enter correct amount",
+    "transaction_success": "Exchanged succefully",
 
-    "history_title": "Historic Transactions",
+
+    "history_title": "History",
+    "history_deposit": "Account\nTop-Up",
 
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",
@@ -72,5 +94,7 @@
     "profile_dark_theme": "Dark",
     "profile_light_theme": "Light",
     "profile_log_out": "Log Out",
+    "profile_account_settings": "Account Settings",
+    "profile_change_password": "Change Password",
     "profile_delete_account": "Delete Account"
 }

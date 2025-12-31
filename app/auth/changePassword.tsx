@@ -13,7 +13,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api';
 const AUTH_TOKEN_KEY = 'userToken'; 
 const AVATAR_KEY = '@user_avatar';
 
-export default function DeleteAccountScreen() {
+export default function ChangePasswordScreen() {
     const router = useRouter();
     const { strings } = useContext(LanguageContext);
     const { theme } = useContext(ThemeContext);
@@ -75,7 +75,7 @@ export default function DeleteAccountScreen() {
     
     return (
         <KeyboardAvoidingView 
-            style={{ flex: 1, backgroundColor: theme.background }}
+            style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView contentContainerStyle={[ styles.container, { backgroundColor: theme.background, flexGrow: 1 }]}>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         borderRadius: 32,
       },
     button: {
-        paddingVertical: 16,
+        paddingVertical: 12,
         paddingHorizontal: 32,
         borderRadius: 32,
         justifyContent: 'center',

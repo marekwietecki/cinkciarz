@@ -125,4 +125,21 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     }
 });
 
+//me
+router.get('/me', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const user = await dbGet('SELECT email FROM users WHERE id = ?', [userId]);
+
+        if (user) {
+            res.json({ email: user.email });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 module.exports = router;

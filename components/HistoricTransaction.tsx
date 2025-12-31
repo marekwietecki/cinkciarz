@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { ThemedText } from "./themed-text";
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
+import { MoveRightIcon } from "./Icons";
 
 export interface TransactionExtended extends Transaction {
   fromFlag: string;
@@ -25,24 +26,36 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   
-  const isBuy = transaction.type === 'BUY';
-  
+  console.log("KOMPONENT WIDZI ID:", transaction?.id, "KWOTA:", transaction?.to_amount, "Kwota2", transaction?.from_amount, "from currency", transaction?.from_currency, "to currency", transaction?.to_currency);
+
+  if (!transaction) return null;
+
   return (
-    <View style={[styles.card, {borderColor: theme.lowContrast}]}>
-      <View style={styles.row}>
-        <View style={styles.leftSection}>
-          <ThemedText style={styles.typeText}>
-            {transaction.type === 'BUY' ? '📥 Kupno' : transaction.type === 'SELL' ? '📤 Sprzedaż' : '🔄 Wymiana'}
+    <View style={[styles.card, {borderColor: theme.veryLowContrast}]}>
+      <ThemedText type="tiny" style={styles.dateText}>
+        {new Date(transaction.date).toLocaleDateString()}
+      </ThemedText>
+      
+      <View style={styles.mainSection}>
+        <View style={[styles.currencyAmountWrapper, { opacity: 0.64 }]}>  
+          {transaction.from_amount !== null && (
+            <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
+              {transaction.from_amount}
+            </ThemedText>
+          )}
+          <ThemedText type="textSmall" style={{ color: theme.midContrast, textAlign: 'center' }}>
+            {transaction.from_currency ? `${transaction.fromFlag} ${transaction.from_currency}` : strings.history_deposit}          
           </ThemedText>
-          <ThemedText style={styles.dateText}>{new Date(transaction.date).toLocaleDateString()}</ThemedText>
-        </View>
+        </View>  
         
-        <View style={styles.rightSection}>
-          <ThemedText style={[styles.amountText, { color: isBuy ? '#4CAF50' : '#FF5252' }]}>
-            {isBuy ? '+' : '-'}{transaction.to_amount} {transaction.to_currency} {transaction.toFlag}
+        <MoveRightIcon size={16} color={theme.lowContrast} style={{paddingHorizontal: '4%'}}></MoveRightIcon>
+
+        <View style={[styles.currencyAmountWrapper, {justifyContent: 'flex-end'}]}>  
+          <ThemedText type="titleMid" style={{ color: theme.midContrast }}>
+            {transaction.to_amount ?? '0'}          
           </ThemedText>
-          <ThemedText style={styles.subAmountText}>
-            {transaction.from_amount} {transaction.from_currency} {transaction.fromFlag}
+          <ThemedText type="textSmall" style={{ color: theme.midContrast }}>
+            {transaction.toFlag} {transaction.to_currency ?? ''}
           </ThemedText>
         </View>
       </View>
@@ -52,44 +65,34 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
 
 const styles = StyleSheet.create({
     card: {
+      width: '100%',
       paddingVertical: 18,
-      paddingHorizontal: 36,
+      paddingHorizontal: 20,
       borderRadius: 28,
-      marginBottom: 20,
-      marginHorizontal: 16,
+      justifyContent: 'space-between',
+      alignItems: 'stretch',
       alignSelf: 'stretch',
       maxWidth: '100%',
-      borderWidth: .5
+      gap: 12,
+      backgroundColor: 'transparent',
     },
-    row: {
+    mainSection: {
+      alignItems: 'center',
+      flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
+      alignSelf: 'stretch',
+      width: '100%'
+    },
+    currencyAmountWrapper: {
       alignItems: 'center',
-      width: '100%',
-    },
-    leftSection: {
       flex: 1,
-    },
-    rightSection: {
-      alignItems: 'flex-end',
-      flex: 1,
-    },
-    typeText: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      paddingHorizontal: '1%',
     },
     dateText: {
       fontSize: 12,
       opacity: 0.6,
       marginTop: 4,
+      alignSelf: 'center',
     },
-    amountText: {
-      fontSize: 16,
-      fontWeight: '700',
-    },
-    subAmountText: {
-      fontSize: 12,
-      opacity: 0.5,
-      marginTop: 4,
-    }
 });

@@ -4,7 +4,7 @@ import { ThemedText } from './themed-text';
 import { ThemeContext } from '../contexts/themeContext';
 import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowRightIcon } from './Icons';
 
-interface CurrencyCardProps {
+interface CurrencyRateCardProps {
     name: string;
     code: string;
     symbol: string;
@@ -14,7 +14,7 @@ interface CurrencyCardProps {
 }
 
 
-export function CurrencyCard({ name, code, symbol, flag, currentRate, trend }: CurrencyCardProps) {
+export function CurrencyRateCard({ name, code, symbol, flag, currentRate, trend }: CurrencyRateCardProps) {
     const { theme } = useContext(ThemeContext);
   
     const getTrendColor = (trendValue: number) => {
@@ -42,8 +42,8 @@ export function CurrencyCard({ name, code, symbol, flag, currentRate, trend }: C
         <TouchableOpacity style={[styles.card, { backgroundColor: theme.background, borderColor: theme.lowContrast }]}>
             <View style={styles.row}>
                 <View style={styles.currency}>                        
-                    <ThemedText type="titleMid" style={{ color: theme.midContrast }}>{flag}</ThemedText>
-                    <ThemedText type="textSmallSemiBold" style={{ color: theme.midContrast  }}>
+                    <ThemedText type="titleMid" style={{ color: theme.midContrast, marginTop: 3 }}>{flag}</ThemedText>
+                    <ThemedText type="titleSmall" style={{ color: theme.midContrast  }}>
                         {symbol}
                     </ThemedText>
                 </View>
@@ -71,8 +71,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginHorizontal: 16,
         alignSelf: 'stretch',
-        maxWidth: '100%',
-        borderWidth: .5
+        maxWidth: '88%',
+        borderWidth: .5,
+        alignItems: 'center'
     },
     row: {
         flexDirection: 'row',

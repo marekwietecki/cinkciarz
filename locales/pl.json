@@ -9,15 +9,37 @@
     "nav_history": "Historia",
 
     "wallet_title": "Portfel",
+    "wallet_top_up_link": "Doładuj Konto",
+    "wallet_no_funds": "Nie masz na koncie żadnych środków..",
+    "wallet_history": "Ostatnia Transakcja",
+    "wallet_history_link": "Zobacz całą historię transakcji", 
+    "wallet_no_transactions": "Brak Transakcji", 
+
 
     "rates_title": "Bieżące kursy",
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
 
-    "topup_title": "Doładuj swoje konto",
+    "topup_title": "Doładuj",
+    "topup_PLN": "Polski Złoty - PLN",
+    "topup_EUR": "Euro - EUR",
+    "topup_USD": "Dolar Amerykański - USD",
+    "topup_GBP": "Funt Brytyjski - GBP",
+    "topup_CHF": "Frank Szwajcarski - CHF",
+    "topup_CZK": "Czeska Korona - CZK",
+    "topup_loading": "Trwa doładowywanie..",
+    "topup_button": "Doładuj Konto",
 
     "transaction_title": "Transakcja",
+    "transaction_sell": "Sprzedajesz",
+    "transaction_buy": "Kupujesz",
+    "transaction_disclaimer": "Przeliczenie uwzględnia 0.5% prowizji serwisowej.",
+    "transaction_loading": "Transakcja w toku..",
+    "transaction_button": "Wymień Walutę",
+    "transaction_invalid_amount": "Wpisz poprawną kwotę",
+    "transaction_success": "Wymiana zakończona pomyślnie",
 
-    "history_title": "Historyczne Transakcje",
+    "history_title": "Historia",
+    "history_deposit": "Doładowanie\nKonta",
 
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut - eWalutka.pl",
@@ -72,5 +94,7 @@
     "profile_dark_theme": "Ciemny",
     "profile_light_theme": "Jasny",
     "profile_log_out": "Wyloguj się",
+    "profile_account_settings": "Ustawienia Konta",
+    "profile_change_password": "Zmień hasło",
     "profile_delete_account": "Usuń Konto"
 }
