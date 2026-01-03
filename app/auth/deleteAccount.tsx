@@ -9,9 +9,8 @@ import { ThemedText } from '@/components/themed-text';
 import { Fonts } from '../_layout';
 import { ChevronLeftIcon } from '@/components/Icons';
 
-const BASE_URL = 'http://192.168.18.9:4000/api';
-const AUTH_TOKEN_KEY = 'userToken'; 
-const AVATAR_KEY = '@user_avatar';
+import { AUTH_TOKEN_KEY, BASE_API_URL, AVATAR_KEY } from '@/config';
+
 
 export default function DeleteAccountScreen() {
     const router = useRouter();
@@ -46,7 +45,7 @@ export default function DeleteAccountScreen() {
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/auth/delete`, {
+            const response = await fetch(`${BASE_API_URL}/auth/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

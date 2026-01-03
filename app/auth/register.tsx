@@ -7,7 +7,7 @@ import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
-const BASE_URL = 'http://192.168.18.9:4000/api';
+import { BASE_API_URL } from '@/config';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function RegisterScreen() {
     setLoading(true);
 
     try{
-        const response = await fetch(`${BASE_URL}/auth/register`, {
+        const response = await fetch(`${BASE_API_URL}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
