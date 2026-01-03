@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { dbGet, dbAll, dbRun } = require('../db');
+const { dbAll, dbRun } = require('../db');
 const authenticateToken = require('./authMiddleware');
 const { checkCurrencyExists } = require('../services/currencyServices');
 const { getWallet, depositCurrencyWallet, withdrawCurrencyWallet, exchangeCurrencyWallet } = require('../services/walletServices');
@@ -173,7 +173,11 @@ function checkISOSQLiteFormat(date) {
     return regex.test(date);
 }
 function getISOSQLiteDate(date = null) {
-    date === null ? date = new Date() : date = new Date(date);
+    if (date === null) {
+        date = new Date()
+    } else {
+        date = new Date(date);
+    }
     return date.toISOString().slice(0, -1);
 }
 function compareDates(date1, date2) {

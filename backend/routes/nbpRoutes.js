@@ -117,7 +117,6 @@ async function getTable(tableType, startDate = null, endDate = null) {
 
 async function getCurrencyRate(tableType, code, startDate = null, endDate = null) {
     tableType = tableType.toUpperCase();
-    console.warn(endDate);
     
     const baseUrl = `https://api.nbp.pl/api/exchangerates/rates/${tableType}/${code}/`;
     const url = startDate && endDate
