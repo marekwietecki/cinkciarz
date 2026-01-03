@@ -1,5 +1,9 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
+
+// CORS
+app.use(cors());
 
 // Middleware
 app.use(express.json());

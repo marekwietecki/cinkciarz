@@ -9,10 +9,9 @@ import { ChevronLeftIcon, ContrastIcon, LanguagesIcon, UserIcon } from '../compo
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
 
+import { AUTH_TOKEN_KEY, BASE_API_URL } from '@/config';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api';
-const AUTH_TOKEN_KEY = 'userToken';
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -27,7 +26,7 @@ export default function ProfileScreen() {
         const token = await AsyncStorage.getItem('userToken');
         if (!token) return;
 
-        const response = await fetch(`${BASE_URL}/auth/me`, {
+        const response = await fetch(`${BASE_API_URL}/auth/me`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,

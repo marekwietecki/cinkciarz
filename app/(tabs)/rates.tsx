@@ -9,8 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import currenciesData from '../../backend/currencies.json';
 import { CurrencyRateCard } from '@/components/CurrencyRateCard';
 
-const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api';
+import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
 const getPastDate = () => {
     const d = new Date();
@@ -20,11 +19,11 @@ const getPastDate = () => {
 
 const fetchExchangeData = async () => {
     try {
-        const currentRes = await fetch(`${BASE_URL}/nbp/table/A`);
+        const currentRes = await fetch(`${BASE_API_URL}/nbp/table/A`);
         const currentData = await currentRes.json();
 
         const pastDate = getPastDate();
-        const pastRes = await fetch(`${BASE_URL}/nbp/table/A?startDate=${pastDate}&endDate=${pastDate}`);
+        const pastRes = await fetch(`${BASE_API_URL}/nbp/table/A?startDate=${pastDate}&endDate=${pastDate}`);
         const pastData = await pastRes.json();
 
         if (currentData.success) {

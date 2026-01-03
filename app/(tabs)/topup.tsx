@@ -10,8 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon } from 'lucide-react-native';
 
-const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api';
+import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
 
     export default function WalletScreen() {
@@ -45,7 +44,7 @@ const BASE_URL = 'http://192.168.18.9:4000/api';
         try {
             const userToken = await AsyncStorage.getItem('userToken');
             
-            const response = await fetch(`${BASE_URL}/transaction/deposit`, {
+            const response = await fetch(`${BASE_API_URL}/transaction/deposit`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${userToken}`,

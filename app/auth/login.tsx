@@ -8,9 +8,7 @@ import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
-
-const BASE_URL = 'http://192.168.18.9:4000/api';
-const AUTH_TOKEN_KEY = 'userToken';
+import { AUTH_TOKEN_KEY, BASE_API_URL } from '@/config';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -33,7 +31,7 @@ export default function LoginScreen() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${BASE_URL}/auth/login`, {
+      const response = await fetch(`${BASE_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
