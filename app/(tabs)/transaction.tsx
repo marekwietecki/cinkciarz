@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon, ArrowDownUpIcon } from '@/components/Icons';
 import currenciesJson from '../../backend/currencies.json';
+import { AuthContext } from '@/contexts/authContext';
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -16,6 +17,7 @@ export default function WalletScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { token } = useContext(AuthContext);
   
   const [avatar, setAvatar] = useState('');
   const [loading, setLoading] = useState(false);
@@ -149,8 +151,6 @@ const fetchRate = useCallback(async (currencyCode: string) => {
 
     try {
       setLoading(true);
-
-      const token = await AsyncStorage.getItem('userToken'); 
 
       const response = await fetch(`${BASE_API_URL}/transaction/exchange`, {
         method: 'POST',

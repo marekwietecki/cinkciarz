@@ -1,15 +1,27 @@
-import { Tabs } from 'expo-router';
-import React, { useContext } from 'react';
+import { Tabs, useRouter } from 'expo-router';
+import React, { useContext, useEffect } from 'react';
 import { Text } from 'react-native'; 
 
 import { HapticTab } from '@/components/haptic-tab';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
 import { WalletIcon, RatesIcon, TopUpIcon, TransationIcon, HistoryIcon } from '../../components/Icons'
+import { AuthContext } from '../../contexts/authContext';
 
 export default function TabLayout() {
   const { theme } = useContext(ThemeContext);
   const { strings } = useContext(LanguageContext);
+  
+  const { token, isLoading } = useContext(AuthContext);
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!isLoading && !token) {
+      router.replace('/(auth)/login');
+    }
+  }, [isLoading, token, router]);
+
+  if (isLoading) return null;
   
   const TabLabel = ({ label, focused, color }: { label: string; focused: boolean; color: string }) => (
     <Text 

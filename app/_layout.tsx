@@ -1,10 +1,11 @@
-import { SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack, Redirect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/languageContext';
 import { ThemeProvider } from '../contexts/themeContext';
+import { AuthContext, AuthProvider } from '../contexts/authContext';
 import { useFonts } from 'expo-font';
 
 export const Fonts = {
@@ -23,6 +24,49 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
+
+function RootNavigation() {
+  const { token, isLoading } = useContext(AuthContext);
+  
+  if (isLoading) return null;
+
+  return (
+    <Stack>
+      <Stack.Screen 
+        name="(auth)" 
+        options={{ 
+          headerShown: false 
+        }}
+      />
+      <Stack.Screen 
+        name="account/changePassword" 
+        options={{ 
+          headerShown: false 
+        }}
+      />
+      <Stack.Screen 
+        name="account/deleteAccount" 
+        options={{ 
+          headerShown: false 
+        }}
+      />
+      <Stack.Screen 
+        name="(tabs)" 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="modal" 
+        options={{ presentation: 'modal', title: 'Modal' }} 
+      />
+      <Stack.Screen 
+        name="profile" 
+        options={{ 
+          headerShown: false
+        }}   
+      />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
 
@@ -48,50 +92,13 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
+    <AuthProvider>
     <LanguageProvider>
       <ThemeProvider>
-        <Stack>
-          <Stack.Screen 
-            name="auth/login" 
-            options={{ 
-              headerShown: false 
-            }}
-          />
-          <Stack.Screen 
-            name="auth/register" 
-            options={{ 
-              headerShown: false 
-            }}
-          />
-          <Stack.Screen 
-            name="auth/deleteAccount" 
-            options={{ 
-              headerShown: false 
-            }}
-          />
-          <Stack.Screen 
-            name="auth/changePassword" 
-            options={{ 
-              headerShown: false 
-            }}
-          />
-          <Stack.Screen 
-            name="(tabs)" 
-            options={{ headerShown: false }} 
-          />
-          <Stack.Screen 
-            name="modal" 
-            options={{ presentation: 'modal', title: 'Modal' }} 
-          />
-          <Stack.Screen 
-            name="profile" 
-            options={{ 
-              headerShown: false
-            }}   
-          />
-        </Stack>
+        <RootNavigation />
         <StatusBar style="auto" />
       </ThemeProvider>
     </LanguageProvider>
+    </AuthProvider>
   );
 }

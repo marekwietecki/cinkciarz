@@ -9,26 +9,25 @@ import currenciesJson from "../../backend/currencies.json";
 import { HistoricTransaction, TransactionExtended } from '../../components/HistoricTransaction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { AuthContext } from '@/contexts/authContext';
 
-import { AUTH_TOKEN_KEY, AVATAR_KEY, BASE_API_URL } from '@/config';
+import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
 
 export default function HistoryScreen() {
   const router = useRouter();
     const { strings } = useContext(LanguageContext);
     const { theme } = useContext(ThemeContext);
+    const { token } = useContext(AuthContext);
     
     const [ avatar, setAvatar ] = useState('');
     const [ history, setHistory ] = useState<TransactionExtended[]>([]);
 
   const ensureWallet = async () => {
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-    if (!userToken) return;
-
     const response = await fetch(`${BASE_API_URL}/wallet/create`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${userToken}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -58,17 +57,10 @@ export default function HistoryScreen() {
   const loadHistory = useCallback(async () => {
     try {
       ensureWallet();
-      const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-
-      if (!userToken) {
-        console.warn("Brak tokena, użytkownik prawdopodobnie niezalogowany");
-        return;
-      }
-
       const response = await fetch(`${BASE_API_URL}/wallet/history`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${userToken}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
