@@ -1,12 +1,12 @@
 import { Tabs, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
-import { Text } from 'react-native'; 
+import { Text } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { ThemeContext } from '../../contexts/themeContext';
-import { LanguageContext } from '../../contexts/languageContext';
-import { WalletIcon, RatesIcon, TopUpIcon, TransationIcon, HistoryIcon } from '../../components/Icons'
+import { HistoryIcon, RatesIcon, TopUpIcon, TransationIcon, WalletIcon } from '../../components/Icons';
 import { AuthContext } from '../../contexts/authContext';
+import { LanguageContext } from '../../contexts/languageContext';
+import { ThemeContext } from '../../contexts/themeContext';
 
 export default function TabLayout() {
   const { theme } = useContext(ThemeContext);
@@ -15,13 +15,18 @@ export default function TabLayout() {
   const { token, isLoading } = useContext(AuthContext);
   const router = useRouter();
   
+  console.log('!!token', !!token);
+  console.log('isLoading', isLoading);
   useEffect(() => {
+    console.log('useEffect');
     if (!isLoading && !token) {
       router.replace('/(auth)/login');
     }
   }, [isLoading, token, router]);
+  console.log('!!token', !!token);
+  console.log('isLoading', isLoading);
 
-  if (isLoading) return null;
+  if (isLoading || !token) return null;
   
   const TabLabel = ({ label, focused, color }: { label: string; focused: boolean; color: string }) => (
     <Text 

@@ -2,13 +2,12 @@ import { ThemedText } from '@/components/themed-text';
 import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { useLocalSearchParams, useRouter, Redirect } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
 import { BASE_API_URL } from '@/config';
-import { AuthContext } from '@/contexts/authContext';
 
 export default function RegisterScreen() {
   const router = useRouter();

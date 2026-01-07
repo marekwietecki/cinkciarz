@@ -1,16 +1,16 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Alert, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { ChevronLeftIcon } from '@/components/Icons';
+import { ThemedText } from '@/components/themed-text';
+import { AuthContext } from '@/contexts/authContext';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
-import { ThemedText } from '@/components/themed-text';
 import { Fonts } from '../_layout';
-import { ChevronLeftIcon } from '@/components/Icons';
-import { AuthContext } from '@/contexts/authContext';
 
-import { BASE_API_URL, AVATAR_KEY } from '@/config';
+import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
 export default function ChangePasswordScreen() {
     const router = useRouter();
@@ -37,7 +37,7 @@ export default function ChangePasswordScreen() {
 
         if (!token) {
             setMessage({ text: strings.changePassword_error_auth, type: 'error' });
-            router.replace('/auth/login');
+            router.replace('/(auth)/login');
             return;
         }
 
@@ -79,7 +79,7 @@ export default function ChangePasswordScreen() {
 
                 await AsyncStorage.removeItem(AVATAR_KEY);
                 router.replace({
-                    pathname: '/auth/login',
+                    pathname: '/(auth)/login',
                     params: { changed: 'true' }
                 })
             } else {
