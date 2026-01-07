@@ -3,7 +3,7 @@ import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CurrencyWalletCard } from '@/components/CurrencyWalletCard';
@@ -13,6 +13,7 @@ import currenciesJson from '../../backend/currencies.json';
 const AVATAR_KEY = 'userAvatar';
 const BASE_URL = 'http://192.168.18.9:4000/api';
 const AUTH_TOKEN_KEY = 'userToken';
+
 
 
 interface CurrencyWalletCardProps {
@@ -26,13 +27,30 @@ export default function WalletScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { loggedin } = useLocalSearchParams();
   
+  
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [ avatar, setAvatar ] = useState('');
   const [ loading, setLoading ] = useState(false);
   const [ wallets, setWallets ] = useState<CurrencyWalletCardProps[]>([]);
   const [ history, setHistory ] = useState<TransactionExtended[]>([]);
   const [ totalBalance, setTotalBalance ] = useState(0);
   
+  useEffect(() => {
+    if (loggedin === 'true') {
+      setMessage({ text: strings.login_success_message, type: 'success' });
+      
+      const timer = setTimeout(() => {
+        setMessage({ text: '', type: null });
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loggedin, strings.login_success_message]);
+
+
+
   const loadAvatar = useCallback(async () => {
     try {
       const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
@@ -67,8 +85,9 @@ const fetchWallets = useCallback(async () => {
     });
     
     const walletsData = await response.json();
-    const uniqueCurrencies = [...new Set(walletsData.map((w: any) => w.currency as string))]
-  .filter(curr => curr !== 'PLN');
+    const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
+    const uniqueCurrencies = [...new Set(safeWalletsData.map((w: any) => w.currency as string))]
+      .filter(curr => curr !== 'PLN');
 
     const ratesArray = await Promise.all(
       uniqueCurrencies.map(async (currCode) => {
@@ -211,7 +230,7 @@ const fetchWallets = useCallback(async () => {
 
       <ScrollView
         horizontal 
-        style={{marginTop: '7%'}}
+        style={{ marginTop: '4%' }}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ 
           paddingHorizontal: '4%', 
@@ -220,11 +239,11 @@ const fetchWallets = useCallback(async () => {
       >
         {loading ? (
           <ActivityIndicator color={theme.highContrast} />
-        ) : wallets.filter(w => (w.amount ?? 0) > 0).length > 0 ? ( 
+        ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? ( 
           wallets
             .filter(wallet => (wallet.amount ?? 0) > 0) 
             .map((wallet, index, array) => (
-              <React.Fragment key={wallet.id}>
+              <React.Fragment key={wallet.id || index}>
                 <CurrencyWalletCard
                   wallet_id={wallet.wallet_id}
                   id={wallet.id}
@@ -239,7 +258,7 @@ const fetchWallets = useCallback(async () => {
                       backgroundColor: theme.midContrast, 
                       opacity: 0.2, 
                       alignSelf: 'flex-start',
-                      marginTop: '4%',
+                      marginTop: '5%',
                       marginHorizontal: 10 
                     }} 
                   />
@@ -247,12 +266,25 @@ const fetchWallets = useCallback(async () => {
               </React.Fragment>
             ))
         ) : (
-          <ThemedText style={{ color: theme.highContrast, textAlign: 'center' }}>
-            {strings.wallet_no_funds}
-          </ThemedText>
+          <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 12 }}>
+            <ThemedText style={{ color: theme.lowContrast, textAlign: 'center' }}>
+              {strings.wallet_no_funds}
+            </ThemedText>
+          </View>
         )}
       </ScrollView>
       
+      {message.type && message.text ? (
+        <View style={ styles.messageContainer }>
+          <ThemedText 
+            type="default"
+            style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
+          >
+            {message.text}  
+          </ThemedText>  
+        </View>
+      ) : null}
+
       <ThemedText
         type="titleSmall"
         style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.titleSmall]}>
@@ -269,18 +301,21 @@ const fetchWallets = useCallback(async () => {
             </View>
           )}
           ListEmptyComponent={() => (
-            <ThemedText style={{ textAlign: 'center', opacity: 0.5, marginTop: 20 }}>
+            <ThemedText style={{ textAlign: 'center', marginTop: 40, color: theme.lowContrast }}>
               {strings.wallet_no_transactions}
             </ThemedText>
           )}
         />
       </View>
-      <TouchableOpacity onPress={() => router.push('./history')}>
-        <ThemedText type='textSmall' style={[ styles.historyLink, {color: theme.lowContrast}]}>
-          {strings.wallet_history_link}
-        </ThemedText>
-      </TouchableOpacity> 
+      {history && history.length > 0 && (
+        <TouchableOpacity onPress={() => router.push('./history')}>
+          <ThemedText type='textSmall' style={[ styles.historyLink, { color: theme.lowContrast }]}>
+            {strings.wallet_history_link}
+          </ThemedText>
+        </TouchableOpacity>
+      )}
     </View>
+    
   );
 }
 
@@ -315,13 +350,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '52%',
   },
+  messageContainer: {
+    marginVertical: 16, 
+    paddingHorizontal: 20
+  },
+  message: {
+    textAlign: 'center',
+  },
   titleSmall: {
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
-    marginVertical: '3%',
+    marginVertical: '2%',
   },
   historyLink: {
     textDecorationLine: 'underline',
-    marginBottom: '12%',
+    marginBottom: '8%',
+    alignSelf: 'center'
   },
 });

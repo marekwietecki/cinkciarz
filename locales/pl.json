@@ -16,7 +16,6 @@
     "wallet_history_link": "Zobacz całą historię transakcji", 
     "wallet_no_transactions": "Brak Transakcji", 
 
-
     "rates_title": "Bieżące kursy",
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
 
@@ -29,6 +28,10 @@
     "topup_CZK": "Czeska Korona - CZK",
     "topup_loading": "Trwa doładowywanie..",
     "topup_button": "Doładuj Konto",
+    "topup_correct_data_required": "Wprowadź poprawne dane",
+    "topup_success": "Doładowano pomyślnie",
+    "topup_error": "Błąd doładowywania, spróbuj ponownie później.",
+    "topup_network_error": "Błąd sieci, spróbuj ponownie później.",
 
     "transaction_title": "Transakcja",
     "transaction_sell": "Sprzedajesz",
@@ -38,6 +41,9 @@
     "transaction_button": "Wymień Walutę",
     "transaction_invalid_amount": "Wpisz poprawną kwotę",
     "transaction_success": "Wymiana zakończona pomyślnie",
+    "transaction_error": "Wymiana nieudana. Spróbuj ponownie później.",
+    "transaction_rate_error": "Błąd pobierania kursu. Spróbuj ponownie później.",
+    "transaction_network_error": "Błąd sieci. Nie można połączyć się z serwerem.",
 
     "history_title": "Historia",
     "history_deposit": "Doładowanie\nKonta",
@@ -84,6 +90,21 @@
     "delete_warning": "Wszystkie Twoje dane zostaną trwale usunięte. Aby kontynuować, potwierdź swój email i hasło.",
     "delete_loading": "Trwa usuwanie konta..",
     "delete_button": "Usuń Konto",
+    "delete_email": "E-mail",
+    "delete_password": "Hasło",
+
+    "changePassword_title": "Zmiana Hasła",
+    "changePassword_warning": "Twoje hasło zostanie zmienione, gdy potwierdzisz swoje stare hasło.",
+    "changePassword_fields_required": "Wypełnij wszystkie pola",
+    "changePassword_loading": "Trwa zmiana hasła..",
+    "changePassword_button": "Zmień Hasło",
+    "changePassword_oldPassword": "Stare Hasło",
+    "changePassword_newPassword": "Nowe Hasło",
+    "changePassword_error_auth": "Błąd Autoryzacji. Zaloguj się.",
+    "changePassword_success": "Hasło zmienione pomyślnie",
+    "changePassword_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
+
+
 
     "profile_logged_in": "Zalogowano",
     "profile_not_logged_in": "Nie Zalogowano",

@@ -21,17 +21,17 @@ export default function DeleteAccountScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
     const getAuthToken = async () => {
         return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
     };
 
     const handleDelete = async () => {
-        setMessage('');
+        setMessage({ text: '', type: null });    
 
         if(!email || !password) {
-            setMessage(strings.delete_fields_required)
+            setMessage({ text: strings.delete_fields_required, type: 'error' });
             return;
         }
 
@@ -40,7 +40,7 @@ export default function DeleteAccountScreen() {
         const token = await getAuthToken();
 
         if (!token) {
-            Alert.alert(strings.error, strings.delete_error_auth);
+            setMessage({ text: strings.delete_error_auth, type: 'error' });
             router.replace('/auth/login');
             return;
         }
@@ -60,14 +60,16 @@ export default function DeleteAccountScreen() {
             if (response.ok) {
                 await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
                 await AsyncStorage.removeItem(AVATAR_KEY);
-                Alert.alert(strings.success, strings.delete_success);
-                router.replace('/auth/login');
+                router.replace ({
+                    pathname: '/auth/register',
+                    params: { deleted: 'true' }
+                })
             } else {
-                setMessage(data.message || strings.delete_unknown_error);
+                setMessage({ text: strings.delete_unknown_error, type: 'error' });
             }
         } catch (error) {
             console.error("Błąd usunięcia konta:", error);
-            setMessage(strings.delete_network_error);
+            setMessage({ text: strings.delete_network_error, type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -94,7 +96,7 @@ export default function DeleteAccountScreen() {
 
                 <View style={styles.inputsContainer}>
                     <TextInput 
-                        placeholder={strings.login_email} 
+                        placeholder={strings.delete_email} 
                         placeholderTextColor={theme.lowContrast}
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
                         onChangeText={setEmail}
@@ -104,7 +106,7 @@ export default function DeleteAccountScreen() {
                         editable={!loading}
                     />
                     <TextInput 
-                        placeholder={strings.login_password} 
+                        placeholder={strings.delete_password} 
                         placeholderTextColor={theme.lowContrast}
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
                         onChangeText={setPassword}
@@ -113,10 +115,6 @@ export default function DeleteAccountScreen() {
                         editable={!loading}
                     />
                 </View>
-
-                {message ? (
-                    <ThemedText style={{ color: theme.failure, marginBottom: 15 }}>{message}</ThemedText>
-                ) : null}
 
                 <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.failure }]}

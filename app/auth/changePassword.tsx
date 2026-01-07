@@ -18,20 +18,20 @@ export default function ChangePasswordScreen() {
     const { strings } = useContext(LanguageContext);
     const { theme } = useContext(ThemeContext);
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
     const getAuthToken = async () => {
         return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
     };
 
     const handleDelete = async () => {
-        setMessage('');
+        setMessage({ text: '', type: null });    
 
-        if(!email || !password) {
-            setMessage(strings.delete_fields_required)
+        if(!oldPassword || !newPassword) {
+            setMessage({ text: strings.changePassword_fields_required, type: 'error' });
             return;
         }
 
@@ -40,19 +40,19 @@ export default function ChangePasswordScreen() {
         const token = await getAuthToken();
 
         if (!token) {
-            Alert.alert(strings.error, strings.delete_error_auth);
+            setMessage({ text: strings.changePassword_error_auth, type: 'error' });
             router.replace('/auth/login');
             return;
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/auth/delete`, {
-                method: 'DELETE',
+            const response = await fetch(`${BASE_URL}/auth/change-password`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`, 
                 },
-                body: JSON.stringify({ email, password }), 
+                body: JSON.stringify({ oldPassword, newPassword }), 
             });
 
             const data = await response.json();
@@ -60,14 +60,16 @@ export default function ChangePasswordScreen() {
             if (response.ok) {
                 await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
                 await AsyncStorage.removeItem(AVATAR_KEY);
-                Alert.alert(strings.success, strings.delete_success);
-                router.replace('/auth/login');
+                router.replace({
+                    pathname: '/auth/login',
+                    params: { changed: 'true' }
+                })
             } else {
                 setMessage(data.message || strings.delete_unknown_error);
             }
         } catch (error) {
             console.error("Błąd usunięcia konta:", error);
-            setMessage(strings.delete_network_error);
+            setMessage({ text: strings.changePassword_network_error, type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -75,7 +77,7 @@ export default function ChangePasswordScreen() {
     
     return (
         <KeyboardAvoidingView 
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: theme.background }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView contentContainerStyle={[ styles.container, { backgroundColor: theme.background, flexGrow: 1 }]}>
@@ -85,38 +87,33 @@ export default function ChangePasswordScreen() {
 
                 <View style={styles.titleContainer}>
                     <ThemedText type="titleMid" style={{color: theme.failure}}>
-                        {strings.delete_title}
+                        {strings.changePassword_title}
                     </ThemedText>
                     <ThemedText type="subtitle" style={{color: theme.midContrast}}>
-                        {strings.delete_warning}
+                        {strings.changePassword_warning}
                     </ThemedText>
                 </View>
 
                 <View style={styles.inputsContainer}>
                     <TextInput 
-                        placeholder={strings.login_email} 
+                        placeholder={strings.changePassword_oldPassword} 
                         placeholderTextColor={theme.lowContrast}
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
-                        onChangeText={setEmail}
-                        value={email}
-                        keyboardType='email-address'
-                        autoCapitalize='none'
+                        onChangeText={setOldPassword}
+                        value={oldPassword}
+                        secureTextEntry={true}
                         editable={!loading}
                     />
                     <TextInput 
-                        placeholder={strings.login_password} 
+                        placeholder={strings.changePassword_newPassword} 
                         placeholderTextColor={theme.lowContrast}
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
-                        onChangeText={setPassword}
-                        value={password}
+                        onChangeText={setNewPassword}
+                        value={newPassword}
                         secureTextEntry={true}
                         editable={!loading}
                     />
                 </View>
-
-                {message ? (
-                    <ThemedText style={{ color: theme.failure, marginBottom: 15 }}>{message}</ThemedText>
-                ) : null}
 
                 <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.failure }]}
@@ -124,7 +121,7 @@ export default function ChangePasswordScreen() {
                     disabled={loading}
                 >
                     <ThemedText type='default' style={{ color: theme.background }}>
-                        {loading ? strings.delete_loading : strings.delete_button}
+                        {loading ? strings.changePassword_loading : strings.changePassword_button}
                     </ThemedText>
                 </TouchableOpacity>
                 
