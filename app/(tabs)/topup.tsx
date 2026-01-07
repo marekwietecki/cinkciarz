@@ -9,6 +9,7 @@ import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon } from 'lucide-react-native';
+import { AuthContext } from '@/contexts/authContext';
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -17,6 +18,7 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
         const router = useRouter();
         const { strings } = useContext(LanguageContext);
         const { theme } = useContext(ThemeContext);
+        const { token } = useContext(AuthContext);
 
         const [avatar, setAvatar] = useState('');
         const [amount, setAmount] = useState('');
@@ -42,12 +44,10 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
         setLoading(true);
         try {
-            const userToken = await AsyncStorage.getItem('userToken');
-            
             const response = await fetch(`${BASE_API_URL}/transaction/deposit`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${userToken}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({

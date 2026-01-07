@@ -9,8 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CurrencyWalletCard } from '@/components/CurrencyWalletCard';
 import { HistoricTransaction, TransactionExtended } from '@/components/HistoricTransaction';
 import currenciesJson from '../../backend/currencies.json';
+import { AuthContext } from '@/contexts/authContext';
 
-import { AUTH_TOKEN_KEY, AVATAR_KEY, BASE_API_URL } from '@/config';
+import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
 
 interface CurrencyWalletCardProps {
@@ -24,6 +25,7 @@ export default function WalletScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { token } = useContext(AuthContext);
   
   const [ avatar, setAvatar ] = useState('');
   const [ loading, setLoading ] = useState(false);
@@ -53,18 +55,15 @@ const fetchRate = useCallback(async (currencyCode: string) => {
 const fetchWallets = useCallback(async () => {
   try {
     setLoading(true);
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY); 
-
-    if (!userToken) {
-      console.error("Brak tokena!");
-      return; 
-    }
 
     const response = await fetch(`${BASE_API_URL}/wallet`, {
-      headers: { 'Authorization': `Bearer ${userToken}` },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
-    
-    const walletsData = await response.json();
+    console.log(response);
+    let walletsData = await response.json();
+    if (walletsData.message) {
+      walletsData = [];
+    }
     const uniqueCurrencies = [...new Set(walletsData.map((w: any) => w.currency as string))]
   .filter(curr => curr !== 'PLN');
 
@@ -105,13 +104,10 @@ const fetchWallets = useCallback(async () => {
   };
 
   const ensureWallet = async () => {
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-    if (!userToken) return;
-
     const response = await fetch(`${BASE_API_URL}/wallet/create`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${userToken}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -126,13 +122,11 @@ const fetchWallets = useCallback(async () => {
   const loadHistory = useCallback(async () => {
   try {
     await ensureWallet();
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-    if (!userToken) return;
 
     const response = await fetch(`${BASE_API_URL}/wallet/history`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${userToken}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
