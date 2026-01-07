@@ -32,7 +32,7 @@ export const HistoricTransaction = ({ transaction }: { transaction: TransactionE
 
   return (
     <View style={[styles.card, {borderColor: theme.veryLowContrast}]}>
-      <ThemedText type="tiny" style={styles.dateText}>
+      <ThemedText type="tiny" style={[styles.dateText, {color: theme.lowContrast}]}>
         {new Date(transaction.date).toLocaleDateString()}
       </ThemedText>
       

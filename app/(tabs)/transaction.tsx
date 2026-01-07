@@ -23,7 +23,7 @@ export default function WalletScreen() {
   const [loading, setLoading] = useState(false);
   const [pickerFirstVisibility, setPickerFirstVisibility] = useState(false);
   const [pickerSecondVisibility, setPickerSecondVisibility] = useState(false);
-
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
   const [fromCurrency, setFromCurrency] = useState('PLN');
   const [toCurrency, setToCurrency] = useState('EUR');
@@ -96,7 +96,7 @@ const fetchRate = useCallback(async (currencyCode: string) => {
     setFromRate(fRate);
     setToRate(tRate);
     
-    const finalRate = fRate / tRate;
+    const finalRate = fRate / tRate * 0.995;
   
     setTransactionRate(finalRate);
 
@@ -136,16 +136,18 @@ const fetchRate = useCallback(async (currencyCode: string) => {
   };
 
   const handleTransaction = async () => {
+    setMessage({ text: '', type: null });    
+    
     const fAmount = parseFloat(displayFrom);
     const tAmount = parseFloat(displayTo);
 
     if (!fAmount || fAmount <= 0) {
-      Alert.alert(strings.error, strings.transaction_invalid_amount || "Wpisz poprawną kwotę");
+      setMessage({ text: strings.transaction_invalid_amount, type: 'error' });
       return;
     }
 
     if (!transactionRate) {
-      Alert.alert("Błąd", "Nie udało się pobrać kursu walut.");
+      setMessage({ text: strings.transaction_rate_error, type: 'error' });
       return;
     }
 
@@ -170,24 +172,24 @@ const fetchRate = useCallback(async (currencyCode: string) => {
       const result = await response.json();
 
       if (response.ok) {
-        Alert.alert(
-          strings.success, 
-          strings.transaction_success,
-          [{ text: "OK", onPress: () => {
-            setAmount(''); 
-            router.replace('./'); 
-          }}]
-        );
+        setMessage({ text: strings.transaction_success, type: 'success' });
+        setTimeout(() => clearMessage(), 5000);
       } else {
-        Alert.alert("Błąd transakcji", result.message || "Coś poszło nie tak");
+        setMessage({ text: strings.transaction_error, type: 'error' });
       }
     } catch (error) {
       console.error("Handle Transaction Error:", error);
-      Alert.alert("Błąd sieci", "Nie można połączyć się z serwerem");
+      setMessage({ text: strings.transaction_network_error, type: 'error' });
     } finally {
       setLoading(false);
     }
   };
+
+
+  const clearMessage = () => {
+    setMessage({ text: '', type: null });
+  };
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -204,6 +206,7 @@ const fetchRate = useCallback(async (currencyCode: string) => {
             {strings.transaction_title}
           </ThemedText>
           <ScrollView 
+            style={{ flex: 1, width: '100%' }}
             showsVerticalScrollIndicator={true}
             keyboardShouldPersistTaps="handled"
           >
@@ -238,10 +241,14 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                     <TextInput
                       style={[styles.textInput, { color: theme.highContrast }]}
                       placeholder="0.00"
+                      secureTextEntry={false}
+                      autoComplete="off"
+                      textContentType="none"
                       placeholderTextColor={theme.highContrast}
                       keyboardType="decimal-pad"
                       value={displayFrom} 
                       onChangeText={(val) => {
+                        clearMessage();
                         setAmount(val);
                         setLastChanged('from'); 
                       }}
@@ -256,7 +263,10 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                 <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
                     <Picker
                         selectedValue={fromCurrency}
-                        onValueChange={(itemValue) => setFromCurrency(itemValue)}
+                        onValueChange={(itemValue) => {
+                          clearMessage(); 
+                          setFromCurrency(itemValue);
+                        }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
@@ -308,10 +318,14 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                     <TextInput
                       style={[styles.textInput, { color: theme.highContrast }]}
                       placeholder="0.00"
+                      secureTextEntry={false}
+                      autoComplete="off"
+                      textContentType="none"
                       placeholderTextColor={theme.highContrast}
                       keyboardType="decimal-pad"
                       value={displayTo} 
                       onChangeText={(val) => {
+                        clearMessage();
                         setAmount(val);
                         setLastChanged('to'); 
                       }}
@@ -326,7 +340,10 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                 <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
                     <Picker
                         selectedValue={toCurrency}
-                        onValueChange={(itemValue) => setToCurrency(itemValue)}
+                        onValueChange={(itemValue) => {
+                          clearMessage(); 
+                          setToCurrency(itemValue);
+                        }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
@@ -346,6 +363,17 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                 style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}>
                 {strings.transaction_disclaimer}
               </ThemedText>
+
+              {message.type && message.text ? (
+                <View style={ styles.messageContainer }>
+                  <ThemedText 
+                    type="default"
+                    style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
+                  >
+                    {message.text}  
+                  </ThemedText>  
+                </View>
+              ) : null}
             </View>
             
           </ScrollView>
@@ -432,6 +460,13 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
     paddingHorizontal: '10%',
   }, 
+  messageContainer: {
+    marginVertical: 10, 
+    paddingHorizontal: 20
+  },
+  message: {
+    textAlign: 'center',
+  },
   buttonWrapper: {
     paddingVertical: 24,
     paddingHorizontal: '6%',

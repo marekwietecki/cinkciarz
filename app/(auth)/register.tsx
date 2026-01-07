@@ -1,8 +1,8 @@
 import { ThemedText } from '@/components/themed-text';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { useRouter, Redirect } from 'expo-router';
+import { useLocalSearchParams, useRouter, Redirect } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
@@ -14,12 +14,25 @@ export default function RegisterScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { deleted } = useLocalSearchParams();
  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+      if (deleted === 'true') {
+        setMessage({ text: strings.delete_success, type: 'success' });
+        
+        const timer = setTimeout(() => {
+          setMessage({ text: '', type: null });
+        }, 5000);
+  
+        return () => clearTimeout(timer);
+      }
+    }, [deleted, strings.delete_success]);
 
   const handleRegister = async () => {
     setMessage({ text: '', type: null });    
@@ -49,8 +62,10 @@ export default function RegisterScreen() {
         const data = await response.json();
 
         if (response.ok) {
-            setMessage({ text: strings.register_success_message, type: 'success' })
-            router.push('./login');
+            router.replace({
+              pathname: './login',
+              params: { registered: 'true' }
+            });
         } else {
             const errorMessage = data.message || strings.register_unknown_error;
             setMessage({ text: errorMessage, type: 'error' });

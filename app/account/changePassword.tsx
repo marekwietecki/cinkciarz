@@ -23,26 +23,21 @@ export default function ChangePasswordScreen() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
-    const handleChange = async () => {
-        setMessage('');
+    const handleDelete = async () => {
+        setMessage({ text: '', type: null });    
 
-        if(!oldPassword || !newPassword || !confirmNewPassword) {
-            setMessage(strings.change_password_fields_required)
-            return;
-        }
-
-        if(newPassword !== confirmNewPassword) {
-            setMessage(strings.change_password_password_mismatch)
+        if(!oldPassword || !newPassword) {
+            setMessage({ text: strings.changePassword_fields_required, type: 'error' });
             return;
         }
 
         setLoading(true);
 
         if (!token) {
-            Alert.alert(strings.error, strings.change_password_error_auth);
-            router.replace('/(auth)/login');
+            setMessage({ text: strings.changePassword_error_auth, type: 'error' });
+            router.replace('/auth/login');
             return;
         }
 
@@ -83,14 +78,16 @@ export default function ChangePasswordScreen() {
 
 
                 await AsyncStorage.removeItem(AVATAR_KEY);
-                Alert.alert(strings.success, strings.change_password_success);
-                router.replace('/(auth)/login');
+                router.replace({
+                    pathname: '/auth/login',
+                    params: { changed: 'true' }
+                })
             } else {
                 setMessage(data.message || strings.change_password_unknown_error);
             }
         } catch (error) {
             console.error("Błąd usunięcia konta:", error);
-            setMessage(strings.change_password_network_error);
+            setMessage({ text: strings.changePassword_network_error, type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -98,7 +95,7 @@ export default function ChangePasswordScreen() {
     
     return (
         <KeyboardAvoidingView 
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: theme.background }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView contentContainerStyle={[ styles.container, { backgroundColor: theme.background, flexGrow: 1 }]}>
@@ -108,57 +105,41 @@ export default function ChangePasswordScreen() {
 
                 <View style={styles.titleContainer}>
                     <ThemedText type="titleMid" style={{color: theme.failure}}>
-                        {strings.change_password_title}
+                        {strings.changePassword_title}
                     </ThemedText>
                     <ThemedText type="subtitle" style={{color: theme.midContrast}}>
-                        {strings.change_password_warning}
+                        {strings.changePassword_warning}
                     </ThemedText>
                 </View>
 
                 <View style={styles.inputsContainer}>
                     <TextInput 
-                        placeholder={strings.change_password_current_password} 
+                        placeholder={strings.changePassword_oldPassword} 
                         placeholderTextColor={theme.lowContrast}
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
                         onChangeText={setOldPassword}
                         value={oldPassword}
-                        autoCapitalize='none'
                         secureTextEntry={true}
                         editable={!loading}
                     />
                     <TextInput 
-                        placeholder={strings.change_password_new_password} 
+                        placeholder={strings.changePassword_newPassword} 
                         placeholderTextColor={theme.lowContrast}
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
                         onChangeText={setNewPassword}
                         value={newPassword}
-                        autoCapitalize='none'
-                        secureTextEntry={true}
-                        editable={!loading}
-                    />
-                    <TextInput 
-                        placeholder={strings.change_password_confirm_password} 
-                        placeholderTextColor={theme.lowContrast}
-                        style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
-                        onChangeText={setConfirmNewPassword}
-                        value={confirmNewPassword}
-                        autoCapitalize='none'
                         secureTextEntry={true}
                         editable={!loading}
                     />
                 </View>
 
-                {message ? (
-                    <ThemedText style={{ color: theme.failure, marginBottom: 15 }}>{message}</ThemedText>
-                ) : null}
-
                 <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.failure }]}
-                    onPress={handleChange}
+                    onPress={handleDelete}
                     disabled={loading}
                 >
                     <ThemedText type='default' style={{ color: theme.background }}>
-                        {loading ? strings.change_password_loading : strings.change_password_button}
+                        {loading ? strings.changePassword_loading : strings.changePassword_button}
                     </ThemedText>
                 </TouchableOpacity>
                 

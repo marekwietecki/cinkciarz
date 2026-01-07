@@ -90,9 +90,11 @@ export default function HistoryScreen() {
   }, []);
   
 
-  useEffect(() => {
-    loadHistory();
-  }, [loadHistory]);
+  useFocusEffect(
+    useCallback(() => {
+      loadHistory();
+    }, [])
+  );
   
   return (
     <View style={[
@@ -108,7 +110,7 @@ export default function HistoryScreen() {
         {strings.history_title}
       </ThemedText>
       {history.length === 0 ? (
-        <ThemedText style={{ textAlign: 'center', marginTop: 20 }}>
+        <ThemedText style={{ textAlign: 'center', marginTop: 20, color: theme.highContrast }}>
           Brak historii transakcji
         </ThemedText>
       ) : (

@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Redirect, useRouter } from 'expo-router';
-import React, { useContext, useState } from 'react';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { LanguageContext } from '../../contexts/languageContext';
@@ -14,14 +14,40 @@ import { AuthContext } from '@/contexts/authContext';
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useContext(AuthContext)
+  const { registered } = useLocalSearchParams();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { changed } = useLocalSearchParams();
  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [loading, setLoading] = useState(false);
-  
+
+  useEffect(() => {
+    if (registered === 'true') {
+      setMessage({ text: strings.register_success_message, type: 'success' });
+      
+      const timer = setTimeout(() => {
+        setMessage({ text: '', type: null });
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [registered, strings.register_success_message]);
+
+  useEffect(() => {
+    if (changed === 'true') {
+      setMessage({ text: strings.changePassword_success, type: 'success' });
+      
+      const timer = setTimeout(() => {
+        setMessage({ text: '', type: null });
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [changed, strings.changePassword_success]);
+
   const handleLogin = async () => {
     setMessage({ text: '', type: null });    
     
@@ -49,8 +75,11 @@ export default function LoginScreen() {
         if(token) {
           login(token);
           //success
-          setMessage({ text: strings.login_success_message, type: 'success' })
-          router.replace('/');
+          setTimeout(() => clearMessage(), 5000);
+          router.replace({
+            pathname: '/',
+            params: { loggedin: 'true' }
+          });
         } else {
           //no token
           setMessage({text: strings.login_token_error, type: 'error'})

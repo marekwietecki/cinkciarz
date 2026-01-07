@@ -25,6 +25,8 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
         const [currency, setCurrency] = useState('PLN');
         const [loading, setLoading] = useState(false);
         const [pickerVisibility, setPickerVisibility] = useState(false);
+        const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
+    
 
         const loadAvatar = useCallback(async () => {
             try {
@@ -35,12 +37,16 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
             }
         }, []);
 
+
+
         const handleDeposit = async () => {
-        const cleanAmount = amount.replace(',', '.');
-        if (!cleanAmount || parseFloat(cleanAmount) <= 0 || isNaN(parseFloat(cleanAmount))) {
-            Alert.alert("Błąd", "Wpisz poprawną kwotę (np. 10.50)");
-            return;
-        }
+            setMessage({ text: '', type: null });    
+            
+            const cleanAmount = amount.replace(',', '.');
+            if (!cleanAmount || parseFloat(cleanAmount) <= 0 || isNaN(parseFloat(cleanAmount))) {
+                setMessage({ text: strings.topup_correct_data_required, type: 'error' });
+                return;
+            }
 
         setLoading(true);
         try {
@@ -56,22 +62,35 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
                 }),
             });
 
-            const responseText = await response.text();
-            console.log("Odpowiedź serwera:", responseText);
+                const responseText = await response.text();
+                console.log("Odpowiedź serwera:", responseText);
 
-            if (response.ok) {
-                Alert.alert("Sukces", "Kasa doładowana!");
-                setAmount(''); 
-            } else {
-                const errorData = JSON.parse(responseText);
-                Alert.alert("Błąd", errorData.message || "Coś nie pykło");
+                if (response.ok) {
+                    setMessage({ text: strings.topup_success, type: 'success' });
+                    setAmount(''); 
+                    setTimeout(() => clearMessage(), 5000);
+                    setPickerVisibility(false);                
+                } else {
+                    const errorData = JSON.parse(responseText);
+                    setMessage({ text: strings.topup_error, type: 'error' });
+                }
+            } catch (error) {
+                setMessage({ text: strings.topup_network_error, type: 'error' });
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            Alert.alert("Błąd sieci", "Serwer nie odpowiada");
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
+
+    
+        const clearMessage = () => {
+            setMessage({ text: '', type: null });
+        };
+
+        const handleSetAmount = (text: string) => {
+            clearMessage();
+            setAmount(text);
+        };
+
 
     useFocusEffect(
         useCallback(() => {
@@ -100,7 +119,7 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
                             placeholderTextColor={theme.highContrast}
                             keyboardType="decimal-pad"
                             value={amount}
-                            onChangeText={setAmount}
+                            onChangeText={handleSetAmount}
                         />
                         <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center"}}>
                             <ThemedText
@@ -129,7 +148,17 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
                         </Picker>
                     </View>
                     )}
-                
+
+                    {message.type && message.text ? (
+                        <View style={ styles.messageContainer }>
+                        <ThemedText 
+                            type="default"
+                            style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
+                        >
+                            {message.text}  
+                        </ThemedText>  
+                        </View>
+                    ) : null}
 
                 <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.highContrast }]} 
@@ -194,6 +223,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignSelf: 'center',
         marginBottom: 4,
+    },
+      messageContainer: {
+        marginVertical: 10, 
+        paddingHorizontal: 20
+    },
+    message: {
+        textAlign: 'center',
     },
     button: {
         paddingVertical: 16,

@@ -86,12 +86,12 @@ export default function ProfileScreen() {
     const handleLogout = async () => {
         try {
             logout();
-            router.replace('/(auth)/login'); 
+            router.replace('/auth/login'); 
             
             console.log('Użytkownik wylogowany pomyślnie.');
         } catch (e) {
             console.error('Błąd podczas wylogowywania:', e);
-            router.replace('/(auth)/login'); 
+            router.replace('/auth/login'); 
         }
     };
 

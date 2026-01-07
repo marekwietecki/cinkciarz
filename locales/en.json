@@ -9,6 +9,7 @@
     "nav_history": "History",
     
     "wallet_title": "Wallet",
+    "wallet_total_wealth": "Total Wealth",
     "wallet_top_up_link": "Top Up the Account",
     "wallet_no_funds": "You don't have any funds..",
     "wallet_history": "Last Transaction",
@@ -27,6 +28,10 @@
     "topup_CZK": "Czech Koruna - CZK",
     "topup_loading": "Top Up in progress..",
     "topup_button": "Top Up the Account",
+    "topup_correct_data_required": "Provide correct data",
+    "topup_success": "Topped Up successfully",
+    "topup_error": "Top Up error, try again later.",
+    "topup_network_error": "Network error, try again later.",
 
     "transaction_title": "Transaction",
     "transaction_sell": "You are selling",
@@ -35,8 +40,10 @@
     "transaction_loading": "Transaction in progress..",
     "transaction_button": "Exchange",
     "transaction_invalid_amount": "Enter correct amount",
-    "transaction_success": "Exchanged succefully",
-
+    "transaction_success": "Exchanged successfully",
+    "transaction_error": "Exchange unsuccessful. Try again later.",
+    "transaction_rate_error": "Rate downloading failure. Try again later.",
+    "transaction_network_error": "Network error. Unable to connect with server.",
 
     "history_title": "History",
     "history_deposit": "Account\nTop-Up",
@@ -58,7 +65,7 @@
     "login_loading": "Login in progress..",
 
     "register_title": "Register!",
-    "register_subtitle": "Register to our online currency exchange service - eWalutka.pl",
+    "register_subtitle": "Register to eWalutka.pl - your online currency exchange service.",
     "register_email": "E-mail",
     "register_email_example": "your@mail.com",
     "register_password": "Password",
@@ -89,7 +96,7 @@
     "change_password_button": "Change password",
 
     "delete_fields_required": "Fill in all items",
-    "delete_error_auth": "Authorization failure. Log In.",
+    "delete_error_auth": "Authorization failure. Log In First.",
     "delete_success": "Account deleted succefully",
     "delete_unknown_error": "Unknown error of deliting account occurred",
     "delete_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
@@ -97,6 +104,19 @@
     "delete_warning": "All your data will be permanently deleted. To continue, confirm your email and password.",
     "delete_loading": "Deleting account in progress..",
     "delete_button": "Delete account",
+    "delete_email": "E-mail",
+    "delete_password": "Password",
+
+    "changePassword_title": "Password Change",
+    "changePassword_warning": "Your password will be changed, when you confirm your old password.",
+    "changePassword_fields_required": "Fill in all items",
+    "changePassword_loading": "Password change in progress..",
+    "changePassword_button": "Change password",
+    "changePassword_oldPassword": "Old Password",
+    "changePassword_newPassword": "New Password",
+    "changePassword_error_auth": "Authorization failure. Log In First.",
+    "changePassword_success": "Password changed successfully",
+    "changePassword_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
 
     "profile_logged_in": "Logged In",
     "profile_not_logged_in": "Not Logged In",
