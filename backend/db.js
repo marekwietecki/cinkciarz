@@ -69,7 +69,7 @@ db.serialize(() => {
 });
 
 for (const currency of currencies) {
-    db.run('INSERT OR IGNORE INTO currencies (code, name, symbol) VALUES (?, ?, ?)', [currency.code, currency.name, currency.symbol]);
+    db.run('INSERT OR IGNORE INTO currencies (code, name, symbol, flag) VALUES (?, ?, ?, ?)', [currency.code, currency.name, currency.symbol, currency.flag]);
 }
 
 module.exports = { db, dbGet, dbAll, dbRun };

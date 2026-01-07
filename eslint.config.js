@@ -7,4 +7,15 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*'],
   },
+  
+  // backend oraz testy
+  {
+    files: ['backend/**/*.{js,ts}', '**/*.test.{js,ts}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest
+      }
+    }
+  }
 ]);

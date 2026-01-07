@@ -8,11 +8,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ChevronLeftIcon, ContrastIcon, LanguagesIcon, UserIcon } from '../components/Icons';
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
+import { AuthContext } from '@/contexts/authContext';
 
+import { BASE_API_URL } from '@/config';
 
 const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api';
-const AUTH_TOKEN_KEY = 'userToken';
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -20,14 +20,12 @@ export default function ProfileScreen() {
     const { themeName, setThemeName, theme } = useContext(ThemeContext);
     const [ avatar, setAvatar ] = useState('');
     const [ isLoggedIn, setIsLoggedIn ] = useState(false);
-    const [userEmail, setUserEmail] = useState('');
+    const [ userEmail, setUserEmail ] = useState('');
+    const { token, logout } = useContext(AuthContext);
     
     const fetchUserProfile = async () => {
     try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (!token) return;
-
-        const response = await fetch(`${BASE_URL}/auth/me`, {
+        const response = await fetch(`${BASE_API_URL}/auth/me`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -56,8 +54,7 @@ export default function ProfileScreen() {
     useEffect(() => {
         const loadProfileData = async () => {
             try {
-                const storedToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-                if (storedToken) {
+                if (token) {
                     setIsLoggedIn(true); 
                 }
                 
@@ -88,8 +85,7 @@ export default function ProfileScreen() {
 
     const handleLogout = async () => {
         try {
-            await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
-
+            logout();
             router.replace('/auth/login'); 
             
             console.log('Użytkownik wylogowany pomyślnie.');
@@ -249,12 +245,12 @@ export default function ProfileScreen() {
                 </View>    
                 <View style={styles.pickerContainer}>
                     <Collapsible title={strings.profile_account_settings}>
-                        <TouchableOpacity onPress={() => router.push('./auth/changePassword')}>
+                        <TouchableOpacity onPress={() => router.push('./account/changePassword')}>
                             <ThemedText type="titleSmall" style={{color: theme.highContrast}}>
                                 {strings.profile_change_password}
                             </ThemedText>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => router.push('./auth/deleteAccount')}>
+                        <TouchableOpacity onPress={() => router.push('./account/deleteAccount')}>
                             <ThemedText type="titleSmall" style={{color: theme.highContrast}}>
                                 {strings.profile_delete_account}
                             </ThemedText>

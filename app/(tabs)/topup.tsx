@@ -9,15 +9,16 @@ import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon } from 'lucide-react-native';
+import { AuthContext } from '@/contexts/authContext';
 
-const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api';
+import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
 
     export default function WalletScreen() {
         const router = useRouter();
         const { strings } = useContext(LanguageContext);
         const { theme } = useContext(ThemeContext);
+        const { token } = useContext(AuthContext);
 
         const [avatar, setAvatar] = useState('');
         const [amount, setAmount] = useState('');
@@ -47,21 +48,19 @@ const BASE_URL = 'http://192.168.18.9:4000/api';
                 return;
             }
 
-            setLoading(true);
-            try {
-                const userToken = await AsyncStorage.getItem('userToken');
-                
-                const response = await fetch(`${BASE_URL}/transaction/deposit`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        amount: parseFloat(cleanAmount),
-                        currency: currency,
-                    }),
-                });
+        setLoading(true);
+        try {
+            const response = await fetch(`${BASE_API_URL}/transaction/deposit`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: parseFloat(cleanAmount),
+                    currency: currency,
+                }),
+            });
 
                 const responseText = await response.text();
                 console.log("Odpowiedź serwera:", responseText);

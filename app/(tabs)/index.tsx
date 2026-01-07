@@ -9,11 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CurrencyWalletCard } from '@/components/CurrencyWalletCard';
 import { HistoricTransaction, TransactionExtended } from '@/components/HistoricTransaction';
 import currenciesJson from '../../backend/currencies.json';
+import { AuthContext } from '@/contexts/authContext';
 
-const AVATAR_KEY = 'userAvatar';
-const BASE_URL = 'http://192.168.18.9:4000/api';
-const AUTH_TOKEN_KEY = 'userToken';
-
+import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
 
 interface CurrencyWalletCardProps {
@@ -27,6 +25,7 @@ export default function WalletScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { token } = useContext(AuthContext);
   const { loggedin } = useLocalSearchParams();
   
   
@@ -54,7 +53,7 @@ export default function WalletScreen() {
   const loadAvatar = useCallback(async () => {
     try {
       const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-      setAvatar(storedAvatar || '');
+      setAvatar(storedAvatar || '|||');
     } catch (e) {
       console.error('Błąd ładowania avatara:', e);
     }
@@ -63,7 +62,7 @@ export default function WalletScreen() {
 const fetchRate = useCallback(async (currencyCode: string) => {
   if (currencyCode === 'PLN') return 1; 
   try {
-    const response = await fetch(`${BASE_URL}/nbp/rate/A/${currencyCode}`);
+    const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
     if (!response.ok) return 0;
     const result = await response.json();
     return result.success ? result.data[result.data.length - 1].rate : 0;
@@ -73,21 +72,16 @@ const fetchRate = useCallback(async (currencyCode: string) => {
 const fetchWallets = useCallback(async () => {
   try {
     setLoading(true);
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY); 
 
-    if (!userToken) {
-      console.error("Brak tokena!");
-      return; 
-    }
-
-    const response = await fetch(`${BASE_URL}/wallet`, {
-      headers: { 'Authorization': `Bearer ${userToken}` },
+    const response = await fetch(`${BASE_API_URL}/wallet`, {
+      headers: { 'Authorization': `Bearer ${token}` },
     });
     
     const walletsData = await response.json();
     const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
     const uniqueCurrencies = [...new Set(safeWalletsData.map((w: any) => w.currency as string))]
       .filter(curr => curr !== 'PLN');
+    
 
     const ratesArray = await Promise.all(
       uniqueCurrencies.map(async (currCode) => {
@@ -126,13 +120,10 @@ const fetchWallets = useCallback(async () => {
   };
 
   const ensureWallet = async () => {
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-    if (!userToken) return;
-
-    const response = await fetch(`${BASE_URL}/wallet/create`, {
+    const response = await fetch(`${BASE_API_URL}/wallet/create`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${userToken}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -147,13 +138,11 @@ const fetchWallets = useCallback(async () => {
   const loadHistory = useCallback(async () => {
   try {
     await ensureWallet();
-    const userToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-    if (!userToken) return;
 
-    const response = await fetch(`${BASE_URL}/wallet/history`, {
+    const response = await fetch(`${BASE_API_URL}/wallet/history`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${userToken}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -202,7 +191,7 @@ const fetchWallets = useCallback(async () => {
           { backgroundColor: theme.background }
         ]}>
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-        <ThemedText type="titleSmall">{avatar}</ThemedText>
+        <ThemedText type="titleSmall" style={{ color: theme.highContrast }}>{avatar}</ThemedText>
       </TouchableOpacity>
       <ThemedText
         type="titleMid"

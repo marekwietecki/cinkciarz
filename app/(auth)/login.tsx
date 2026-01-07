@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -8,12 +8,12 @@ import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
-
-const BASE_URL = 'http://192.168.18.9:4000/api';
-const AUTH_TOKEN_KEY = 'userToken';
+import { AUTH_TOKEN_KEY, BASE_API_URL } from '@/config';
+import { AuthContext } from '@/contexts/authContext';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useContext(AuthContext)
   const { registered } = useLocalSearchParams();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
@@ -59,7 +59,7 @@ export default function LoginScreen() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${BASE_URL}/auth/login`, {
+      const response = await fetch(`${BASE_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,11 +68,12 @@ export default function LoginScreen() {
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (response.ok) {
         const token = data.token;
         if(token) {
-          await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
+          login(token);
           //success
           setTimeout(() => clearMessage(), 5000);
           router.replace({
@@ -111,6 +112,10 @@ export default function LoginScreen() {
       clearMessage();
       setPassword(text);
   };
+
+  // if (token !== null) {
+  //   return <Redirect href="/(tabs)" />
+  // }
 
   return (
     <KeyboardAvoidingView 
