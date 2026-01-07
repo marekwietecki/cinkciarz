@@ -42,7 +42,8 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS currencies (
         code TEXT PRIMARY KEY,
         name TEXT,
-        symbol TEXT
+        symbol TEXT,
+        flag TEXT
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS currency_wallets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

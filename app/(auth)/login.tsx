@@ -1,6 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -8,7 +7,7 @@ import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
 
-import { AUTH_TOKEN_KEY, BASE_API_URL } from '@/config';
+import { BASE_API_URL } from '@/config';
 import { AuthContext } from '@/contexts/authContext';
 
 export default function LoginScreen() {

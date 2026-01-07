@@ -1,15 +1,15 @@
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView, FlatList, Image } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { ThemeContext } from '../../contexts/themeContext';
-import { LanguageContext } from '../../contexts/languageContext';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { Fonts } from '../_layout';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CurrencyWalletCard } from '@/components/CurrencyWalletCard';
 import { HistoricTransaction, TransactionExtended } from '@/components/HistoricTransaction';
-import currenciesJson from '../../backend/currencies.json';
+import { ThemedText } from '@/components/themed-text';
 import { AuthContext } from '@/contexts/authContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import currenciesJson from '../../backend/currencies.json';
+import { LanguageContext } from '../../contexts/languageContext';
+import { ThemeContext } from '../../contexts/themeContext';
+import { Fonts } from '../_layout';
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
@@ -97,7 +97,7 @@ const fetchWallets = useCallback(async () => {
       })
     );
 
-    const total = calculateTotal(walletsData, ratesArray);
+    const total = calculateTotal(safeWalletsData, ratesArray);
     
     setWallets(walletsData);
     setTotalBalance(total);

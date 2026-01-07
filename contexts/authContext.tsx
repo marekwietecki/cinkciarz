@@ -1,5 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useEffect, useState } from 'react';
 
 import { AUTH_TOKEN_KEY } from '@/config';
 
@@ -18,8 +18,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const loadToken = async () => {
+      setIsLoading(true);
       const storedToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-      console.log('storedToken', storedToken);
       if (!storedToken || storedToken === 'dummy-token') {
         setIsLoading(false);
         return;

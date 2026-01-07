@@ -4,11 +4,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Collapsible } from '@/components/collapsible';
 import { ThemedText } from '@/components/themed-text';
+import { AuthContext } from '@/contexts/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ChevronLeftIcon, ContrastIcon, LanguagesIcon, UserIcon } from '../components/Icons';
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
-import { AuthContext } from '@/contexts/authContext';
 
 import { BASE_API_URL } from '@/config';
 
@@ -86,12 +86,12 @@ export default function ProfileScreen() {
     const handleLogout = async () => {
         try {
             logout();
-            router.replace('/auth/login'); 
+            router.replace('/(auth)/login'); 
             
             console.log('Użytkownik wylogowany pomyślnie.');
         } catch (e) {
             console.error('Błąd podczas wylogowywania:', e);
-            router.replace('/auth/login'); 
+            router.replace('/(auth)/login'); 
         }
     };
 
