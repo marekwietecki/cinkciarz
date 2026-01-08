@@ -10,14 +10,20 @@ Kompletny system mobilny umożliwiający bezpieczną wymianę walut, śledzenie 
 - [Instalacja i konfiguracja](#instalacja-i-konfiguracja)
 - [Licencja](#licencja)
 
+--
+
 ## Opis Projektu
 Projekt ma na celu praktyczne zastosowanie zagadnień związanych z komunikacją między aplikacją mobilną a serwisem sieciowym (REST) oraz bazą danych. System integruje się z zewnętrznym API Narodowego Banku Polskiego, zapewniając rzetelne dane finansowe.
+
+--
 
 ## Tech Stack
 * **Aplikacja Mobilna:** Expo / React Native (Context API, Expo Router)
 * **Backend (Web Service):** Node.js / Express.js
 * **Baza Danych:** SQLite
 * **Integracja zewnętrzna:** API NBP (kursy walut)
+
+--
 
 ## Zakres Funkcjonalny
 
@@ -40,6 +46,7 @@ Projekt ma na celu praktyczne zastosowanie zagadnień związanych z komunikacją
 * Rejestrowanie pełnej historii transakcji.
 * Zapisywanie aktualnego stanu portfela walutowego.
 
+--
 
 ## Użycie endpointów
 Serwis sieciowy udostępnia zestaw ścieżek REST umożliwiających komunikację aplikacji z logiką biznesową i bazą danych.
@@ -77,13 +84,7 @@ Serwis sieciowy udostępnia zestaw ścieżek REST umożliwiających komunikację
 - `POST /exchange` – Realizacja transakcji wymiany między walutami (kupno/sprzedaż).
 
 
-## Konfiguracja Sieciowa
-Aby aplikacja na fizycznym telefonie połączyła się z serwerem na komputerze przy użyciu aplikacji mobilnej Expo App, oba urządzenia muszą być w tej samej sieci Wi-Fi, a adres URL musi wskazywać na lokalne IP komputera. 
-
-Można je sprawdzić wpisując w konsolę polecenie:
-- Windows: Otwórz Wiersz Polecenia (cmd) i wpisz ipconfig. Szukaj pozycji IPv4 Address (np. 192.168.1.15).
-- macOS / Linux: Otwórz Terminal i wpisz ifconfig lub ip addr. Szukaj adresu przy en0 lub eth0 (zazwyczaj zaczyna się od 192.168.x.x).
-
+--
 
 ## Instalacja i Konfiguracja
 
@@ -93,13 +94,19 @@ Można je sprawdzić wpisując w konsolę polecenie:
     ```
 
 3.  **Konfiguracja Serwera:**
-    TUTAJ INSTRUKCJA ZMIANY IP
+W pliku config.js należy podmienić obecne ip na lokalne. 
+
+Aby aplikacja na fizycznym telefonie połączyła się z serwerem na komputerze przy użyciu aplikacji mobilnej Expo App, oba urządzenia muszą być w tej samej sieci Wi-Fi, a adres URL musi wskazywać na lokalne IP komputera. 
+
+Można je sprawdzić wpisując w konsolę polecenie:
+- Windows: Otwórz Wiersz Polecenia (cmd) i wpisz ipconfig. Szukaj pozycji IPv4 Address (np. 192.168.1.15).
+- macOS / Linux: Otwórz Terminal i wpisz ifconfig lub ip addr. Szukaj adresu przy en0 lub eth0 (zazwyczaj zaczyna się od 192.168.x.x).
 
 3.  **Konfiguracja Backend (Node.js):**
     ```bash
-    cd server
+    cd backend
     npm install
-    npm start
+    node \server.js\
     ```
 
 4.  **Konfiguracja Frontend (Expo):**
@@ -108,9 +115,11 @@ Można je sprawdzić wpisując w konsolę polecenie:
     npx expo start
     ```
 
+--
 
 ## Licencja
 Projekt udostępniany na licencji **MIT**. Możesz dowolnie modyfikować i korzystać z kodu, pod warunkiem zachowania informacji o autorze.
 
 ---
+
 **Autorzy:** Tomasz Turek & Marek Wietecki
