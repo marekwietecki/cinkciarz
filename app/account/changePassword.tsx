@@ -95,19 +95,21 @@ export default function ChangePasswordScreen() {
     
     return (
         <KeyboardAvoidingView 
-            style={{ flex: 1, backgroundColor: theme.background }}
+            style={[styles.kav, { backgroundColor: theme.background }]}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScrollView contentContainerStyle={[ styles.container, { backgroundColor: theme.background, flexGrow: 1 }]}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.back}>
+
+            <TouchableOpacity onPress={() => router.back()} style={styles.back}>
                     <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
                 </TouchableOpacity>
 
+            <View style={[ styles.container, { backgroundColor: theme.background }]}>
+
                 <View style={styles.titleContainer}>
-                    <ThemedText type="titleMid" style={{color: theme.failure}}>
+                    <ThemedText type="titleMid" style={{color: theme.failure, paddingLeft: '2%'}}>
                         {strings.changePassword_title}
                     </ThemedText>
-                    <ThemedText type="subtitle" style={{color: theme.midContrast}}>
+                    <ThemedText type="subtitle" style={{color: theme.midContrast, maxWidth: '96%'}}>
                         {strings.changePassword_warning}
                     </ThemedText>
                 </View>
@@ -143,16 +145,26 @@ export default function ChangePasswordScreen() {
                     </ThemedText>
                 </TouchableOpacity>
                 
-            </ScrollView>
+            </View>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
+    kav: {
+        flex: 1, 
+        width: '100%',  
+        alignItems: 'center', 
+        overflow: 'hidden'
+    },
     container: { 
         padding: 20, 
         justifyContent: 'center', 
-        alignItems: 'center' 
+        alignItems: 'center',
+        alignSelf: 'center',
+        flex: 1,
+        width: '100%',
+        maxWidth: 480, 
     },
     titleContainer: { 
         marginBottom: 40, 
@@ -185,5 +197,6 @@ const styles = StyleSheet.create({
         position: 'absolute', 
         top: '8%', 
         left: '4%',
+        zIndex: 10,
     },
 });
