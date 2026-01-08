@@ -77,9 +77,11 @@ export default function TransactionScreen() {
     }
   }, [token]);
 
-  useEffect(() => {
-    fetchWallets();
-  }, [fetchWallets]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchWallets();
+    }, [fetchWallets])
+  );
 
   const fetchRate = useCallback(async (currencyCode: string) => {
     if (currencyCode === 'PLN') return 1; 
@@ -482,7 +484,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingHorizontal: '4%',
-    paddingTop: '32%',
+    paddingTop: 120, // '32%'
     gap: 16
   },
   profileLink: {
@@ -490,8 +492,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '11%', 
-    right: '8%',
+    top: 70, // '11%'
+    right: 40, // '10.5%'
   },
   title: {
     alignSelf: 'flex-start', 

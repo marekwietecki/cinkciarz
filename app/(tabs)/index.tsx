@@ -301,6 +301,19 @@ const fetchWallets = useCallback(async () => {
             </ThemedText>
           )}
         />
+        {/*
+          {history.length > 0 ? (
+            <View style={[styles.card, { backgroundColor: theme.stepBackground || '#f5f5f5', borderColor: theme.midContrast }]}>
+              <HistoricTransaction transaction={history[0]} />
+            </View>
+          ) : (
+            <View style={styles.emptyState}>
+              <ThemedText style={{ color: theme.lowContrast }}>
+                {strings.wallet_no_transactions}
+              </ThemedText>
+            </View>
+          )}
+        */}
       </View>
       {history && history.length > 0 && (
         <TouchableOpacity onPress={() => router.push('./history')}>
@@ -320,15 +333,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingHorizontal: '4%',
-    paddingTop: '32%',
+    paddingTop: 120, // '32%'
   },
-  profileLink: {
+profileLink: {
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '11%', 
-    right: '8%',
+    top: 70, // '11%'
+    right: 40, // '10.5%'
   },
   title: {
     alignSelf: 'flex-start', 

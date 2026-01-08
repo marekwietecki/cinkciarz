@@ -220,15 +220,15 @@ export default function ProfileScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>    
-                <View style={styles.pickerContainer}>
+                <View style={[styles.pickerContainer, {marginBottom: 64} ]}>
                     <Collapsible title={strings.profile_account_settings}>
                         <TouchableOpacity onPress={() => router.push('./account/changePassword')}>
-                            <ThemedText type="titleSmall" style={{color: theme.highContrast}}>
+                            <ThemedText type="titleSmall" style={[{color: theme.highContrast}]}>
                                 {strings.profile_change_password}
                             </ThemedText>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => router.push('./account/deleteAccount')}>
-                            <ThemedText type="titleSmall" style={{color: theme.highContrast}}>
+                            <ThemedText type="titleSmall" style={[{color: theme.highContrast}]}>
                                 {strings.profile_delete_account}
                             </ThemedText>
                         </TouchableOpacity>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     left: '4%',
   },
   userContainer: {
-    marginBottom: '16%',
+    marginBottom: 80, // '16%'
     alignSelf: 'flex-start',
     marginLeft: '8%',
     gap: 2,
@@ -274,14 +274,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'center',
     alignItems: 'center', 
-    width: '80%',
+    alignContent: 'center',
+    width: '100%',
     gap: 6,
   },
   rowTitle: {
     flexDirection: 'row', 
     justifyContent: 'center',
     alignItems: 'center', 
-    width: '80%',
+    width: '100%',
     gap: 6,
   },
   contextPickers: {
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   picker: { 
     flex: 1, 
@@ -298,8 +299,8 @@ const styles = StyleSheet.create({
     alignItems: 'center' 
   },
   button: {
-    marginBottom: '8%',
-    marginTop: '16%',
+    marginBottom: 20, //'4%'
+    //marginTop: 64, //12%
     paddingVertical: 12,
     paddingHorizontal: 20, 
     borderRadius: 40, 

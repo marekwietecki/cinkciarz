@@ -147,7 +147,8 @@ const fetchExchangeData = async () => {
       styles.container,
       { backgroundColor: theme.background }
     ]}>
-      <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
+      <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}
+      >
         <ThemedText type="titleSmall">{avatar}</ThemedText>
       </TouchableOpacity>
       
@@ -157,7 +158,7 @@ const fetchExchangeData = async () => {
           style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
           {strings.rates_title}
         </ThemedText>
-        <TouchableOpacity onPress={loadData} disabled={loading} style={{ paddingRight: '10%' }}>
+        <TouchableOpacity onPress={loadData} disabled={loading} style={{ paddingRight: 38 }}>
           {loading ? (
             <ActivityIndicator size="small" color={theme.midContrast} />
           ) : (
@@ -209,21 +210,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingHorizontal: '4%',
-    paddingTop: '32%',
+    paddingTop: 120, // '32%'
   },
   profileLink: {
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '11%', 
-    right: '8%',
+    top: 70, // '11%'
+    right: 40, // '10.5%'
   },
   titleIconWrapper: {
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between', 
-    width: '100%'
+    width: '100%',
+    maxWidth: 480,
   },
   title: {
     alignSelf: 'flex-start', 
@@ -234,8 +236,9 @@ const styles = StyleSheet.create({
   disclaimer: {
     alignSelf: 'center',
     textAlign: 'center', 
-    marginTop: '2%',
-    marginBottom: '4%',
-    paddingHorizontal: '10%',
+    marginTop: 6, // '2%'
+    marginBottom: 12, // '4%'
+    paddingHorizontal: 48, // '10%'
+    maxWidth: 480,
   }
 });

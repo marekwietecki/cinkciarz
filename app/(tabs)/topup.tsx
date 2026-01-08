@@ -199,15 +199,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingHorizontal: '4%',
-        paddingTop: '32%',
+        paddingTop: 120, // '32%'
     },
     profileLink: {
         paddingVertical: 11,
         paddingHorizontal: 14,
         borderRadius: 50,
         position: 'absolute', 
-        top: '11%', 
-        right: '8%',
+        top: 70, // '11%'
+        right: 40, // '10.5%'
     },
     title: {
         alignSelf: 'flex-start', 

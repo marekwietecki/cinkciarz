@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignSelf: 'stretch',
-      width: '100%'
+      width: 300 // '100%'
     },
     currencyAmountWrapper: {
       alignItems: 'center',
