@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -8,10 +8,30 @@ import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import currenciesData from '../../backend/currencies.json';
 import { CurrencyRateCard } from '@/components/CurrencyRateCard';
+import { RefreshIcon } from '@/components/Icons';
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
-const getPastDate = () => {
+interface CurrencyItem {
+  name: string;
+  code: string;
+  symbol: string;
+  flag: string;
+  currentRate: string;
+  trend: number;
+}
+
+export default function RatesScreen() {
+  const router = useRouter();
+  const { strings } = useContext(LanguageContext);
+  const { theme } = useContext(ThemeContext);
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  
+  const [ avatar, setAvatar ] = useState('');
+  const [currencies, setCurrencies] = useState<CurrencyItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const getPastDate = () => {
     const d = new Date();
     d.setMonth(d.getMonth() - 3);
     return d.toISOString().split('T')[0];
@@ -27,6 +47,9 @@ const fetchExchangeData = async () => {
         const pastData = await pastRes.json();
 
         if (currentData.success) {
+            const dateFromApi = currentData.data && currentData.data[0] ? currentData.effectiveDate : (currentData[0]?.effectiveDate || '');            
+            console.log(dateFromApi);
+
             const joinedData = currentData.data.map((curr: any) => {
                 const extraInfo = currenciesData.find(c => c.code === curr.code);
                 
@@ -70,62 +93,48 @@ const fetchExchangeData = async () => {
                     return a.code.localeCompare(b.code);
                 });
 
-            return finalData;
+            return {
+              rates: finalData,  
+              date: dateFromApi
+            };
         }
     } catch (error) {
         console.error("Błąd przy pobieraniu kursów:", error);
     }
 };
 
-interface CurrencyItem {
-  name: string;
-  code: string;
-  symbol: string;
-  flag: string;
-  currentRate: string;
-  trend: number;
-}
-
-export default function RatesScreen() {
-  const router = useRouter();
-  const { strings } = useContext(LanguageContext);
-  const { theme } = useContext(ThemeContext);
-  
-  const [ avatar, setAvatar ] = useState('');
-  const [currencies, setCurrencies] = useState<CurrencyItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  const loadAvatar = async () => {
+  const loadAvatar = useCallback(async () => {
     try {
-      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-      if (storedAvatar) {
-        setAvatar(storedAvatar);
+      const userEmail = await AsyncStorage.getItem('USER_EMAIL'); 
+      
+      if (userEmail) {
+        const storedAvatar = await AsyncStorage.getItem(`avatar_${userEmail}`);
+        setAvatar(storedAvatar || '');
       } else {
         setAvatar('');
       }
     } catch (e) {
       console.error('Błąd ładowania avatara:', e);
     }
-  };
+  }, []);
+
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    
     try {
-      const [data] = await Promise.all([
-        fetchExchangeData(),
-        loadAvatar()
-      ]);
+        const result = await fetchExchangeData();
+        await loadAvatar();
 
-      if (data) {
-        setCurrencies(data);
-      }
+        if (result) {
+            setCurrencies(result.rates); 
+            setEffectiveDate(result.date); 
+        }
     } catch (error) {
-      console.error("Błąd ładowania danych:", error);
+        console.error("Błąd ładowania danych:", error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  }, []); 
+}, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -141,22 +150,40 @@ export default function RatesScreen() {
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
         <ThemedText type="titleSmall">{avatar}</ThemedText>
       </TouchableOpacity>
-      <ThemedText
-        type="titleMid"
-        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-        {strings.rates_title}
-      </ThemedText>
-
+      
+      <View style={styles.titleIconWrapper}>
+        <ThemedText
+          type="titleMid"
+          style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+          {strings.rates_title}
+        </ThemedText>
+        <TouchableOpacity onPress={loadData} disabled={loading} style={{ paddingRight: '10%' }}>
+          {loading ? (
+            <ActivityIndicator size="small" color={theme.midContrast} />
+          ) : (
+            <RefreshIcon color={theme.midContrast} size={24} />
+          )}
+        </TouchableOpacity>
+      </View>
       <ThemedText
         type="textSmall"
         style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}>
         {strings.rates_disclaimer}
+      </ThemedText>  
+
+      <ThemedText
+        type="textSmall"
+        style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}
+      >
+        {strings.rates_date_info} {effectiveDate}      
       </ThemedText>
 
       <FlatList
         data={currencies}
         alwaysBounceHorizontal={false} // Blokuje odbijanie w poziomie
         showsHorizontalScrollIndicator={false}
+        persistentScrollbar={true} 
+        showsVerticalScrollIndicator={true}
         contentContainerStyle={{ paddingVertical: 12 }}
         keyExtractor={(item) => item.code}
         renderItem={({ item }) => (
@@ -192,6 +219,12 @@ const styles = StyleSheet.create({
     top: '11%', 
     right: '8%',
   },
+  titleIconWrapper: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    width: '100%'
+  },
   title: {
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
@@ -201,6 +234,7 @@ const styles = StyleSheet.create({
   disclaimer: {
     alignSelf: 'center',
     textAlign: 'center', 
+    marginTop: '2%',
     marginBottom: '4%',
     paddingHorizontal: '10%',
   }

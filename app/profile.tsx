@@ -24,25 +24,31 @@ export default function ProfileScreen() {
     const { token, logout } = useContext(AuthContext);
     
     const fetchUserProfile = async () => {
-    try {
-        const response = await fetch(`${BASE_API_URL}/auth/me`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-        });
+        try {
+            const response = await fetch(`${BASE_API_URL}/auth/mail`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+            });
 
-        if (response.ok) {
-        const userData = await response.json();
-        console.log("CO PRZYSZŁO Z BACKENDU:", userData); 
-        setUserEmail(userData.email || 'Brak maila w tokenie');
-        } else {
-        console.warn("Serwer odpowiedział błędem:", response.status);
+            if (response.ok) {
+                const userData = await response.json();
+                const email = userData.email.toLowerCase();            
+                setUserEmail(email);
+                setIsLoggedIn(true);
+
+                const storedAvatar = await AsyncStorage.getItem(`avatar_${email}`);
+                if (storedAvatar) {
+                    setAvatar(storedAvatar);
+                } else {
+                    setAvatar(''); 
+                }
+            }
+        } catch (error) {
+            console.error("Błąd pobierania profilu:", error);
         }
-    } catch (error) {
-        console.error("Błąd pobierania profilu:", error);
-    }
     };
 
     useFocusEffect(
@@ -51,42 +57,12 @@ export default function ProfileScreen() {
         }, [])
     );
 
-    useEffect(() => {
-        const loadProfileData = async () => {
-            try {
-                if (token) {
-                    setIsLoggedIn(true); 
-                }
-                
-                const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-                if (storedAvatar) {
-                    setAvatar(storedAvatar);
-                }
-            } catch (e) {
-                console.error('Błąd ładowania danych profilu:', e);
-            }
-        }
-        loadProfileData();
-    }, []);
-
-    useEffect(() => {
-        const loadAvatar = async () => {
-            try {
-                const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-                if (storedAvatar) {
-                    setAvatar(storedAvatar);
-                }
-            } catch (e) {
-                console.error('Błąd ładowania avatara:', e);
-            }
-        }
-        loadAvatar();
-    }, []);
 
     const handleLogout = async () => {
         try {
+            await AsyncStorage.removeItem('USER_EMAIL'); 
             logout();
-            router.replace('/(auth)/login'); 
+            router.replace('/(auth)/login');
             
             console.log('Użytkownik wylogowany pomyślnie.');
         } catch (e) {
@@ -98,12 +74,13 @@ export default function ProfileScreen() {
 
     const handleSetAvatar = useCallback(async (newAvatar: string) => {
         try {
-            await AsyncStorage.setItem(AVATAR_KEY, newAvatar);
+            const userSpecificKey = `avatar_${userEmail}`; 
+            await AsyncStorage.setItem(userSpecificKey, newAvatar);
             setAvatar(newAvatar);
         } catch (e) {
             console.error('Błąd zapisu avatara:', e);
         }
-    }, [setAvatar]);
+    }, [userEmail]);
 
     const handleGoBack = () => {
         if (router.canGoBack()) {
@@ -123,7 +100,7 @@ export default function ProfileScreen() {
 
             <View style={styles.userContainer}>
                 {avatar === '' ? (
-                    <UserIcon size={32} color={theme.highContrast} strokeWidth={3.5} />
+                    <ThemedText type="titleBig">👤</ThemedText>
                 ) : (
                     <ThemedText type="titleBig">{avatar}</ThemedText>
                 )}

@@ -9,6 +9,7 @@ import { Fonts } from '../_layout';
 
 import { BASE_API_URL } from '@/config';
 import { AuthContext } from '@/contexts/authContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -72,7 +73,8 @@ export default function LoginScreen() {
       if (response.ok) {
         const token = data.token;
         if(token) {
-          login(token);
+          await AsyncStorage.setItem('USER_EMAIL', email);     
+          login(token);     
           //success
           setTimeout(() => clearMessage(), 5000);
           router.replace({
@@ -118,7 +120,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView 
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={-64}
     >
@@ -240,6 +242,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderWidth: 2,
     borderRadius: 32,
+    overflow: 'hidden'
   },
   inputsContainer: {
     gap: 16,

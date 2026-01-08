@@ -18,6 +18,7 @@
 
     "rates_title": "Current Rates",
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
+    "rates_date_info": "All rates are from: ",
 
     "topup_title": "Top Up",
     "topup_PLN": "Polish Złoty - PLN",
@@ -44,6 +45,8 @@
     "transaction_error": "Exchange unsuccessful. Try again later.",
     "transaction_rate_error": "Rate downloading failure. Try again later.",
     "transaction_network_error": "Network error. Unable to connect with server.",
+    "transaction_sell_limit": "You own only: ",
+    "transaction_buy_limit": "For money You own, You can only buy: ",
 
     "history_title": "History",
     "history_deposit": "Account\nTop-Up",

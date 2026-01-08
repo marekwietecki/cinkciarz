@@ -7,13 +7,13 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import { ChevronDownIcon, ArrowDownUpIcon } from '@/components/Icons';
+import { ChevronDownIcon, ChevronUpIcon, ArrowDownUpIcon } from '@/components/Icons';
 import currenciesJson from '../../backend/currencies.json';
 import { AuthContext } from '@/contexts/authContext';
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
-export default function WalletScreen() {
+export default function TransactionScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
@@ -32,6 +32,7 @@ export default function WalletScreen() {
   const [transactionRate, setTransactionRate] = useState<number | null>(null);
   const [amount, setAmount] = useState('');
   const [lastChanged, setLastChanged] = useState<'from' | 'to'>('from');
+  const [userWallets, setUserWallets] = useState<any[]>([]);
 
   const getCurrencyData = (code: string) => {
     const currency = currenciesJson.find(c => c.code === code);
@@ -43,8 +44,14 @@ export default function WalletScreen() {
 
   const loadAvatar = useCallback(async () => {
     try {
-      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-      setAvatar(storedAvatar || '');
+      const userEmail = await AsyncStorage.getItem('USER_EMAIL'); 
+      
+      if (userEmail) {
+        const storedAvatar = await AsyncStorage.getItem(`avatar_${userEmail}`);
+        setAvatar(storedAvatar || '');
+      } else {
+        setAvatar('');
+      }
     } catch (e) {
       console.error('Błąd ładowania avatara:', e);
     }
@@ -56,47 +63,67 @@ export default function WalletScreen() {
     }, [loadAvatar])
   );
 
-const fetchRate = useCallback(async (currencyCode: string) => {
-  if (currencyCode === 'PLN') return 1; 
-  
-  try {
-    setLoading(true);
-    const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
-
-    if (!response.ok) {
-      console.warn(`Serwer zwrócił błąd dla ${currencyCode}: status ${response.status}`);
-      return 0; 
+  const fetchWallets = useCallback(async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/wallet/`, { 
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setUserWallets(result || []);
+      }
+    } catch (error) {
+      console.error("Błąd pobierania portfeli:", error);
     }
+  }, [token]);
 
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      console.error("Serwer nie zwrócił JSON-a!");
+  useEffect(() => {
+    fetchWallets();
+  }, [fetchWallets]);
+
+  const fetchRate = useCallback(async (currencyCode: string) => {
+    if (currencyCode === 'PLN') return 1; 
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
+
+      if (!response.ok) {
+        console.warn(`Serwer zwrócił błąd dla ${currencyCode}: status ${response.status}`);
+        return 0; 
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Serwer nie zwrócił JSON-a!");
+        return 0;
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data && result.data.length > 0) {
+        return result.data[result.data.length - 1].rate;
+      }
       return 0;
+    } catch (error) {
+      console.error(`Błąd sieci dla ${currencyCode}:`, error);
+      return 0;
+    } finally {
+      setLoading(false);
     }
-
-    const result = await response.json();
-
-    if (result.success && result.data && result.data.length > 0) {
-      return result.data[result.data.length - 1].rate;
-    }
-    return 0;
-  } catch (error) {
-    console.error(`Błąd sieci dla ${currencyCode}:`, error);
-    return 0;
-  } finally {
-    setLoading(false);
-  }
-}, []);
+  }, []);
 
 
   const calculateTransactionRate = useCallback(async () => {
+    const COMMISSION = 0.005;
+    
     const fRate = await fetchRate(fromCurrency);
     const tRate = await fetchRate(toCurrency);
    
     setFromRate(fRate);
     setToRate(tRate);
     
-    const finalRate = fRate / tRate * 0.995;
+    const finalRate = fRate / tRate * (1-COMMISSION);
   
     setTransactionRate(finalRate);
 
@@ -173,6 +200,8 @@ const fetchRate = useCallback(async (currencyCode: string) => {
 
       if (response.ok) {
         setMessage({ text: strings.transaction_success, type: 'success' });
+        setAmount('');
+        fetchWallets();
         setTimeout(() => clearMessage(), 5000);
       } else {
         setMessage({ text: strings.transaction_error, type: 'error' });
@@ -233,7 +262,11 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                             style={{fontFamily: Fonts.medium, color: theme.midContrast, paddingLeft: 6}}>
                             {fromCurrency}
                         </ThemedText>
-                        <ChevronDownIcon color={theme.midContrast} size={24}></ChevronDownIcon>
+                        {pickerFirstVisibility ? (
+                          <ChevronUpIcon color={theme.midContrast} size={24} />
+                        ) : (
+                          <ChevronDownIcon color={theme.midContrast} size={24} />
+                        )}
                     </TouchableOpacity>
                   
                   </View>
@@ -249,8 +282,24 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                       value={displayFrom} 
                       onChangeText={(val) => {
                         clearMessage();
-                        setAmount(val);
-                        setLastChanged('from'); 
+                        
+                        const cleanVal = val.replace(',', '.');
+                        const numInput = parseFloat(cleanVal) || 0;
+
+                        const currentWallet = userWallets.find(w => w.currency === fromCurrency);
+                        const balance = currentWallet ? currentWallet.amount : 0;
+
+                        if (numInput > balance) {
+                          setAmount(balance.toString()); 
+                          setLastChanged('from');
+                          setMessage({ 
+                            text: `${strings.transaction_sell_limit } ${balance} ${fromCurrency}`, 
+                            type: 'error' 
+                          });
+                        } else {
+                          setAmount(val);
+                          setLastChanged('from');
+                        }
                       }}
                     />
                     <ThemedText type="titleMid" style={{ color: theme.highContrast, paddingLeft: 3, lineHeight: 32}}>
@@ -310,9 +359,12 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                             style={{fontFamily: Fonts.medium, color: theme.midContrast, paddingLeft: 6}}>
                             {toCurrency}
                         </ThemedText>
-                        <ChevronDownIcon color={theme.midContrast} size={24}></ChevronDownIcon>
+                        {pickerSecondVisibility ? (
+                          <ChevronUpIcon color={theme.midContrast} size={24} />
+                        ) : (
+                          <ChevronDownIcon color={theme.midContrast} size={24} />
+                        )}                    
                     </TouchableOpacity>
-                  
                   </View>
                   <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>  
                     <TextInput
@@ -326,8 +378,35 @@ const fetchRate = useCallback(async (currencyCode: string) => {
                       value={displayTo} 
                       onChangeText={(val) => {
                         clearMessage();
-                        setAmount(val);
-                        setLastChanged('to'); 
+                        const cleanVal = val.replace(',', '.');
+                        const numInputTo = parseFloat(cleanVal) || 0;
+
+                        const sourceWallet = userWallets.find(w => w.currency === fromCurrency);
+                        const balanceFrom = sourceWallet ? sourceWallet.amount : 0;
+
+                        if (!transactionRate || transactionRate === 0) {
+                          setAmount(val);
+                          setLastChanged('to');
+                          return;
+                        }
+
+                        const estimatedCostFrom = numInputTo / transactionRate;
+
+                        if (estimatedCostFrom > balanceFrom) {
+                          const maxToBuy = balanceFrom * transactionRate;
+                          
+                          const safeMax = (Math.floor(maxToBuy * 100) / 100).toString();
+
+                          setAmount(safeMax);
+                          setLastChanged('to');
+                          setMessage({ 
+                            text: `${strings.transaction_buy_limit } ${safeMax} ${toCurrency}`, 
+                            type: 'error' 
+                          });
+                        } else {
+                          setAmount(val);
+                          setLastChanged('to');
+                        }
                       }}
                     />
                     <ThemedText type="titleMid" style={{ color: theme.highContrast, paddingLeft: 3, lineHeight: 32}}>

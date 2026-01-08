@@ -1,139 +1,116 @@
-SZABLON DOKUMENTACJI PROJEKTOWEJ
-Przedmiot: Zagadnienia sieciowe w systemach mobilnych
+# 💸 eWalutka - Mobilny System Wymiany Walut
 
-Część 1 – Projekt koncepcyjny
+Kompletny system mobilny umożliwiający bezpieczną wymianę walut, śledzenie kursów NBP oraz zarządzanie wirtualnym portfelem. Projekt łączy nowoczesny frontend mobilny z autorskim serwisem sieciowym i relacyjną bazą danych.
 
-Temat projektu: System mobilny kantoru wymiany walut (lub alternatywny temat zaakceptowany przez prowadzącego)
+## Spis treści
+- [Opis projektu](#opis-projektu)
+- [Tech Stack](#tech-stack)
+- [Zakres Funkcjonalny](#zakres-funkcjonalny)
+- [Użycie endpointów](#użycie-endpointów)
+- [Instalacja i konfiguracja](#instalacja-i-konfiguracja)
+- [Licencja](#licencja)
 
-1. Informacje ogólne
-   Tytuł Projektu:
-   Cinkciarz
+## Opis Projektu
+Projekt ma na celu praktyczne zastosowanie zagadnień związanych z komunikacją między aplikacją mobilną a serwisem sieciowym (REST) oraz bazą danych. System integruje się z zewnętrznym API Narodowego Banku Polskiego, zapewniając rzetelne dane finansowe.
 
-Autorzy projektu:
+## Tech Stack
+* **Aplikacja Mobilna:** Expo / React Native (Context API, Expo Router)
+* **Backend (Web Service):** Node.js / Express.js
+* **Baza Danych:** SQLite
+* **Integracja zewnętrzna:** API NBP (kursy walut)
 
-Tomasz Turek, Marek Wietecki
+## Zakres Funkcjonalny
 
-Kierunek studiów:
+### A. Aplikacja Mobilna
+* **Autoryzacja:** Rejestracja i logowanie użytkowników (JWT).
+* **Finanse:** Zasilenie konta (symulowany przelew) oraz podgląd stanu posiadanych środków.
+* **Giełda Walut:** Pobieranie aktualnych kursów z NBP, dostęp do danych archiwalnych oraz realizacja transakcji kupna/sprzedaży.
+* **Personalizacja:** 
+    * Wybór awatara (system izolowany per e-mail użytkownika).
+    * Dynamiczna zmiana motywu (Light/Dark) i języka (PL/EN).
+    * Transparentność: Brak ukrytych kosztów – pełna informacja o transakcji przed jej zatwierdzeniem.
 
-Informatyka
+### B. Web Service (Node.js)
+* Realizacja pełnej logiki biznesowej kantoru.
+* Pośrednictwo w komunikacji z API NBP.
+* Walidacja danych po stronie serwera oraz autoryzacja zapytań.
 
-Rok / Semestr:
-
-4ty rok, 7my semestr
-
-Prowadzący
-
-Marcin Kacprowicz
-
-Data oddania
-
-6.02.2025
-
-2. Opis projektu
-   2.1. Cel projektu
-   •Krótki opis celu aplikacji:
-   Aplikacja ma na celu stworzenie mobilnego systemu pozwalającemu użytkownikowai na intuicyjną i wygodną wymianę wirtualnych walut w czasie rzeczywistym. Użyktownik korzystając z naszej aplikacji możesz kupować, a także sprzedawać z wykorzystaniem
-
-•Główna funkcjonalność
-
-•Wartości użytkowa systemu
-
-Przykład: Celem projektu jest stworzenie aplikacji mobilnej umożliwiającej wymianę walut wirtualnych, w tym przegląd kursów walut w czasie rzeczywistym i realizację transakcji kupna/sprzedaży, z wykorzystaniem API Narodowego Banku Polskiego.
-
-2.2. Zakres projektu
-Opis modułów systemu oraz ich roli (np. aplikacja mobilna, Web Service, baza danych).
-
-3. Wymagania systemowe
-   3.1. Wymagania funkcjonalne
-   Tabela przedstawiająca wszystkie funkcje systemu:
-
-ID
-
-Nazwa funkcji
-
-Opis działania
-
-Priorytet
-
-F1
-
-Rejestracja użytkownika
-
-Użytkownik może utworzyć konto
-
-Wysoki
-
-3.2. Wymagania niefunkcjonalne
-Opis wymagań dotyczących jakości systemu:
-
-ID
-
-Nazwa
-
-Opis
-
-Kategoria
-
-N1
-
-Wydajność
-
-Czas odpowiedzi systemu ≤ 2 s
-
-Wydajność
-
-4. Diagramy UML
-   4.1. Diagram przypadków użycia
-   Wstaw diagram przedstawiający interakcje między użytkownikiem a systemem.
-
-4.2. Diagram klas
-Przedstaw strukturę logiczną systemu – główne klasy, atrybuty, relacje.
-
-5. Projekt bazy danych
-   Model ERD (Entity-Relationship Diagram), opis tabel i relacji, klucze główne, obce, typy danych.
-
-6. Architektura systemu
-   Opis wzajemnych powiązań między modułami aplikacji oraz schemat logiczny przepływu danych.
-
-7. Plan realizacji projektu
-   Etap
-
-Opis
-
-Termin
-
-Osoba odpowiedzialna
-
-1
-
-Analiza wymagań
-
-8. Wnioski i możliwe rozszerzenia
-   Opis potencjalnych funkcjonalności dodatkowych lub usprawnień, które mogą zostać dodane po ukończeniu projektu.
-
-9. Źródła
-   Lista źródeł i materiałów wykorzystanych w projekcie (np. dokumentacja API NBP, dokumentacja technologii, literatura).
+### C. Baza Danych (SQLite)
+* Relacyjne przechowywanie informacji o użytkownikach.
+* Rejestrowanie pełnej historii transakcji.
+* Zapisywanie aktualnego stanu portfela walutowego.
 
 
-https://expo.dev/
+## Użycie endpointów
+Serwis sieciowy udostępnia zestaw ścieżek REST umożliwiających komunikację aplikacji z logiką biznesową i bazą danych.
 
-https://docs.npmjs.com
+### Autoryzacja
+`app.use('/api/auth', authRoutes);`
+- `POST /register` – Rejestracja nowego użytkownika.
+- `POST /login` – Logowanie i uzyskanie tokena JWT.
+- `GET /mail` – Pobranie adresu e-mail aktualnie zalogowanego użytkownika.
+- `PUT /change-password` – Zmiana hasła użytkownika.
+- `DELETE /delete` – Usunięcie konta użytkownika z systemu.
 
-https://expressjs.com
+### Ścieżki API NBP
+`app.use('/api/nbp', nbpRoutes);`
+- `GET /rate/:tableLetter/:currencyCode` – Pobiera kurs konkretnej waluty z wybranej tabeli NBP.
+- `GET /table/:tableLetter` – Pobiera pełną tabelę kursów (np. Tabela A lub B).
 
-https://medium.com/the-node-js-collection/making-your-node-js-work-everywhere-with-environment-variables-2da8cdf6e786
-https://stackoverflow.com/questions/51554366/jest-securityerror-localstorage-is-not-available-for-opaque-origins
+### Lista walut
+`app.use('/api/currency', currencyRoutes);`
+- `GET /` – Pobiera listę wszystkich wspieranych walut.
+- `GET /:currencyCode` – Pobiera szczegółowe informacje o konkretnej walucie.
 
-## Learn more
+### Portfele
+`app.use('/api/wallet', walletRoutes);`
+- `GET /` – Pobiera listę wszystkich portfeli walutowych użytkownika.
+- `POST /create` – Tworzy domyślny portfel użytkownika.
+- `POST /create/:currencyCode` – Otwiera portfel dla konkretnej waluty.
+- `GET /history` – Pobiera historię zmian w portfelach.
+- `DELETE /delete` – Usuwa wszystkie portfele użytkownika.
+- `DELETE /delete/:currencyCode` – Usuwa portfel konkretnej waluty.
 
-To learn more about developing your project with Expo, look at the following resources:
+### Transakcje
+`app.use('/api/transaction', transactionRoutes);`
+- `POST /deposit` – Zasilenie konta (symulowany wirtualny przelew).
+- `POST /exchange` – Realizacja transakcji wymiany między walutami (kupno/sprzedaż).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
+## Konfiguracja Sieciowa
+Aby aplikacja na fizycznym telefonie połączyła się z serwerem na komputerze przy użyciu aplikacji mobilnej Expo App, oba urządzenia muszą być w tej samej sieci Wi-Fi, a adres URL musi wskazywać na lokalne IP komputera. 
 
-Join our community of developers creating universal apps.
+Można je sprawdzić wpisując w konsolę polecenie:
+- Windows: Otwórz Wiersz Polecenia (cmd) i wpisz ipconfig. Szukaj pozycji IPv4 Address (np. 192.168.1.15).
+- macOS / Linux: Otwórz Terminal i wpisz ifconfig lub ip addr. Szukaj adresu przy en0 lub eth0 (zazwyczaj zaczyna się od 192.168.x.x).
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Instalacja i Konfiguracja
+
+1.  **Klonowanie repozytorium:**
+    ```bash
+    git clone [https://github.com/marekwietecki/cinkciarz.git](https://github.com/marekwietecki/cinkciarz.git)
+    ```
+
+3.  **Konfiguracja Serwera:**
+    TUTAJ INSTRUKCJA ZMIANY IP
+
+3.  **Konfiguracja Backend (Node.js):**
+    ```bash
+    cd server
+    npm install
+    npm start
+    ```
+
+4.  **Konfiguracja Frontend (Expo):**
+    ```bash
+    npm install
+    npx expo start
+    ```
+
+
+## Licencja
+Projekt udostępniany na licencji **MIT**. Możesz dowolnie modyfikować i korzystać z kodu, pod warunkiem zachowania informacji o autorze.
+
+---
+**Autorzy:** Tomasz Turek & Marek Wietecki

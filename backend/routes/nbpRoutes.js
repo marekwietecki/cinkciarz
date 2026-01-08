@@ -72,8 +72,8 @@ async function getTable(tableType, startDate = null, endDate = null) {
 
     try {
         const response = await axios.get(url);
-        const { rates } = response.data[0];
-        return { success: true, data: rates };
+        const { rates, effectiveDate } = response.data[0];
+        return { success: true, data: rates, effectiveDate: effectiveDate };
     } catch (error) {
         console.error('NBP API Error:', error.response?.status, error.response?.data);
 
@@ -201,7 +201,8 @@ router.get('/table/:tableLetter', async (req, res) => {
 
         res.json({
             success: true,
-            data: result.data
+            data: result.data,
+            effectiveDate: result.effectiveDate
         });
     } catch (error) {
         console.error('Route error:', error);

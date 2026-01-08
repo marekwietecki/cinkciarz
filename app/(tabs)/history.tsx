@@ -3,13 +3,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
 import { Fonts } from '../_layout';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import currenciesJson from "../../backend/currencies.json";
 import { HistoricTransaction, TransactionExtended } from '../../components/HistoricTransaction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '@/contexts/authContext';
+import { SortAZIcon, SortZAIcon } from '@/components/Icons';
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
@@ -22,27 +23,34 @@ export default function HistoryScreen() {
     
     const [ avatar, setAvatar ] = useState('');
     const [ history, setHistory ] = useState<TransactionExtended[]>([]);
+    const [historyDirection, setHistoryDirection] = useState<'AZ' | 'ZA'>('AZ');
+  
+    const ensureWallet = async () => {
+      const response = await fetch(`${BASE_API_URL}/wallet/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
-  const ensureWallet = async () => {
-    const response = await fetch(`${BASE_API_URL}/wallet/create`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+      if (response.status === 201) {
+        console.log("Wallet created");
+      } else if (response.status === 400) {
+        console.log("Wallet already exists");
       }
-    });
-
-    if (response.status === 201) {
-      console.log("Wallet created");
-    } else if (response.status === 400) {
-      console.log("Wallet already exists");
-    }
-  };
+    };
 
   const loadAvatar = useCallback(async () => {
     try {
-      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-      setAvatar(storedAvatar || '');
+      const userEmail = await AsyncStorage.getItem('USER_EMAIL'); 
+      
+      if (userEmail) {
+        const storedAvatar = await AsyncStorage.getItem(`avatar_${userEmail}`);
+        setAvatar(storedAvatar || '');
+      } else {
+        setAvatar('');
+      }
     } catch (e) {
       console.error('Błąd ładowania avatara:', e);
     }
@@ -95,27 +103,58 @@ export default function HistoryScreen() {
       loadHistory();
     }, [])
   );
+
+  const toggleSort = () => {
+    setHistoryDirection(prev => prev === 'AZ' ? 'ZA' : 'AZ');
+  };
   
+  const sortedHistory = useMemo(() => {
+    return [...history].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+
+      if (historyDirection === 'AZ') {
+        return dateB - dateA;
+      } else {
+        return dateA - dateB;
+      }
+    });
+  }, [history, historyDirection]);
+
   return (
     <View style={[
       styles.container,
       { backgroundColor: theme.background }
     ]}>
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-        <ThemedText type="titleSmall">{avatar}</ThemedText>
+        {avatar === '' ? (
+            <ThemedText type="titleSmall">👤</ThemedText>
+        ) : (
+            <ThemedText type="titleSmall">{avatar}</ThemedText>
+        )}
       </TouchableOpacity>
-      <ThemedText
-        type="titleMid"
-        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-        {strings.history_title}
-      </ThemedText>
+      <View style={styles.titleIconWrapper}>
+        <ThemedText
+          type="titleMid"
+          style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+          {strings.history_title}
+        </ThemedText>
+        <TouchableOpacity onPress={toggleSort} style={{ paddingRight: '10%' }}>
+          {historyDirection === 'AZ' ? (
+            <SortZAIcon color={theme.midContrast} size={24} />
+          ) : (
+            <SortAZIcon color={theme.midContrast} size={24} />
+          )}
+        </TouchableOpacity>
+      </View>
+
       {history.length === 0 ? (
         <ThemedText style={{ textAlign: 'center', marginTop: 20, color: theme.highContrast }}>
           Brak historii transakcji
         </ThemedText>
       ) : (
         <FlatList
-          data={history}
+          data={sortedHistory}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <HistoricTransaction transaction={item}/>}
           contentContainerStyle={{ paddingVertical: 12 }}
@@ -152,6 +191,12 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: '11%', 
     right: '8%',
+  },
+  titleIconWrapper: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    width: '100%'
   },
   title: {
     alignSelf: 'flex-start', 

@@ -18,6 +18,8 @@
 
     "rates_title": "Bieżące kursy",
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
+    "rates_date_info": "Poniższe kursy są z dnia: ",
+
 
     "topup_title": "Doładuj",
     "topup_PLN": "Polski Złoty - PLN",
@@ -44,6 +46,8 @@
     "transaction_error": "Wymiana nieudana. Spróbuj ponownie później.",
     "transaction_rate_error": "Błąd pobierania kursu. Spróbuj ponownie później.",
     "transaction_network_error": "Błąd sieci. Nie można połączyć się z serwerem.",
+    "transaction_sell_limit": "Posiadasz tylko: ",
+    "transaction_buy_limit": "Za pieniądze które posiadasz, możesz kupić: ",
 
     "history_title": "Historia",
     "history_deposit": "Doładowanie\nKonta",
@@ -117,8 +121,6 @@
     "changePassword_error_auth": "Błąd Autoryzacji. Zaloguj się.",
     "changePassword_success": "Hasło zmienione pomyślnie",
     "changePassword_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
-
-
 
     "profile_logged_in": "Zalogowano",
     "profile_not_logged_in": "Nie Zalogowano",

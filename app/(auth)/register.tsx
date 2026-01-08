@@ -98,7 +98,7 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView 
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={-64}
     >
@@ -234,6 +234,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderWidth: 2,
     borderRadius: 32,
+    overflow: 'hidden'
   },
   inputsContainer: {
     gap: 16,

@@ -52,8 +52,14 @@ export default function WalletScreen() {
 
   const loadAvatar = useCallback(async () => {
     try {
-      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-      setAvatar(storedAvatar || '|||');
+      const userEmail = await AsyncStorage.getItem('USER_EMAIL'); 
+      
+      if (userEmail) {
+        const storedAvatar = await AsyncStorage.getItem(`avatar_${userEmail}`);
+        setAvatar(storedAvatar || '');
+      } else {
+        setAvatar('');
+      }
     } catch (e) {
       console.error('Błąd ładowania avatara:', e);
     }
