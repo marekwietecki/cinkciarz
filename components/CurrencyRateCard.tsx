@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginHorizontal: 16,
         alignSelf: 'stretch',
-        maxWidth: '88%',
+        width: 300,
         borderWidth: .5,
         alignItems: 'center'
     },

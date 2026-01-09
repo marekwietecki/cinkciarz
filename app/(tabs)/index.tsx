@@ -10,6 +10,7 @@ import currenciesJson from '../../backend/currencies.json';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
+import { useWindowDimensions } from 'react-native';
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
@@ -27,7 +28,10 @@ export default function WalletScreen() {
   const { theme } = useContext(ThemeContext);
   const { token } = useContext(AuthContext);
   const { loggedin } = useLocalSearchParams();
+  const { width } = useWindowDimensions();
   
+  const isLargeScreen = width > 480;
+  const dynamicGap = isLargeScreen ? 40 : 20;
   
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [ avatar, setAvatar ] = useState('');
@@ -52,8 +56,14 @@ export default function WalletScreen() {
 
   const loadAvatar = useCallback(async () => {
     try {
-      const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-      setAvatar(storedAvatar || '|||');
+      const userEmail = await AsyncStorage.getItem('USER_EMAIL'); 
+      
+      if (userEmail) {
+        const storedAvatar = await AsyncStorage.getItem(`avatar_${userEmail}`);
+        setAvatar(storedAvatar || '');
+      } else {
+        setAvatar('');
+      }
     } catch (e) {
       console.error('Błąd ładowania avatara:', e);
     }
@@ -193,37 +203,43 @@ const fetchWallets = useCallback(async () => {
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
         <ThemedText type="titleSmall" style={{ color: theme.highContrast }}>{avatar}</ThemedText>
       </TouchableOpacity>
-      <ThemedText
-        type="titleMid"
-        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-        {strings.wallet_title}
-      </ThemedText>
-
-      <Image source={require('@/assets/images/Wallet.png')} 
-        style={{ width: 264 , height: 169 , marginTop: 16}} 
-      />
-
-      <ThemedText
-        type="titleSmall"
-        style={[{ color: '#EBECEC'}, styles.totalWealth]}
-      >
-        {strings.wallet_total_wealth}{':'+'\n'+totalBalance.toFixed(2)+'zł'} {}
-      </ThemedText>
-      <TouchableOpacity onPress={() => router.push('./topup')} style={styles.topUpLink}>
+      <View style={styles.titleWrapper}>  
         <ThemedText
-          type="textSmall"
-          style={{ color: '#5D5D61', textDecorationLine: 'underline' }}>
-          {strings.wallet_top_up_link}
+          type="titleMid"
+          style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}
+        >
+          {strings.wallet_title}
         </ThemedText>
-      </TouchableOpacity>
+      </View>
+      <View style={styles.walletWrapper}>
+        <Image source={require('@/assets/images/Wallet.png')} 
+          style={styles.walletImg} 
+        />
+
+        <ThemedText
+          type="titleSmall"
+          style={[{ color: '#EBECEC'}, styles.totalWealth]}
+        >
+          {strings.wallet_total_wealth}{':'+'\n'+totalBalance.toFixed(2)+'zł'} {}
+        </ThemedText>
+        <TouchableOpacity onPress={() => router.push('./topup')} style={styles.topUpLink}>
+          <ThemedText
+            type="textSmall"
+            style={{ color: '#5D5D61', textDecorationLine: 'underline' }}>
+            {strings.wallet_top_up_link}
+          </ThemedText>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
         horizontal 
-        style={{ marginTop: '4%' }}
+        style={{ marginTop: 16 }}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ 
-          paddingHorizontal: '4%', 
-          paddingVertical: 8 
+          paddingHorizontal: 16, //'4%'
+          paddingVertical: 8,
+          columnGap: dynamicGap, 
+          justifyContent: 'center' 
         }}
       >
         {loading ? (
@@ -247,7 +263,7 @@ const fetchWallets = useCallback(async () => {
                       backgroundColor: theme.midContrast, 
                       opacity: 0.2, 
                       alignSelf: 'flex-start',
-                      marginTop: '5%',
+                      marginTop: 32, //'5%'
                       marginHorizontal: 10 
                     }} 
                   />
@@ -274,12 +290,16 @@ const fetchWallets = useCallback(async () => {
         </View>
       ) : null}
 
-      <ThemedText
-        type="titleSmall"
-        style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.titleSmall]}>
-        {strings.wallet_history}
-      </ThemedText>
+      <View style={styles.titleWrapper}>  
+        <ThemedText
+          type="titleSmall"
+          style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.titleSmall]}>
+          {strings.wallet_history}
+        </ThemedText>
+      </View>
+
       <View style={{ width: '100%', height: 136 }}>
+        
         <FlatList
           data={history}
           keyExtractor={(item) => item.id.toString()}
@@ -295,6 +315,24 @@ const fetchWallets = useCallback(async () => {
             </ThemedText>
           )}
         />
+        
+        {/*
+          {history.length > 0 ? (
+            <View style={{ width: '100%' }}>
+              <HistoricTransaction 
+                transaction={{
+                  ...history[0],
+                  fromFlag: history[0].fromFlag || '🏳️',
+                  toFlag: history[0].toFlag || '🏳️'
+                }} 
+              />
+            </View>
+          ) : (
+              <ThemedText style={{ textAlign: 'center', marginTop: 40, color: theme.lowContrast }}>
+              {strings.wallet_no_transactions}
+            </ThemedText>
+          )}
+        */}
       </View>
       {history && history.length > 0 && (
         <TouchableOpacity onPress={() => router.push('./history')}>
@@ -312,32 +350,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     paddingHorizontal: '4%',
-    paddingTop: '32%',
+    paddingTop: 120, // '32%'
   },
   profileLink: {
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderRadius: 50,
     position: 'absolute', 
-    top: '11%', 
-    right: '8%',
+    top: 70, // '11%'
+    right: 40, // '10.5%'
+  },
+  titleWrapper: {
+    width: '100%',
+    maxWidth: 480,
   },
   title: {
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
-    marginBottom: '6%',
+    marginBottom: 16, //'4%'
     marginTop: '2%',
   },
+  walletWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    width: 288, //264
+    height: 184.42, //169
+  },
+  walletImg: { 
+    width: 288, 
+    height: 184.42, 
+    position: 'absolute'
+  },
   totalWealth: {
-    position: 'absolute',
-    top: '44%',
-    textAlign: 'center'
+    textAlign: 'center',
+    marginTop: 64,
   },
   topUpLink: {
-    position: 'absolute',
-    top: '52%',
+    textAlign: 'center',
+    marginTop: 12,
   },
   messageContainer: {
     marginVertical: 16, 
@@ -353,7 +406,7 @@ const styles = StyleSheet.create({
   },
   historyLink: {
     textDecorationLine: 'underline',
-    marginBottom: '8%',
+    marginBottom: 32, //
     alignSelf: 'center'
   },
 });

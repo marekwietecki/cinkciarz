@@ -125,8 +125,8 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     }
 });
 
-//me
-router.get('/me', authenticateToken, async (req, res) => {
+//mail
+router.get('/mail', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.userId;
 

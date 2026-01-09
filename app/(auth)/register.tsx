@@ -98,14 +98,14 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView 
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center' }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={-64}
     >
       <ScrollView 
         contentContainerStyle={[ 
           styles.container,
-          { backgroundColor: theme.background, flexGrow: 1 } 
+          { backgroundColor: theme.background } 
         ]}
         keyboardShouldPersistTaps="handled" 
       >
@@ -202,6 +202,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingHorizontal: '8%',
     paddingBottom: '4%',
+    maxWidth: 480, 
+    flexGrow: 1,
   },
   profileLink: {
     paddingVertical: 11,
@@ -234,6 +236,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderWidth: 2,
     borderRadius: 32,
+    overflow: 'hidden'
   },
   inputsContainer: {
     gap: 16,

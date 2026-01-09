@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, StyleSheet, TextInput, TouchableOpacity, View, Keyboard, 
+import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View, Keyboard, 
   TouchableWithoutFeedback } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useState } from 'react';
@@ -8,45 +8,62 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import { ChevronDownIcon } from 'lucide-react-native';
+import { ChevronDownIcon, ChevronUpIcon } from '@/components/Icons';
 import { AuthContext } from '@/contexts/authContext';
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
 
-    export default function WalletScreen() {
-        const router = useRouter();
-        const { strings } = useContext(LanguageContext);
-        const { theme } = useContext(ThemeContext);
-        const { token } = useContext(AuthContext);
+export default function TopUpScreen() {
+    const router = useRouter();
+    const { strings } = useContext(LanguageContext);
+    const { theme } = useContext(ThemeContext);
+    const { token } = useContext(AuthContext);
 
-        const [avatar, setAvatar] = useState('');
-        const [amount, setAmount] = useState('');
-        const [currency, setCurrency] = useState('PLN');
-        const [loading, setLoading] = useState(false);
-        const [pickerVisibility, setPickerVisibility] = useState(false);
-        const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
-    
+    const [avatar, setAvatar] = useState('');
+    const [amount, setAmount] = useState('');
+    const [currency, setCurrency] = useState('PLN');
+    const [loading, setLoading] = useState(false);
+    const [pickerVisibility, setPickerVisibility] = useState(false);
+    const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
-        const loadAvatar = useCallback(async () => {
-            try {
-            const storedAvatar = await AsyncStorage.getItem(AVATAR_KEY);
-            setAvatar(storedAvatar || '');
-            } catch (e) {
-            console.error('Błąd ładowania avatara:', e);
-            }
-        }, []);
+    const handleDismiss = () => {
+        if (Platform.OS !== 'web') {
+            Keyboard.dismiss();
+        }
+    };
 
-
-
-        const handleDeposit = async () => {
-            setMessage({ text: '', type: null });    
+    const loadAvatar = useCallback(async () => {
+        try {
+            const userEmail = await AsyncStorage.getItem('USER_EMAIL'); 
             
-            const cleanAmount = amount.replace(',', '.');
-            if (!cleanAmount || parseFloat(cleanAmount) <= 0 || isNaN(parseFloat(cleanAmount))) {
-                setMessage({ text: strings.topup_correct_data_required, type: 'error' });
-                return;
+            if (userEmail) {
+            const storedAvatar = await AsyncStorage.getItem(`avatar_${userEmail}`);
+            setAvatar(storedAvatar || '');
+            } else {
+            setAvatar('');
             }
+        } catch (e) {
+            console.error('Błąd ładowania avatara:', e);
+        }
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            loadAvatar();
+        }, [loadAvatar])
+    );
+
+
+
+    const handleDeposit = async () => {
+        setMessage({ text: '', type: null });    
+        
+        const cleanAmount = amount.replace(',', '.');
+        if (!cleanAmount || parseFloat(cleanAmount) <= 0 || isNaN(parseFloat(cleanAmount))) {
+            setMessage({ text: strings.topup_correct_data_required, type: 'error' });
+            return;
+        }
 
         setLoading(true);
         try {
@@ -62,34 +79,35 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
                 }),
             });
 
-                const responseText = await response.text();
-                console.log("Odpowiedź serwera:", responseText);
+            const responseText = await response.text();
+            console.log("Odpowiedź serwera:", responseText);
 
-                if (response.ok) {
-                    setMessage({ text: strings.topup_success, type: 'success' });
-                    setAmount(''); 
-                    setTimeout(() => clearMessage(), 5000);
-                    setPickerVisibility(false);                
-                } else {
-                    const errorData = JSON.parse(responseText);
-                    setMessage({ text: strings.topup_error, type: 'error' });
-                }
-            } catch (error) {
-                setMessage({ text: strings.topup_network_error, type: 'error' });
-            } finally {
-                setLoading(false);
+            if (response.ok) {
+                setMessage({ text: strings.topup_success, type: 'success' });
+                setAmount(''); 
+                setTimeout(() => clearMessage(), 5000);
+                setPickerVisibility(false);                
+            } else {
+                const errorData = JSON.parse(responseText);
+                setMessage({ text: strings.topup_error, type: 'error' });
             }
-        };
+        } catch (error) {
+            setMessage({ text: strings.topup_network_error, type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    
-        const clearMessage = () => {
-            setMessage({ text: '', type: null });
-        };
 
-        const handleSetAmount = (text: string) => {
-            clearMessage();
-            setAmount(text);
-        };
+    const clearMessage = () => {
+        setMessage({ text: '', type: null });
+    };
+
+    const handleSetAmount = (text: string) => {
+        setPickerVisibility(false);
+        clearMessage();
+        setAmount(text);
+    };
 
 
     useFocusEffect(
@@ -98,69 +116,79 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
         }, [loadAvatar])
     );
 
-    return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={[
-                styles.container,
-                { backgroundColor: theme.background }
-                ]}>
-                <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-                    <ThemedText type="titleSmall">{avatar}</ThemedText>
-                </TouchableOpacity>
+return (
+    <TouchableWithoutFeedback onPress={handleDismiss} accessible={false}>
+        <View style={[
+            styles.container,
+            { backgroundColor: theme.background }
+            ]}>
+            <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
+                <ThemedText type="titleSmall">{avatar}</ThemedText>
+            </TouchableOpacity>
+            <View style={styles.titleWrapper}>
                 <ThemedText
                     type="titleMid"
                     style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
                     {strings.topup_title}
                 </ThemedText>
-                    <View style={styles.topUpWrapper}>
-                        <TextInput
-                            style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
-                            placeholder="0.00"
-                            placeholderTextColor={theme.highContrast}
-                            keyboardType="decimal-pad"
-                            value={amount}
-                            onChangeText={handleSetAmount}
-                        />
-                        <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center"}}>
-                            <ThemedText
-                                type="titleSmall"
-                                style={[{fontFamily: Fonts.medium, color: theme.lowContrast}, styles.title]}>
-                                {currency}
-                            </ThemedText>
-                            <ChevronDownIcon color={theme.lowContrast} size={24}></ChevronDownIcon>
-                        </TouchableOpacity>
+            </View>
+            <View style={styles.centerContainer}>
+                <View style={styles.topUpWrapper}>
+                    <TextInput
+                        style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
+                        placeholder="0.00"
+                        placeholderTextColor={theme.highContrast}
+                        keyboardType="decimal-pad"
+                        value={amount}
+                        onChangeText={handleSetAmount}
+                        editable={!loading} 
+                        selectTextOnFocus={true}
+                    />
+                    <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center"}}>
+                        <ThemedText
+                            type="titleSmall"
+                            style={[{fontFamily: Fonts.medium, color: theme.lowContrast}, styles.currency]}>
+                            {currency}
+                        </ThemedText>
+                        {pickerVisibility ? (
+                        <ChevronUpIcon color={theme.lowContrast} size={24} />
+                        ) : (
+                        <ChevronDownIcon color={theme.lowContrast} size={24} />
+                        )}                          
+                    </TouchableOpacity>
+                </View>
+
+                {pickerVisibility && (
+                <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
+                    <Picker
+                        selectedValue={currency}
+                        onValueChange={(itemValue) => setCurrency(itemValue)}
+                        style={{ color: theme.highContrast }}
+                        dropdownIconColor={theme.highContrast}
+                    >
+                        <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
+                        <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
+                        <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
+                        <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
+                        <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
+                        <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                    </Picker>
+                </View>
+                )}
+
+                {message.type && message.text ? (
+                    <View style={ styles.messageContainer }>
+                    <ThemedText 
+                        type="default"
+                        style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
+                    >
+                        {message.text}  
+                    </ThemedText>  
                     </View>
+                ) : null}
+            </View>
 
-                    {pickerVisibility && (
-                    <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
-                        <Picker
-                            selectedValue={currency}
-                            onValueChange={(itemValue) => setCurrency(itemValue)}
-                            style={{ color: theme.highContrast }}
-                            dropdownIconColor={theme.highContrast}
-                        >
-                            <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
-                            <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
-                            <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
-                            <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
-                            <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
-                            <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
-                        </Picker>
-                    </View>
-                    )}
-
-                    {message.type && message.text ? (
-                        <View style={ styles.messageContainer }>
-                        <ThemedText 
-                            type="default"
-                            style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
-                        >
-                            {message.text}  
-                        </ThemedText>  
-                        </View>
-                    ) : null}
-
-                <TouchableOpacity 
+            <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.highContrast }]} 
                     onPress={handleDeposit}
                     disabled={loading}
@@ -173,9 +201,9 @@ import { BASE_API_URL, AVATAR_KEY } from '@/config';
                         </ThemedText>                
                     )}
                 </TouchableOpacity>
-            </View>
-        </TouchableWithoutFeedback>
-    )};
+        </View>
+    </TouchableWithoutFeedback>
+)};
 
 const styles = StyleSheet.create({
     container: {
@@ -183,15 +211,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingHorizontal: '4%',
-        paddingTop: '32%',
+        paddingTop: 120, // '32%'
+        alignSelf: 'center',  
+        width: '100%'
     },
     profileLink: {
         paddingVertical: 11,
         paddingHorizontal: 14,
         borderRadius: 50,
         position: 'absolute', 
-        top: '11%', 
-        right: '8%',
+        top: 70, // '11%'
+        right: 40, // '10.5%'
+    },
+    titleWrapper: {
+        width: '100%',
+        maxWidth: 480,
     },
     title: {
         alignSelf: 'flex-start', 
@@ -199,13 +233,36 @@ const styles = StyleSheet.create({
         marginBottom: '6%',
         marginTop: '2%',
     },
+    currency: {
+        alignSelf: 'flex-start', 
+        paddingLeft: '2%', 
+    },
+    centerContainer: { 
+        justifyContent: 'center',  
+        alignItems: 'center',     
+        width: '100%',
+        top: '30%'
+        //marginTop: 200,      
+    },
     topUpWrapper: {
+        /*
+        position: 'absolute',
+        top: '50%',          // Przesuń górną krawędź 
+        left: '50%',
+        transform: [
+            { translateX: -60 }, // Połowa szerokości (jeśli ustawisz width: 300)
+            { translateY: -70 }   // Połowa szacowanej wysokości
+        ],        
+        */
         flexDirection: 'row', 
         alignItems: "center", 
-        marginTop: '58%', 
+        alignSelf: 'center',
+        justifyContent: 'flex-end',
+        //marginTop: 212, //'58%' 
         marginBottom: '2%', 
-        marginLeft: '25%', 
-        gap: 16
+        gap: 16,
+        width: 240,
+        marginLeft: 32,
     },
     textInput: {
         fontFamily: Fonts.bold, 
@@ -213,9 +270,13 @@ const styles = StyleSheet.create({
         lineHeight: 34,
         paddingVertical: 12,
         paddingHorizontal: 24,
+        maxWidth: 240,
+        justifyContent: 'flex-end',
+        textAlign: 'right'
     },
     pickerContainer: {
         width: '80%',
+        maxWidth: 300,
         height: 160,
         borderWidth: 2,
         borderRadius: 24,
@@ -224,7 +285,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 4,
     },
-      messageContainer: {
+    messageContainer: {
         marginVertical: 10, 
         paddingHorizontal: 20
     },
@@ -235,12 +296,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        bottom: 24
+        marginTop: 'auto', 
+        marginBottom: 40,
     },
-    buttonText: {
-
-    }
 });
