@@ -231,11 +231,13 @@ export default function TransactionScreen() {
           <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
             <ThemedText type="titleSmall">{avatar}</ThemedText>
           </TouchableOpacity>
-          <ThemedText
-            type="titleMid"
-            style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-            {strings.transaction_title}
-          </ThemedText>
+          <View style={styles.titleWrapper}>
+            <ThemedText
+              type="titleMid"
+              style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+              {strings.transaction_title}
+            </ThemedText>
+          </View>
           <ScrollView 
             style={{ flex: 1, width: '100%' }}
             showsVerticalScrollIndicator={true}
@@ -336,7 +338,7 @@ export default function TransactionScreen() {
                 <ArrowDownUpIcon color={theme.lowContrast} size={24} />
               </TouchableOpacity>
 
-              <View style={[styles.transactionWrapper, {backgroundColor: theme.veryLowContrast, borderRadius: 28, paddingTop: 20 }]}>
+              <View style={[styles.transactionWrapper, {backgroundColor: theme.veryLowContrast }]}>
                 <ThemedText
                   type="tiny"
                   style={[{fontFamily: Fonts.bold, color: theme.midContrast}, styles.info]}>
@@ -495,6 +497,10 @@ const styles = StyleSheet.create({
     top: 70, // '11%'
     right: 40, // '10.5%'
   },
+  titleWrapper: {
+    width: '100%',
+    maxWidth: 480,
+  },
   title: {
     alignSelf: 'flex-start', 
     paddingLeft: '6%', 
@@ -507,7 +513,10 @@ const styles = StyleSheet.create({
   },
   transactionWrapper: {
     width: '88%',
-    paddingVertical: 12,
+    paddingBottom: 12,
+    borderRadius: 28, 
+    paddingTop: 20,
+    maxWidth: 480
   },
   info: {
     alignSelf: 'flex-end',
@@ -518,13 +527,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   textInput: {
     fontFamily: Fonts.bold, 
     fontSize: 28, 
     lineHeight: 34,
     paddingHorizontal: 2,
+    width: 110,
+    textAlign: 'right',
   },
   pickerContainer: {
     width: '88%',

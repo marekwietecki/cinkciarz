@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, StyleSheet, TextInput, TouchableOpacity, View, Keyboard, 
+import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View, Keyboard, 
   TouchableWithoutFeedback } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useState } from 'react';
@@ -26,6 +26,12 @@ export default function TopUpScreen() {
     const [loading, setLoading] = useState(false);
     const [pickerVisibility, setPickerVisibility] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
+
+    const handleDismiss = () => {
+        if (Platform.OS !== 'web') {
+            Keyboard.dismiss();
+        }
+    };
 
     const loadAvatar = useCallback(async () => {
         try {
@@ -111,7 +117,7 @@ export default function TopUpScreen() {
     );
 
 return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={handleDismiss} accessible={false}>
         <View style={[
             styles.container,
             { backgroundColor: theme.background }
@@ -119,11 +125,14 @@ return (
             <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
                 <ThemedText type="titleSmall">{avatar}</ThemedText>
             </TouchableOpacity>
-            <ThemedText
-                type="titleMid"
-                style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-                {strings.topup_title}
-            </ThemedText>
+            <View style={styles.titleWrapper}>
+                <ThemedText
+                    type="titleMid"
+                    style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+                    {strings.topup_title}
+                </ThemedText>
+            </View>
+            <View style={styles.centerContainer}>
                 <View style={styles.topUpWrapper}>
                     <TextInput
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
@@ -132,11 +141,13 @@ return (
                         keyboardType="decimal-pad"
                         value={amount}
                         onChangeText={handleSetAmount}
+                        editable={!loading} 
+                        selectTextOnFocus={true}
                     />
                     <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center"}}>
                         <ThemedText
                             type="titleSmall"
-                            style={[{fontFamily: Fonts.medium, color: theme.lowContrast}, styles.title]}>
+                            style={[{fontFamily: Fonts.medium, color: theme.lowContrast}, styles.currency]}>
                             {currency}
                         </ThemedText>
                         {pickerVisibility ? (
@@ -175,20 +186,21 @@ return (
                     </ThemedText>  
                     </View>
                 ) : null}
+            </View>
 
             <TouchableOpacity 
-                style={[styles.button, { backgroundColor: theme.highContrast }]} 
-                onPress={handleDeposit}
-                disabled={loading}
-            >
-                {loading ? (
-                    <ActivityIndicator color={theme.background} />
-                ) : (
-                    <ThemedText type='default' style={{ color: theme.accentDark}}>
-                        {loading ? strings.topup_loading : strings.topup_button}
-                    </ThemedText>                
-                )}
-            </TouchableOpacity>
+                    style={[styles.button, { backgroundColor: theme.highContrast }]} 
+                    onPress={handleDeposit}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color={theme.background} />
+                    ) : (
+                        <ThemedText type='default' style={{ color: theme.accentDark}}>
+                            {loading ? strings.topup_loading : strings.topup_button}
+                        </ThemedText>                
+                    )}
+                </TouchableOpacity>
         </View>
     </TouchableWithoutFeedback>
 )};
@@ -200,6 +212,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         paddingHorizontal: '4%',
         paddingTop: 120, // '32%'
+        alignSelf: 'center',  
+        width: '100%'
     },
     profileLink: {
         paddingVertical: 11,
@@ -209,19 +223,46 @@ const styles = StyleSheet.create({
         top: 70, // '11%'
         right: 40, // '10.5%'
     },
+    titleWrapper: {
+        width: '100%',
+        maxWidth: 480,
+    },
     title: {
         alignSelf: 'flex-start', 
         paddingLeft: '6%', 
         marginBottom: '6%',
         marginTop: '2%',
     },
+    currency: {
+        alignSelf: 'flex-start', 
+        paddingLeft: '2%', 
+    },
+    centerContainer: { 
+        justifyContent: 'center',  
+        alignItems: 'center',     
+        width: '100%',
+        top: '30%'
+        //marginTop: 200,      
+    },
     topUpWrapper: {
+        /*
+        position: 'absolute',
+        top: '50%',          // Przesuń górną krawędź 
+        left: '50%',
+        transform: [
+            { translateX: -60 }, // Połowa szerokości (jeśli ustawisz width: 300)
+            { translateY: -70 }   // Połowa szacowanej wysokości
+        ],        
+        */
         flexDirection: 'row', 
         alignItems: "center", 
-        marginTop: '58%', 
+        alignSelf: 'center',
+        justifyContent: 'flex-end',
+        //marginTop: 212, //'58%' 
         marginBottom: '2%', 
-        marginLeft: '25%', 
-        gap: 16
+        gap: 16,
+        width: 240,
+        marginLeft: 32,
     },
     textInput: {
         fontFamily: Fonts.bold, 
@@ -229,9 +270,13 @@ const styles = StyleSheet.create({
         lineHeight: 34,
         paddingVertical: 12,
         paddingHorizontal: 24,
+        maxWidth: 240,
+        justifyContent: 'flex-end',
+        textAlign: 'right'
     },
     pickerContainer: {
         width: '80%',
+        maxWidth: 300,
         height: 160,
         borderWidth: 2,
         borderRadius: 24,
@@ -240,7 +285,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 4,
     },
-      messageContainer: {
+    messageContainer: {
         marginVertical: 10, 
         paddingHorizontal: 20
     },
@@ -251,12 +296,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        bottom: 24
+        marginTop: 'auto', 
+        marginBottom: 40,
     },
-    buttonText: {
-
-    }
 });

@@ -26,7 +26,7 @@ export function CurrencyWalletCard({ id, wallet_id, currency_code, balance }: Cu
         <View style={styles.balanceCard}>
             <View style={styles.rightSection}>
                 <ThemedText type="numbersSmall" style={{ fontFamily: Fonts.bold, color: theme.highContrast }}>
-                    {(balance ?? 0).toFixed(0)} {info.symbol}
+                    {(balance ?? 0).toFixed(0)}{'\u00A0'}{info.symbol}
                 </ThemedText>
             </View>
 
@@ -42,13 +42,13 @@ export function CurrencyWalletCard({ id, wallet_id, currency_code, balance }: Cu
 
 const styles = StyleSheet.create({
   balanceCard: {
-    width: 120, 
     padding: 16,
     flex: 0,
     height: 100, 
     justifyContent: 'center',
-    alignItems: "center",
+    alignItems: 'center',
     gap: 4,
+    paddingHorizontal: 24,
   },
   lowerSection: {
     flexDirection: 'row',
