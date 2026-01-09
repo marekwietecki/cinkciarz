@@ -20,6 +20,10 @@
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",
     "rates_date_info": "Poniższe kursy są z dnia: ",
 
+    "historicRates_title": "Historyczne Kursy",
+    "historicRates_chart_dates": ["90 dni", "60 dni", "30 dni", "Dziś"],
+    "historicRates_owned_amount": "Posiadana Ilość",
+
 
     "topup_title": "Doładuj",
     "topup_PLN": "Polski Złoty - PLN",

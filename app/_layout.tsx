@@ -55,8 +55,10 @@ function RootNavigation() {
         options={{ headerShown: false }} 
       />
       <Stack.Screen 
-        name="modal" 
-        options={{ presentation: 'modal', title: 'Modal' }} 
+        name="historicRates" 
+        options={{ 
+          headerShown: false
+        }}   
       />
       <Stack.Screen 
         name="profile" 

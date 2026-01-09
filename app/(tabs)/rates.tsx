@@ -176,9 +176,18 @@ const fetchExchangeData = async () => {
         type="textSmall"
         style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}
       >
-        {strings.rates_date_info} {effectiveDate}      
+        {strings.rates_date_info} {effectiveDate}
       </ThemedText>
-
+      {/* 
+      <TouchableOpacity onPress={() => router.push({
+              pathname: '../historicRates',
+              params: { currencyCode: 'GBP' } 
+            })}>
+        <ThemedText type='textSmall' style={[ styles.historyLink, { color: theme.lowContrast }]}>
+          Historyyczne Kursy
+        </ThemedText>
+      </TouchableOpacity>
+      */}
       <FlatList
         data={currencies}
         alwaysBounceHorizontal={false} // Blokuje odbijanie w poziomie
@@ -188,14 +197,26 @@ const fetchExchangeData = async () => {
         contentContainerStyle={{ paddingVertical: 12 }}
         keyExtractor={(item) => item.code}
         renderItem={({ item }) => (
-          <CurrencyRateCard 
-            name={item.name}    
-            code={item.code}
-            symbol={item.symbol}
-            flag={item.flag}
-            currentRate={item.currentRate}
-            trend={item.trend}
-          />
+          <TouchableOpacity 
+            onPress={() => router.push({
+              pathname: '../historicRates',
+              params: { 
+                currencyCode: item.code,
+                currencyName: item.name, 
+                currencyFlag: item.flag, 
+                currencySymbol: item.symbol
+               } 
+            })}
+          >
+            <CurrencyRateCard 
+              name={item.name}    
+              code={item.code}
+              symbol={item.symbol}
+              flag={item.flag}
+              currentRate={item.currentRate}
+              trend={item.trend}
+            />
+          </TouchableOpacity>
         )}
         refreshing={loading}
         onRefresh={loadData}
@@ -240,5 +261,10 @@ const styles = StyleSheet.create({
     marginBottom: 12, // '4%'
     paddingHorizontal: 48, // '10%'
     maxWidth: 480,
-  }
+  },
+  historyLink: {
+    textDecorationLine: 'underline',
+    marginBottom: 32, //
+    alignSelf: 'center'
+  },
 });

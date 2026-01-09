@@ -20,6 +20,10 @@
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",
     "rates_date_info": "All rates are from: ",
 
+    "historicRates_title": "Historic Rates",
+    "historicRates_chart_dates": ["90 days", "60 days", "30 days", "Today"],
+    "historicRates_owned_amount": "Owned Amount",
+
     "topup_title": "Top Up",
     "topup_PLN": "Polish Złoty - PLN",
     "topup_EUR": "Euro - EUR",
