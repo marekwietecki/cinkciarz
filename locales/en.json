@@ -21,8 +21,13 @@
     "rates_date_info": "All rates are from: ",
 
     "historicRates_title": "Historic Rates",
-    "historicRates_chart_dates": ["90 days", "60 days", "30 days", "Today"],
+    "historicRates_chart_dates_three_months": ["90 days", "60 days", "30 days", ""],
+    "historicRates_chart_dates_year": ["Year", "8 m.", "4 m.", ""],
     "historicRates_owned_amount": "Owned Amount",
+    "historicRates_disclaimer": "Historic rates for currency: ",
+    "historicRates_period": "From period:",
+    "historicRates_year": "One Year",
+    "historicRates_three_months": "Three Months",
 
     "topup_title": "Top Up",
     "topup_PLN": "Polish Złoty - PLN",

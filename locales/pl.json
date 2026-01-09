@@ -21,8 +21,13 @@
     "rates_date_info": "Poniższe kursy są z dnia: ",
 
     "historicRates_title": "Historyczne Kursy",
-    "historicRates_chart_dates": ["90 dni", "60 dni", "30 dni", "Dziś"],
+    "historicRates_chart_dates_three_months": ["90 dni", "60 dni", "30 dni", ""],
+    "historicRates_chart_dates_year": ["Rok", "8 m.", "4 m.", ""],
     "historicRates_owned_amount": "Posiadana Ilość",
+    "historicRates_disclaimer": "Historyczne kursy dla waluty: ",
+    "historicRates_period": "Z okresu:",
+    "historicRates_year": "Roku",
+    "historicRates_three_months": "Trzech Miesięcy",
 
 
     "topup_title": "Doładuj",

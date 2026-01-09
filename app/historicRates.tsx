@@ -11,20 +11,40 @@ import { useLocalSearchParams } from 'expo-router';
 
 
 import { BASE_API_URL } from '@/config';
+import { AuthContext } from "@/contexts/authContext";
 
 
 export default function TransactionChart({  }) {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
+  const { token } = useContext(AuthContext);
   const { currencyCode, currencyName, currencyFlag, currencySymbol } = useLocalSearchParams();  const [chartData, setChartData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState(90);
+  const [wallets, setWallets] = useState<any[]>([]);
 
-  const fetchHistoryData = async (code: string) => {
+  const fetchWallets = async () => {
     try {
+      const response = await fetch(`${BASE_API_URL}/wallet`, {
+        headers: { 'Authorization': `Bearer ${token}` }, 
+      });
+      
+      const walletsData = await response.json();
+      const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
+      
+      setWallets(safeWalletsData);
+    } catch (error) {
+      console.error("Błąd pobierania portfeli:", error);
+    }
+  };
+
+  const fetchHistoryData = async (code: string, days: number) => { 
+    try {
+        setLoading(true);
         const end = new Date();
         const start = new Date();
-        start.setDate(end.getDate() - 30); // Tutaj możesz dać np. 90 dni, jeśli chcesz więcej danych
+        start.setDate(end.getDate() - days); 
 
         const startDate = start.toISOString().split('T')[0];
         const endDate = end.toISOString().split('T')[0];
@@ -36,62 +56,68 @@ export default function TransactionChart({  }) {
 
         if (result.success && result.data) {
             const points = result.data.map((item: any) => item.rate);
-
-            // Mapujemy punkty na etykiety ze strings
-            const labels = points.map((_: any, index: number) => { // Dodano : number
-              const transLabels = strings.historicRates_chart_dates; 
-              const dataLength = points.length;
-              const labelsCount = transLabels.length;
-
-              // Obliczamy krok, aby rozłożyć etykiety równomiernie
-              const step = Math.floor(dataLength / (labelsCount - 1 || 1));
-              
-              // Sprawdzamy, czy dany punkt powinien otrzymać etykietę ze strings
-              if (index % step === 0 && (index / step) < labelsCount) {
-                  return transLabels[Math.floor(index / step)];
-              }
-              return ""; 
+            
+            const labels = points.map((_: any, index: number) => {
+                const transLabels = days === 365 
+                ? strings.historicRates_chart_dates_year
+                : strings.historicRates_chart_dates_three_months; 
+                const dataLength = points.length;
+                const labelsCount = transLabels.length;
+                const step = Math.floor(dataLength / (labelsCount - 1 || 1));
+                if (index % step === 0 && (index / step) < labelsCount) {
+                    return transLabels[Math.floor(index / step)];
+                }
+                return ""; 
             });
 
-            const finalDataObject = {
-                labels: labels,
-                datasets: [{ data: points }]
-            };
-            console.log("Dane przygotowane do wykresu:", finalDataObject);
-            return finalDataObject;
+            return { labels, datasets: [{ data: points }] };
         }
     } catch (error) {
-        console.error("Błąd pobierania historii:", error);
+        console.error("Błąd:", error);
         return null;
+    } finally {
+        setLoading(false);
     }
-}
+  };
+
+  const currentWallet = wallets.find(w => w.currency === currencyCode);
+  const amount = currentWallet ? currentWallet.amount : 0;
 
   useEffect(() => {
     if (currencyCode) {
       const load = async () => {
-          console.log("Start ładowania dla:", currencyCode); // Dodaj tego loga!
-          const data = await fetchHistoryData(currencyCode as string);
+        setLoading(true); 
+        try {
+          const [data] = await Promise.all([
+            fetchHistoryData(currencyCode as string, period),
+            fetchWallets() 
+          ]);
           setChartData(data);
-          setLoading(false);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false); 
+        }
       };
       load();
     }
-  }, [currencyCode]);
+  }, [currencyCode, period]);
 
 
   return (
     <>
       <TouchableOpacity onPress={() => router.back()} style={styles.back}>
-              <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
-          </TouchableOpacity>
+        <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
+      </TouchableOpacity>
 
       <View style={[ styles.container, { backgroundColor: theme.background }]}>
-          <ThemedText
-            type="titleMid"
-            style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
-            {strings.historicRates_title}
-          </ThemedText> 
-
+          <View style={styles.titleWrapper}> 
+            <ThemedText
+              type="titleMid"
+              style={[{fontFamily: Fonts.bold, color: theme.highContrast}, styles.title]}>
+              {strings.historicRates_title}
+            </ThemedText> 
+          </View>
           <View style={styles.infoContainer}>
               <View style={styles.infoRow}>
                   <ThemedText style={styles.flag}>{currencyFlag}</ThemedText>
@@ -100,86 +126,191 @@ export default function TransactionChart({  }) {
                           {currencyName} ({currencyCode})
                       </ThemedText>
                       <ThemedText type="textSmall" style={{ color: theme.lowContrast }}>
-                          {strings.historicRates_owned_amount}: TU TRZEBA POBRAĆ ILOŚĆ POSIADANĄ {currencySymbol} 
-                          {/* Zakładam, że owned_amount masz w strings, a 0.00 to placeholder */}
+                          {strings.historicRates_owned_amount}: {amount.toFixed(2)} {currencySymbol} 
                       </ThemedText>
                   </View>
               </View>
           </View>
 
+           
+
           {chartData && chartData.labels && chartData.datasets ? (
-          <LineChart
-            data={chartData}
-            width={300} 
-            height={220}
-            yAxisLabel="$"
-            chartConfig={{
-              backgroundColor: "#e26a00",
-              backgroundGradientFrom: "#fb8c00",
-              backgroundGradientTo: "#ffa726",
-              decimalPlaces: 2, 
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 16
-              },
-              propsForDots: {
-                r: "3",
-                strokeWidth: "2",
-                stroke: "#ffa726"
-              },
-            }}
-            bezier 
-            style={{
-              marginVertical: 8,
-              borderRadius: 16,
-            }}
-          />
+          <View style={styles.chartWrapper}>
+            <LineChart
+              data={chartData}
+              width={290} 
+              height={200}
+              yAxisLabel="$"
+              chartConfig={{
+                backgroundColor: "#B78212",
+                backgroundGradientFrom: "#B78212",
+                backgroundGradientTo: "#B78212",
+                decimalPlaces: 2, 
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: "1",
+                  strokeWidth: "1",
+                  stroke: '#E5B855' //gold400
+                },
+                propsForLabels: {
+                  fontWeight: "600",
+                  fontSize: 10,
+                },
+                propsForBackgroundLines: {
+                  strokeWidth: 0,
+                },
+                fillShadowGradientFromOpacity: 0.5,
+                fillShadowGradientToOpacity: 0,
+              }}
+              bezier 
+              style={{
+                borderRadius: 16,
+              }}
+            />
+          </View>
           ) : (
             <ActivityIndicator size="large" color={theme.highContrast} />
           )}
+
+          <ThemedText
+            type="textSmall"
+            style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}>
+            {strings.historicRates_disclaimer}({currencyCode})
+          </ThemedText>
+          <ThemedText
+            type="textSmall"
+            style={[{fontFamily: Fonts.regular, color: theme.lowContrast}, styles.disclaimer]}>
+            {strings.historicRates_period}
+          </ThemedText>
+
+          <View style={styles.selectorContainer}>
+            <View style={styles.selectorButtonWrapper}>
+              <TouchableOpacity 
+                onPress={() => {
+                  setChartData(null); 
+                  setPeriod(90);
+                }} 
+                style={[
+                  styles.selectorButton, 
+                  period === 90 && { borderBottomColor: theme.highContrast, borderBottomWidth: 3 }
+                ]}
+              >
+                <ThemedText style={[
+                  styles.selectorText, 
+                  { color: period === 90 ? theme.highContrast : theme.lowContrast }
+                ]}>
+                  {strings.historicRates_three_months}
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.selectorButtonWrapper}>
+              <TouchableOpacity 
+                onPress={() => {
+                  setChartData(null); 
+                  setPeriod(365);
+                }}  
+                style={[
+                  styles.selectorButton, 
+                  period === 365 && { borderBottomColor: theme.highContrast, borderBottomWidth: 3 }
+                ]}
+              >
+                <ThemedText style={[
+                  styles.selectorText, 
+                  { color: period === 365 ? theme.highContrast : theme.lowContrast }
+                ]}>
+                  {strings.historicRates_year}
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+          </View>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-    container: { 
-        padding: 20, 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        alignSelf: 'center',
-        flex: 1,
-        width: '100%',
-        maxWidth: 480, 
-    },
-    title: {
-      alignSelf: 'flex-start', 
-      paddingLeft: '6%', 
-      marginBottom: '4%',
-      marginTop: '2%',
-    },
-    back: {
-        position: 'absolute', 
-        top: '8%', 
-        left: '4%',
-        zIndex: 10,
-    },
-    infoContainer: {
-      width: '100%',
-      paddingHorizontal: '6%',
-      marginBottom: 20,
-    },
-    infoRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.03)', 
-      padding: 15,
-      borderRadius: 12,
-    },
-    flag: {
-      fontSize: 32,
-      lineHeight: 40,
-      marginRight: 15,
-    },
+  container: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: '4%',
+    paddingTop: 120, // '32%'
+  },
+  titleWrapper: {
+    width: '100%',
+    maxWidth: 480,
+    marginBottom: 40,
+  },
+  title: {
+    alignSelf: 'flex-start', 
+    paddingLeft: '6%', 
+    marginBottom: '6%',
+    marginTop: '2%',
+  },
+  back: {
+      position: 'absolute', 
+      top: '8%', 
+      left: '4%',
+      zIndex: 10,
+  },
+  infoContainer: {
+    width: '92%',
+    paddingRight: '10%',
+    paddingLeft: '6%',
+    marginBottom: 20,
+    justifyContent: 'flex-start',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.03)', 
+    padding: 15,
+    borderRadius: 12,
+  },
+  flag: {
+    fontSize: 32,
+    lineHeight: 40,
+    marginRight: 15,
+  },
+  chartWrapper: {
+    paddingTop: 12,
+    paddingRight: 10,
+    paddingBottom: 2,
+    backgroundColor: '#B78212',
+    borderRadius: 16,
+    marginBottom: 20,
+  },
+  disclaimer: {
+    alignSelf: 'center',
+    textAlign: 'center', 
+    marginTop: 6, 
+    marginBottom: 12, 
+    paddingHorizontal: 48, 
+    maxWidth: 480,
+  },
+  selectorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '92%',
+  },
+  selectorButtonWrapper: {
+    width: 120, 
+  },
+  selectorButton: {
+    paddingVertical: 8,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  selectorText: {
+    fontFamily: Fonts.bold,
+    fontSize: 14,
+  },
 })
