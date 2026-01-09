@@ -10,6 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon, ChevronUpIcon } from '@/components/Icons';
 import { AuthContext } from '@/contexts/authContext';
+import currencies from '../../backend/currencies.json';
+
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -162,16 +164,21 @@ return (
                 <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
                     <Picker
                         selectedValue={currency}
-                        onValueChange={(itemValue) => setCurrency(itemValue)}
+                        onValueChange={(itemValue) => {
+                            setPickerVisibility(false);
+                            setCurrency(itemValue)
+                        }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
-                        <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                        {currencies.map((curr) => (
+                        <Picker.Item 
+                          key={curr.code} 
+                          label={`${curr.code} - ${curr.name}`} 
+                          value={curr.code} 
+                          color={theme.highContrast}
+                        />
+                      ))}
                     </Picker>
                 </View>
                 )}

@@ -3,13 +3,14 @@ import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon, ChevronUpIcon, ArrowDownUpIcon } from '@/components/Icons';
 import currenciesJson from '../../backend/currencies.json';
 import { AuthContext } from '@/contexts/authContext';
+import currencies from '../../backend/currencies.json';
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -18,6 +19,7 @@ export default function TransactionScreen() {
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   const { token } = useContext(AuthContext);
+  const { initialToCurrency } = useLocalSearchParams();
   
   const [avatar, setAvatar] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,7 @@ export default function TransactionScreen() {
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
   const [fromCurrency, setFromCurrency] = useState('PLN');
-  const [toCurrency, setToCurrency] = useState('EUR');
+  const [toCurrency, setToCurrency] = useState<string>((initialToCurrency as string) || "USD");  
   const [toRate, setToRate] = useState<number | null>(null);
   const [fromRate, setFromRate] = useState<number | null>(null);
   const [transactionRate, setTransactionRate] = useState<number | null>(null);
@@ -324,17 +326,28 @@ export default function TransactionScreen() {
                         selectedValue={fromCurrency}
                         onValueChange={(itemValue) => {
                           clearMessage(); 
-                          setFromCurrency(itemValue);
+                          setPickerFirstVisibility(false);
+                          setPickerSecondVisibility(false);                           setFromCurrency(itemValue);
                         }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
+                      {currencies.map((curr) => (
+                        <Picker.Item 
+                          key={curr.code} 
+                          label={`${curr.code} - ${curr.name}`} 
+                          value={curr.code} 
+                          color={theme.highContrast}
+                        />
+                      ))}
+                      {/*
                         <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                      */}
                     </Picker>
                 </View>
                 )}
@@ -430,18 +443,22 @@ export default function TransactionScreen() {
                     <Picker
                         selectedValue={toCurrency}
                         onValueChange={(itemValue) => {
-                          clearMessage(); 
+                          clearMessage();
+                          setPickerFirstVisibility(false);
+                          setPickerSecondVisibility(false); 
                           setToCurrency(itemValue);
                         }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
-                        <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                        {currencies.map((curr) => (
+                        <Picker.Item 
+                          key={curr.code} 
+                          label={`${curr.code} - ${curr.name}`} 
+                          value={curr.code} 
+                          color={theme.highContrast}
+                        />
+                      ))}
                     </Picker>
                 </View>
                 )}

@@ -141,10 +141,11 @@ export default function TransactionChart({  }) {
               width={290} 
               height={200}
               yAxisLabel="$"
+              
               chartConfig={{
-                backgroundColor: "#B78212",
-                backgroundGradientFrom: "#B78212",
-                backgroundGradientTo: "#B78212",
+                backgroundColor: '#5D5D61', //'#5D5D61'
+                backgroundGradientFrom: '#5D5D61', //"#B78212"
+                backgroundGradientTo: '#5D5D61',
                 decimalPlaces: 2, 
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -153,8 +154,12 @@ export default function TransactionChart({  }) {
                 },
                 propsForDots: {
                   r: "1",
-                  strokeWidth: "1",
-                  stroke: '#E5B855' //gold400
+                  strokeWidth: "0.5",
+                  //gold100 = '#FCF9EA';
+                  //gold200 = '#F5E4B9';
+                  //gold300 = '#EDCE87';
+                  //gold400 = '#E5B855';
+                  stroke: '#EDCE87' //gold300
                 },
                 propsForLabels: {
                   fontWeight: "600",
@@ -227,6 +232,22 @@ export default function TransactionChart({  }) {
               </TouchableOpacity>
             </View>
           </View>
+
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: theme.highContrast }]}
+            onPress={() => {
+              router.push({
+                pathname: "/(tabs)/transaction", 
+                params: { 
+                  initialToCurrency: currencyCode 
+                }
+              });
+            }}
+          >
+            <ThemedText style={{ color: theme.background, fontFamily: Fonts.bold }}>
+              {strings.historicRates_button} {currencyCode}
+            </ThemedText>
+          </TouchableOpacity>
       </View>
     </>
   );
@@ -280,7 +301,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingRight: 10,
     paddingBottom: 2,
-    backgroundColor: '#B78212',
+    backgroundColor: '#5D5D61',
     borderRadius: 16,
     marginBottom: 20,
   },
@@ -312,5 +333,13 @@ const styles = StyleSheet.create({
   selectorText: {
     fontFamily: Fonts.bold,
     fontSize: 14,
+  },
+  button: {
+    marginTop: 80,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
