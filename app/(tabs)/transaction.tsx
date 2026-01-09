@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { ActivityIndicator, Platform, Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -33,6 +33,12 @@ export default function TransactionScreen() {
   const [amount, setAmount] = useState('');
   const [lastChanged, setLastChanged] = useState<'from' | 'to'>('from');
   const [userWallets, setUserWallets] = useState<any[]>([]);
+
+  const handleDismiss = () => {
+    if (Platform.OS !== 'web') {
+        Keyboard.dismiss();
+    }
+  };
 
   const getCurrencyData = (code: string) => {
     const currency = currenciesJson.find(c => c.code === code);
@@ -223,7 +229,7 @@ export default function TransactionScreen() {
 
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={handleDismiss} accessible={false}>
         <View style={[
               styles.container,
               { backgroundColor: theme.background }
