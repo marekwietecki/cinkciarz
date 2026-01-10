@@ -61,6 +61,7 @@
 
     "history_title": "Historia",
     "history_deposit": "Doładowanie\nKonta",
+    "history_disclaimer": "Jesteś offline i Twoja historia mogła się zmienić. W celu zobaczenia najnowszych transackji sprawdź, gdy będziesz online.",
 
     "login_title": "Zaloguj się",
     "login_subtitle": "Witaj, zaloguj się do swojego konta wymiany walut eWalutka.pl.",

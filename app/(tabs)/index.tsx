@@ -201,7 +201,11 @@ const fetchWallets = useCallback(async () => {
           { backgroundColor: theme.background }
         ]}>
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-        <ThemedText type="titleSmall" style={{ color: theme.highContrast }}>{avatar}</ThemedText>
+        {avatar === '' ? (
+            <ThemedText type="titleSmall">👤</ThemedText>
+        ) : (
+            <ThemedText type="titleSmall">{avatar}</ThemedText>
+        )}
       </TouchableOpacity>
       <View style={styles.titleWrapper}>  
         <ThemedText
@@ -233,13 +237,15 @@ const fetchWallets = useCallback(async () => {
 
       <ScrollView
         horizontal 
-        style={{ marginTop: 16 }}
-        showsHorizontalScrollIndicator={false}
+        style={{ marginTop: 16, width: 320, height: 120 }}
+        showsHorizontalScrollIndicator={true}
         contentContainerStyle={{ 
           paddingHorizontal: 16, //'4%'
           paddingVertical: 8,
-          columnGap: dynamicGap, 
-          justifyContent: 'center' 
+          columnGap: dynamicGap,
+          height: 120,
+          justifyContent: 'flex-start',
+          backgroundColor: 'red', 
         }}
       >
         {loading ? (

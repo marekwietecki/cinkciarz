@@ -124,8 +124,13 @@ return (
             styles.container,
             { backgroundColor: theme.background }
             ]}>
-            <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-                <ThemedText type="titleSmall">{avatar}</ThemedText>
+            <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}
+            >
+                {avatar === '' ? (
+                    <ThemedText type="titleSmall">👤</ThemedText>
+                ) : (
+                    <ThemedText type="titleSmall">{avatar}</ThemedText>
+                )}
             </TouchableOpacity>
             <View style={styles.titleWrapper}>
                 <ThemedText

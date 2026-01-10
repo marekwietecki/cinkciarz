@@ -141,7 +141,6 @@ export default function TransactionChart({  }) {
               width={290} 
               height={200}
               yAxisLabel={typeof currencySymbol === 'string' ? currencySymbol : currencySymbol?.[0] || ""}
-              
               chartConfig={{
                 backgroundColor: '#5D5D61', //'#5D5D61'
                 backgroundGradientFrom: '#5D5D61', //"#B78212"
@@ -279,9 +278,9 @@ const styles = StyleSheet.create({
       zIndex: 10,
   },
   infoContainer: {
-    width: '92%',
-    paddingRight: '10%',
-    paddingLeft: '6%',
+    width: 300,
+    paddingRight: '2%',
+    paddingLeft: '2%',
     marginBottom: 20,
     justifyContent: 'flex-start',
   },
@@ -316,7 +315,7 @@ const styles = StyleSheet.create({
   selectorContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '92%',
+    width: 300,
   },
   selectorButtonWrapper: {
     width: 120, 

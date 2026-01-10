@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '@/contexts/authContext';
 import { SortAZIcon, SortZAIcon } from '@/components/Icons';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
@@ -24,7 +25,12 @@ export default function HistoryScreen() {
     const [ avatar, setAvatar ] = useState('');
     const [ history, setHistory ] = useState<TransactionExtended[]>([]);
     const [historyDirection, setHistoryDirection] = useState<'AZ' | 'ZA'>('AZ');
-  
+    const HISTORY_CACHE_KEY = '@wallet_history_cache';
+    const netInfo = useNetInfo();
+    const isOffline = netInfo.isConnected === false;  
+    
+    
+
     const ensureWallet = async () => {
       const response = await fetch(`${BASE_API_URL}/wallet/create`, {
         method: 'POST',
@@ -92,8 +98,15 @@ export default function HistoryScreen() {
         });
         
         setHistory(enhancedHistory);
+
+        await AsyncStorage.setItem(HISTORY_CACHE_KEY, JSON.stringify(enhancedHistory));
       } catch (e) {
         console.error("Błąd historii:", e);
+        
+        const cachedData = await AsyncStorage.getItem(HISTORY_CACHE_KEY);
+        if (cachedData) {
+          setHistory(JSON.parse(cachedData));
+        }
       }
   }, []);
   
@@ -121,6 +134,13 @@ export default function HistoryScreen() {
     });
   }, [history, historyDirection]);
 
+  useEffect(() => {
+    if (netInfo.isConnected === true) {
+      console.log("Internet wrócił! Odświeżam historię...");
+      loadHistory();
+    }
+  }, [netInfo.isConnected, loadHistory]);
+
   return (
     <View style={[
       styles.container,
@@ -147,6 +167,15 @@ export default function HistoryScreen() {
           )}
         </TouchableOpacity>
       </View>
+
+      {isOffline && (
+        <ThemedText
+          type="textSmall"
+          style={[{ fontFamily: Fonts.regular, color: theme.lowContrast }, styles.disclaimer]}
+        >
+          {strings.history_disclaimer}
+        </ThemedText>
+      )}
 
       {history.length === 0 ? (
         <ThemedText style={{ textAlign: 'center', marginTop: 20, color: theme.highContrast }}>
@@ -204,5 +233,13 @@ const styles = StyleSheet.create({
     paddingLeft: '6%', 
     marginBottom: '4%',
     marginTop: '2%',
+  },
+  disclaimer: {
+    alignSelf: 'center',
+    textAlign: 'center', 
+    marginTop: 6, // '2%'
+    marginBottom: 12, // '4%'
+    paddingHorizontal: 48, // '10%'
+    maxWidth: 480,
   },
 });

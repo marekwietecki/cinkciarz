@@ -25,7 +25,7 @@
     "historicRates_chart_dates_year": ["Year", "8 m.", "4 m.", ""],
     "historicRates_owned_amount": "Owned Amount",
     "historicRates_disclaimer": "Historic rates for currency: ",
-    "historicRates_period": "From period:",
+    "historicRates_period": "From:",
     "historicRates_year": "One Year",
     "historicRates_three_months": "Three Months",
     "historicRates_button": "Buy more: ",
@@ -60,6 +60,7 @@
 
     "history_title": "History",
     "history_deposit": "Account\nTop-Up",
+    "history_disclaimer": "You are offline, and Your history might have changed. Check for the latest transactions while online.",
 
     "login_title": "Log In!",
     "login_subtitle": "Hello, log in to your currrency exchange account - eWalutka.pl",

@@ -237,7 +237,11 @@ export default function TransactionScreen() {
               { backgroundColor: theme.background }
             ]}>
           <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-            <ThemedText type="titleSmall">{avatar}</ThemedText>
+            {avatar === '' ? (
+                <ThemedText type="titleSmall">👤</ThemedText>
+            ) : (
+                <ThemedText type="titleSmall">{avatar}</ThemedText>
+            )}
           </TouchableOpacity>
           <View style={styles.titleWrapper}>
             <ThemedText
@@ -296,6 +300,10 @@ export default function TransactionScreen() {
                         clearMessage();
                         
                         const cleanVal = val.replace(',', '.');
+                        
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (cleanVal !== "" && !regex.test(cleanVal)) return;
+
                         const numInput = parseFloat(cleanVal) || 0;
 
                         const currentWallet = userWallets.find(w => w.currency === fromCurrency);
@@ -309,7 +317,7 @@ export default function TransactionScreen() {
                             type: 'error' 
                           });
                         } else {
-                          setAmount(val);
+                          setAmount(cleanVal);
                           setLastChanged('from');
                         }
                       }}
@@ -402,8 +410,11 @@ export default function TransactionScreen() {
                       onChangeText={(val) => {
                         clearMessage();
                         const cleanVal = val.replace(',', '.');
-                        const numInputTo = parseFloat(cleanVal) || 0;
 
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (cleanVal !== "" && !regex.test(cleanVal)) return;
+
+                        const numInputTo = parseFloat(cleanVal) || 0;
                         const sourceWallet = userWallets.find(w => w.currency === fromCurrency);
                         const balanceFrom = sourceWallet ? sourceWallet.amount : 0;
 
@@ -418,7 +429,7 @@ export default function TransactionScreen() {
                         if (estimatedCostFrom > balanceFrom) {
                           const maxToBuy = balanceFrom * transactionRate;
                           
-                          const safeMax = (Math.floor(maxToBuy * 100) / 100).toString();
+                          const safeMax = (Math.floor(maxToBuy * 100) / 100).toFixed(2).toString();
 
                           setAmount(safeMax);
                           setLastChanged('to');
@@ -427,7 +438,7 @@ export default function TransactionScreen() {
                             type: 'error' 
                           });
                         } else {
-                          setAmount(val);
+                          setAmount(cleanVal);
                           setLastChanged('to');
                         }
                       }}
