@@ -45,6 +45,7 @@
     "topup_success": "Topped Up successfully",
     "topup_error": "Top Up error, try again later.",
     "topup_network_error": "Network error, try again later.",
+    "topup_offline_error": "No internet connection - You cannot make a top up while being offline.",
 
     "transaction_title": "Transaction",
     "transaction_sell": "You are selling",
@@ -59,6 +60,7 @@
     "transaction_network_error": "Network error. Unable to connect with server.",
     "transaction_sell_limit": "You own only: ",
     "transaction_buy_limit": "For money You own, You can only buy: ",
+    "transaction_offline_error": "No internet connection - You cannot make a transaction while being offline.",
 
     "history_title": "History",
     "history_deposit": "Account\nTop-Up",

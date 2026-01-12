@@ -46,6 +46,7 @@
     "topup_success": "Doładowano pomyślnie",
     "topup_error": "Błąd doładowywania, spróbuj ponownie później.",
     "topup_network_error": "Błąd sieci, spróbuj ponownie później.",
+    "topup_offline_error": "Brak internetu - nie można dokonać doładowania będąc offline.",
 
     "transaction_title": "Transakcja",
     "transaction_sell": "Sprzedajesz",
@@ -60,6 +61,7 @@
     "transaction_network_error": "Błąd sieci. Nie można połączyć się z serwerem.",
     "transaction_sell_limit": "Posiadasz tylko: ",
     "transaction_buy_limit": "Za pieniądze które posiadasz, możesz kupić: ",
+    "transaction_offline_error": "Brak internetu - nie można dokonać transackji będąc offline.",
 
     "history_title": "Historia",
     "history_deposit": "Doładowanie\nKonta",

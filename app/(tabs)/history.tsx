@@ -103,7 +103,8 @@ export default function HistoryScreen() {
 
         await AsyncStorage.setItem(HISTORY_CACHE_KEY, JSON.stringify(enhancedHistory));
       } catch (e) {
-        console.error("Błąd historii:", e);
+        //console.error("Błąd historii:", e);
+        console.log("Błąd historii:", e);
         setIsDataFromCache(true);
         
         const cachedData = await AsyncStorage.getItem(HISTORY_CACHE_KEY);
@@ -165,10 +166,10 @@ export default function HistoryScreen() {
       
       {isOffline && (
         <View style={styles.offlineWrapper}>
-          <ThemedText style={styles.offlineText}>
+          <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
               {strings.no_internet_connection}
           </ThemedText>
-          <ThemedText style={styles.offlineText}>
+          <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
               {strings.no_internet_connection_disclaimer}
           </ThemedText>
         </View>
@@ -243,6 +244,19 @@ const styles = StyleSheet.create({
     top: 70, // '11%'
     right: 40, // '10.5%'
   },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 200,
+  },
+  offlineText: {
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
+  },
   titleIconWrapper: {
     flexDirection: 'row', 
     alignItems: 'center', 
@@ -263,19 +277,5 @@ const styles = StyleSheet.create({
     marginBottom: 12, // '4%'
     paddingHorizontal: 48, // '10%'
     maxWidth: 480,
-  },
-  offlineWrapper: {
-    position: 'absolute',
-    top: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 999,
-    maxWidth: 200,
-  },
-  offlineText: {
-    color: '#DC2544',
-    fontSize: 12,
-    fontFamily: Fonts.bold,
-    textAlign: 'center',
   },
 });

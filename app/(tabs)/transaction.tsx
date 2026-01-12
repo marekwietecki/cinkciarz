@@ -11,6 +11,8 @@ import { ChevronDownIcon, ChevronUpIcon, ArrowDownUpIcon } from '@/components/Ic
 import currenciesJson from '../../backend/currencies.json';
 import { AuthContext } from '@/contexts/authContext';
 import currencies from '../../backend/currencies.json';
+import { useNetInfo } from '@react-native-community/netinfo';
+
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -35,6 +37,8 @@ export default function TransactionScreen() {
   const [amount, setAmount] = useState('');
   const [lastChanged, setLastChanged] = useState<'from' | 'to'>('from');
   const [userWallets, setUserWallets] = useState<any[]>([]);
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false;  
 
   const handleDismiss = () => {
     if (Platform.OS !== 'web') {
@@ -173,6 +177,11 @@ export default function TransactionScreen() {
   };
 
   const handleTransaction = async () => {
+    if (!netInfo.isConnected) {
+      setMessage({ text: strings.transaction_offline_error, type: 'error' });
+      return;
+    }
+    
     setMessage({ text: '', type: null });    
     
     const fAmount = parseFloat(displayFrom);
@@ -229,6 +238,22 @@ export default function TransactionScreen() {
     setMessage({ text: '', type: null });
   };
 
+  useEffect(() => {
+    if (netInfo.isConnected === false) {
+      setMessage({ 
+        text: strings.transaction_offline_error, 
+        type: 'error' 
+      });
+    } else if (netInfo.isConnected === true) {
+      console.log("Internet wrócił!");
+      
+      if (message.text === strings.transaction_offline_error) {
+        setMessage({ text: '', type: null });
+      }
+      
+    }
+  }, [netInfo.isConnected, strings.transaction_offline_error]);
+
 
   return (
     <TouchableWithoutFeedback onPress={handleDismiss} accessible={false}>
@@ -243,6 +268,18 @@ export default function TransactionScreen() {
                 <ThemedText type="titleSmall">{avatar}</ThemedText>
             )}
           </TouchableOpacity>
+
+          {isOffline && (
+            <View style={styles.offlineWrapper}>
+              <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                  {strings.no_internet_connection}
+              </ThemedText>
+              <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                  {strings.no_internet_connection_disclaimer}
+              </ThemedText>
+            </View>
+          )}
+
           <View style={styles.titleWrapper}>
             <ThemedText
               type="titleMid"
@@ -291,6 +328,7 @@ export default function TransactionScreen() {
                       style={[styles.textInput, { color: theme.highContrast }]}
                       placeholder="0.00"
                       secureTextEntry={false}
+                      editable={!isOffline && !loading}
                       autoComplete="off"
                       textContentType="none"
                       placeholderTextColor={theme.highContrast}
@@ -402,6 +440,7 @@ export default function TransactionScreen() {
                       style={[styles.textInput, { color: theme.highContrast }]}
                       placeholder="0.00"
                       secureTextEntry={false}
+                      editable={!isOffline && !loading}
                       autoComplete="off"
                       textContentType="none"
                       placeholderTextColor={theme.highContrast}
@@ -494,11 +533,12 @@ export default function TransactionScreen() {
             </View>
             
           </ScrollView>
+
           <View style={styles.buttonWrapper}>
             <TouchableOpacity 
-              style={[styles.button, { backgroundColor: theme.highContrast }]} 
+              style={[styles.button, { backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1 }]} 
               onPress={handleTransaction}
-              disabled={loading}
+              disabled={loading || isOffline}
             >
               {loading ? (
                 <ActivityIndicator color={theme.background} />
@@ -530,6 +570,19 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 70, // '11%'
     right: 40, // '10.5%'
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 200,
+  },
+  offlineText: {
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
   },
   titleWrapper: {
     width: '100%',

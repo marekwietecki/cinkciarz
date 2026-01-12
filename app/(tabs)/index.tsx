@@ -199,6 +199,14 @@ const fetchWallets = useCallback(async () => {
     }, [loadAvatar, fetchWallets, loadHistory])
   );
 
+  useEffect(() => {
+    if (netInfo.isConnected === true) {
+      console.log("Internet wrócił! Odświeżam historię...");
+      loadHistory();
+      fetchWallets();
+    }
+  }, [netInfo.isConnected]);
+
   return (
     <View style={[
           styles.container,
@@ -211,6 +219,18 @@ const fetchWallets = useCallback(async () => {
             <ThemedText type="titleSmall">{avatar}</ThemedText>
         )}
       </TouchableOpacity>
+
+    {isOffline && (
+      <View style={styles.offlineWrapper}>
+        <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+            {strings.no_internet_connection}
+        </ThemedText>
+        <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+            {strings.no_internet_connection_disclaimer}
+        </ThemedText>
+      </View>
+    )}
+
       <View style={styles.titleWrapper}>  
         <ThemedText
           type="titleMid"
@@ -381,6 +401,19 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 70, // '11%'
     right: 40, // '10.5%'
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 200,
+  },
+  offlineText: {
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
   },
   titleWrapper: {
     width: '100%',

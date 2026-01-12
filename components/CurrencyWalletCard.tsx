@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 24,
+    paddingHorizontal: 28,
   },
   lowerSection: {
     flexDirection: 'row',

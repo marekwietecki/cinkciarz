@@ -1,6 +1,6 @@
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -9,6 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import currenciesData from '../../backend/currencies.json';
 import { CurrencyRateCard } from '@/components/CurrencyRateCard';
 import { RefreshIcon } from '@/components/Icons';
+import { useNetInfo } from '@react-native-community/netinfo';
+
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -42,6 +44,8 @@ export default function RatesScreen() {
   const [currencies, setCurrencies] = useState<CurrencyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const RATES_CACHE_KEY = '@rates_cache';
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false; 
 
 
   const fetchExchangeData = async () => {
@@ -158,6 +162,12 @@ export default function RatesScreen() {
     }, [loadData]) 
   );
 
+  useEffect(() => {
+    if (netInfo.isConnected === true) {
+      console.log("Internet wrócił! Odświeżam historię...");
+    }
+  }, [netInfo.isConnected]);
+
   return (
     <View style={[
       styles.container,
@@ -170,6 +180,17 @@ export default function RatesScreen() {
             <ThemedText type="titleSmall">{avatar}</ThemedText>
         )}
       </TouchableOpacity>
+
+      {isOffline && (
+        <View style={styles.offlineWrapper}>
+          <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+              {strings.no_internet_connection}
+          </ThemedText>
+          <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+              {strings.no_internet_connection_disclaimer}
+          </ThemedText>
+        </View>
+      )}
       
       <View style={styles.titleIconWrapper}>
         <ThemedText
@@ -215,6 +236,10 @@ export default function RatesScreen() {
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{ paddingVertical: 12 }}
         keyExtractor={(item) => item.code}
+        style={{ 
+          maxHeight: 800,
+          overflowY: 'scroll', 
+        }}
         renderItem={({ item }) => (
           <TouchableOpacity 
             onPress={() => router.push({
@@ -248,7 +273,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     paddingHorizontal: '4%',
     paddingTop: 120, // '32%'
   },
@@ -259,6 +284,19 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 70, // '11%'
     right: 40, // '10.5%'
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 200,
+  },
+  offlineText: {
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
   },
   titleIconWrapper: {
     flexDirection: 'row', 
