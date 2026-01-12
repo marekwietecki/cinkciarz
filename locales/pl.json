@@ -1,6 +1,8 @@
 {
     "error": "Błąd",
     "success": "Sukces",
+    "no_internet_connection": "Brak Internetu!",
+    "no_internet_connection_disclaimer": "Aplikacja działa w trybie offline.",
 
     "nav_wallet": "Portfel",
     "nav_rates": "Kursy",

@@ -81,6 +81,7 @@ export default function LoginScreen() {
             pathname: '/',
             params: { loggedin: 'true' }
           });
+          setTimeout(() => login(token), 100);
         } else {
           //no token
           setMessage({text: strings.login_token_error, type: 'error'})

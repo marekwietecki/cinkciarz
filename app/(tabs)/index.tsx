@@ -13,6 +13,7 @@ import { Fonts } from '../_layout';
 import { useWindowDimensions } from 'react-native';
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 
 interface CurrencyWalletCardProps {
@@ -27,11 +28,11 @@ export default function WalletScreen() {
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   const { token } = useContext(AuthContext);
-  const { loggedin } = useLocalSearchParams();
+  const { loggedin } = useLocalSearchParams<{ loggedin: string }>();  
   const { width } = useWindowDimensions();
   
   const isLargeScreen = width > 480;
-  const dynamicGap = isLargeScreen ? 40 : 20;
+  const dynamicGap = isLargeScreen ? 40 : 4;
   
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [ avatar, setAvatar ] = useState('');
@@ -39,10 +40,13 @@ export default function WalletScreen() {
   const [ wallets, setWallets ] = useState<CurrencyWalletCardProps[]>([]);
   const [ history, setHistory ] = useState<TransactionExtended[]>([]);
   const [ totalBalance, setTotalBalance ] = useState(0);
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false;
   
   useEffect(() => {
     if (loggedin === 'true') {
       setMessage({ text: strings.login_success_message, type: 'success' });
+      router.setParams({ loggedin: '' });
       
       const timer = setTimeout(() => {
         setMessage({ text: '', type: null });
@@ -159,7 +163,7 @@ const fetchWallets = useCallback(async () => {
 
     if (response.ok) {
       const rawTransactions = await response.json();
-      console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk"); //TEST
+      console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk");
       
       const enhanced = rawTransactions
         .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -235,66 +239,76 @@ const fetchWallets = useCallback(async () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        horizontal 
-        style={{ marginTop: 16, width: 320, height: 120 }}
-        showsHorizontalScrollIndicator={true}
-        contentContainerStyle={{ 
-          paddingHorizontal: 16, //'4%'
-          paddingVertical: 8,
-          columnGap: dynamicGap,
-          height: 120,
-          justifyContent: 'flex-start',
-          backgroundColor: 'red', 
-        }}
-      >
-        {loading ? (
-          <ActivityIndicator color={theme.highContrast} />
-        ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? ( 
-          wallets
-            .filter(wallet => (wallet.amount ?? 0) > 0) 
-            .map((wallet, index, array) => (
-              <React.Fragment key={wallet.id || index}>
-                <CurrencyWalletCard
-                  wallet_id={wallet.wallet_id}
-                  id={wallet.id}
-                  currency_code={wallet.currency}
-                  balance={wallet.amount}
-                />
-                {index < array.length - 1 && (
-                  <View 
-                    style={{
-                      width: 1,
-                      height: 40, 
-                      backgroundColor: theme.midContrast, 
-                      opacity: 0.2, 
-                      alignSelf: 'flex-start',
-                      marginTop: 32, //'5%'
-                      marginHorizontal: 10 
-                    }} 
+      <View style={{maxHeight: 140}}>  
+        <ScrollView
+          horizontal 
+          style={{ marginTop: 16, width: 320, alignSelf: 'flex-start',   }}
+          showsHorizontalScrollIndicator={true}
+          contentContainerStyle={{ 
+            paddingHorizontal: 16, //'4%'
+            paddingVertical: 8,
+            columnGap: dynamicGap,
+          }}
+        >
+          {loading ? (
+            <ActivityIndicator color={theme.highContrast} />
+          ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? ( 
+            wallets
+              .filter(wallet => (wallet.amount ?? 0) > 0) 
+              .map((wallet, index, array) => (
+                <React.Fragment key={wallet.id || index}>
+                  <CurrencyWalletCard
+                    wallet_id={wallet.wallet_id}
+                    id={wallet.id}
+                    currency_code={wallet.currency}
+                    balance={wallet.amount}
                   />
-                )}
-              </React.Fragment>
-            ))
-        ) : (
-          <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 12 }}>
-            <ThemedText style={{ color: theme.lowContrast, textAlign: 'center' }}>
-              {strings.wallet_no_funds}
-            </ThemedText>
-          </View>
-        )}
-      </ScrollView>
-      
-      {message.type && message.text ? (
-        <View style={ styles.messageContainer }>
-          <ThemedText 
-            type="default"
-            style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
-          >
-            {message.text}  
-          </ThemedText>  
-        </View>
-      ) : null}
+                  {index < array.length - 1 && (
+                    <View 
+                      style={{
+                        width: 1,
+                        height: 40, 
+                        backgroundColor: theme.midContrast, 
+                        opacity: 0.2, 
+                        alignSelf: 'flex-start',
+                        marginTop: 32, //'5%'
+                        marginHorizontal: 10 
+                      }} 
+                    />
+                  )}
+                </React.Fragment>
+              ))
+          ) : (
+            <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 12 }}>
+              <ThemedText style={{ color: theme.lowContrast, textAlign: 'center' }}>
+                {strings.wallet_no_funds}
+              </ThemedText>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+
+      <View 
+        style={[
+          styles.messageContainer, 
+          { 
+            opacity: (message.type && message.text) ? 1 : 0 
+          }
+        ]}
+      >
+        <ThemedText 
+          type="default"
+          style={[
+            styles.message, 
+            { 
+              color: message.type === 'error' ? theme.failure : theme.success 
+            }
+          ]} 
+        >
+          {/* if no text space is being displayed, to maintain proper height */}
+          {message.text || " "}  
+        </ThemedText>  
+      </View>
 
       <View style={styles.titleWrapper}>  
         <ThemedText
@@ -356,7 +370,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingHorizontal: '4%',
     paddingTop: 120, // '32%'
   },
@@ -399,7 +413,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   messageContainer: {
-    marginVertical: 16, 
+    marginVertical: '6%', 
     paddingHorizontal: 20
   },
   message: {

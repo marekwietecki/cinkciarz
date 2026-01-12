@@ -105,10 +105,15 @@ export default function TopUpScreen() {
         setMessage({ text: '', type: null });
     };
 
-    const handleSetAmount = (text: string) => {
+    const handleSetAmount = (val: string) => {
         setPickerVisibility(false);
+        let cleanVal = val.replace(',', '.');
+        const regex = /^\d*\.?\d{0,2}$/;
+        if (cleanVal !== "" && !regex.test(cleanVal)) {
+            return;
+        }
         clearMessage();
-        setAmount(text);
+        setAmount(cleanVal);
     };
 
 
@@ -199,6 +204,8 @@ return (
                     </View>
                 ) : null}
             </View>
+
+            
 
             <TouchableOpacity 
                     style={[styles.button, { backgroundColor: theme.highContrast }]} 

@@ -109,7 +109,7 @@ export default function ChangePasswordScreen() {
                     <ThemedText type="titleMid" style={{color: theme.failure, paddingLeft: '2%'}}>
                         {strings.changePassword_title}
                     </ThemedText>
-                    <ThemedText type="subtitle" style={{color: theme.midContrast, maxWidth: '96%'}}>
+                    <ThemedText type="subtitle" style={{color: theme.midContrast, maxWidth: 300 }}>
                         {strings.changePassword_warning}
                     </ThemedText>
                 </View>
@@ -173,7 +173,8 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     inputsContainer: { 
-        width: '100%', 
+        width: '100%',
+        maxWidth: 300, 
         marginBottom: 20, 
         gap: 15 
     },

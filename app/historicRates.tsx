@@ -140,7 +140,7 @@ export default function TransactionChart({  }) {
               data={chartData}
               width={290} 
               height={200}
-              yAxisLabel={typeof currencySymbol === 'string' ? currencySymbol : currencySymbol?.[0] || ""}
+              yAxisLabel={typeof currencySymbol === 'string' ? currencySymbol+' ' : currencySymbol?.[0] || ""}
               chartConfig={{
                 backgroundColor: '#5D5D61', //'#5D5D61'
                 backgroundGradientFrom: '#5D5D61', //"#B78212"

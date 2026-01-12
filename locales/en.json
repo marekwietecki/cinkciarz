@@ -1,6 +1,8 @@
 {
     "error": "Error",
     "success": "Success",
+    "no_internet_connection": "No internet connection!",
+    "no_internet_connection_disclaimer": "App is working in an offline mode.",
 
     "nav_wallet": "Wallet",
     "nav_rates": "Rates",

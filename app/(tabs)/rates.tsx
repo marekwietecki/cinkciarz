@@ -21,6 +21,17 @@ interface CurrencyItem {
   trend: number;
 }
 
+const getPastDateRange = () => {
+  const end = new Date();
+  end.setMonth(end.getMonth() - 3);
+  const start = new Date(end);
+  start.setDate(start.getDate() - 7); 
+  return {
+    start: start.toISOString().split('T')[0],
+    end: end.toISOString().split('T')[0]
+  };
+};
+
 export default function RatesScreen() {
   const router = useRouter();
   const { strings } = useContext(LanguageContext);
@@ -30,78 +41,75 @@ export default function RatesScreen() {
   const [ avatar, setAvatar ] = useState('');
   const [currencies, setCurrencies] = useState<CurrencyItem[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  const getPastDate = () => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - 3);
-    return d.toISOString().split('T')[0];
-};
+  const RATES_CACHE_KEY = '@rates_cache';
 
-const fetchExchangeData = async () => {
-    try {
-        const currentRes = await fetch(`${BASE_API_URL}/nbp/table/A`);
-        const currentData = await currentRes.json();
 
-        const pastDate = getPastDate();
-        const pastRes = await fetch(`${BASE_API_URL}/nbp/table/A?startDate=${pastDate}&endDate=${pastDate}`);
-        const pastData = await pastRes.json();
+  const fetchExchangeData = async () => {
+      try {
+          const currentRes = await fetch(`${BASE_API_URL}/nbp/table/A`);
+          const currentData = await currentRes.json();
 
-        if (currentData.success) {
-            const dateFromApi = currentData.data && currentData.data[0] ? currentData.effectiveDate : (currentData[0]?.effectiveDate || '');            
-            console.log(dateFromApi);
+          const range = getPastDateRange();
+          const pastRes = await fetch(`${BASE_API_URL}/nbp/table/A?startDate=${range.start}&endDate=${range.end}`);
+          const pastData = await pastRes.json();
 
-            const joinedData = currentData.data.map((curr: any) => {
-                const extraInfo = currenciesData.find(c => c.code === curr.code);
-                
-                const historyCurr = pastData.success 
-                    ? pastData.data.find((h: any) => h.code === curr.code) 
-                    : null;
 
-                const currentRate = Math.round(curr.mid * 100) / 100;                
-                const pastRate = historyCurr ? historyCurr.mid : currentRate;
-                
-                const trend = Math.round(((currentRate - pastRate) / pastRate) * 100 * 10) / 10;
-                
-                return {
-                    name: extraInfo?.name || '',
-                    code: curr.code,
-                    symbol: extraInfo?.symbol || '',
-                    flag: extraInfo?.flag || '🏳️',
-                    currentRate: currentRate.toFixed(2),
-                    trend: trend
-                };
-            });
+          if (currentData.success) {
+              const dateFromApi = currentData.data && currentData.data[0] ? currentData.effectiveDate : (currentData[0]?.effectiveDate || '');            
+              console.log(dateFromApi);
 
-            const priority: Record<string, number> = { 
-                'EUR': 1, 
-                'USD': 2, 
-                'GBP': 3, 
-                'CHF': 4,
-                'CZK': 5,
-                'CAD': 6 
-            };
+              const joinedData = currentData.data.map((curr: any) => {
+                  const extraInfo = currenciesData.find(c => c.code === curr.code);
+                  
+                  const historyCurr = pastData.success 
+                      ? pastData.data.find((h: any) => h.code === curr.code) 
+                      : null;
 
-            const finalData = joinedData
-                .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) 
-                .sort((a: CurrencyItem, b: CurrencyItem) => {
-                    const valA = priority[a.code] || 999;
-                    const valB = priority[b.code] || 999;
+                  const currentRate = Math.round(curr.mid * 100) / 100;                
+                  const pastRate = historyCurr ? historyCurr.mid : currentRate;
+                  
+                  const trend = Math.round(((currentRate - pastRate) / pastRate) * 100 * 10) / 10;
+                  
+                  return {
+                      name: extraInfo?.name || '',
+                      code: curr.code,
+                      symbol: extraInfo?.symbol || '',
+                      flag: extraInfo?.flag || '🏳️',
+                      currentRate: currentRate.toFixed(2),
+                      trend: trend
+                  };
+              });
 
-                    if (valA !== valB) {
-                        return valA - valB;
-                    }
-                    return a.code.localeCompare(b.code);
-                });
+              const priority: Record<string, number> = { 
+                  'EUR': 1, 
+                  'USD': 2, 
+                  'GBP': 3, 
+                  'CHF': 4,
+                  'CZK': 5,
+                  'CAD': 6 
+              };
 
-            return {
-              rates: finalData,  
-              date: dateFromApi
-            };
-        }
-    } catch (error) {
-        console.error("Błąd przy pobieraniu kursów:", error);
-    }
-};
+              const finalData = joinedData
+                  .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) 
+                  .sort((a: CurrencyItem, b: CurrencyItem) => {
+                      const valA = priority[a.code] || 999;
+                      const valB = priority[b.code] || 999;
+
+                      if (valA !== valB) {
+                          return valA - valB;
+                      }
+                      return a.code.localeCompare(b.code);
+                  });
+
+              return {
+                rates: finalData,  
+                date: dateFromApi
+              };
+          }
+      } catch (error) {
+          console.error("Błąd przy pobieraniu kursów:", error);
+      }
+  };
 
   const loadAvatar = useCallback(async () => {
     try {
@@ -126,15 +134,23 @@ const fetchExchangeData = async () => {
         await loadAvatar();
 
         if (result) {
-            setCurrencies(result.rates); 
-            setEffectiveDate(result.date); 
+          setCurrencies(result.rates); 
+          setEffectiveDate(result.date); 
+          await AsyncStorage.setItem(RATES_CACHE_KEY, JSON.stringify(result));
+        } else {
+          const cached = await AsyncStorage.getItem(RATES_CACHE_KEY);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            setCurrencies(parsed.rates);
+            setEffectiveDate(parsed.date + " (offline)");
+          }
         }
     } catch (error) {
         console.error("Błąd ładowania danych:", error);
     } finally {
         setLoading(false);
     }
-}, []);
+}, [loadAvatar]);
 
   useFocusEffect(
     useCallback(() => {

@@ -86,7 +86,7 @@ export default function DeleteAccountScreen() {
                     <ThemedText type="titleMid" style={{color: theme.failure}}>
                         {strings.delete_title}
                     </ThemedText>
-                    <ThemedText type="subtitle" style={{color: theme.midContrast}}>
+                    <ThemedText type="subtitle" style={{color: theme.midContrast, maxWidth: 300}}>
                         {strings.delete_warning}
                     </ThemedText>
                 </View>
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     },
     inputsContainer: { 
         width: '100%', 
+        maxWidth: 300,
         marginBottom: 20, 
         gap: 15 
     },

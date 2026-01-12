@@ -28,7 +28,8 @@ export default function HistoryScreen() {
     const HISTORY_CACHE_KEY = '@wallet_history_cache';
     const netInfo = useNetInfo();
     const isOffline = netInfo.isConnected === false;  
-    
+    const [isDataFromCache, setIsDataFromCache] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     
 
     const ensureWallet = async () => {
@@ -98,10 +99,12 @@ export default function HistoryScreen() {
         });
         
         setHistory(enhancedHistory);
+        setIsDataFromCache(false);
 
         await AsyncStorage.setItem(HISTORY_CACHE_KEY, JSON.stringify(enhancedHistory));
       } catch (e) {
         console.error("Błąd historii:", e);
+        setIsDataFromCache(true);
         
         const cachedData = await AsyncStorage.getItem(HISTORY_CACHE_KEY);
         if (cachedData) {
@@ -141,6 +144,12 @@ export default function HistoryScreen() {
     }
   }, [netInfo.isConnected, loadHistory]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadHistory();
+    setRefreshing(false);
+  };
+
   return (
     <View style={[
       styles.container,
@@ -153,6 +162,18 @@ export default function HistoryScreen() {
             <ThemedText type="titleSmall">{avatar}</ThemedText>
         )}
       </TouchableOpacity>
+      
+      {isOffline && (
+        <View style={styles.offlineWrapper}>
+          <ThemedText style={styles.offlineText}>
+              {strings.no_internet_connection}
+          </ThemedText>
+          <ThemedText style={styles.offlineText}>
+              {strings.no_internet_connection_disclaimer}
+          </ThemedText>
+        </View>
+      )}
+
       <View style={styles.titleIconWrapper}>
         <ThemedText
           type="titleMid"
@@ -168,7 +189,7 @@ export default function HistoryScreen() {
         </TouchableOpacity>
       </View>
 
-      {isOffline && (
+      {(isOffline || isDataFromCache) && (
         <ThemedText
           type="textSmall"
           style={[{ fontFamily: Fonts.regular, color: theme.lowContrast }, styles.disclaimer]}
@@ -184,6 +205,7 @@ export default function HistoryScreen() {
       ) : (
         <FlatList
           data={sortedHistory}
+          refreshing={refreshing}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <HistoricTransaction transaction={item}/>}
           contentContainerStyle={{ paddingVertical: 12 }}
@@ -241,5 +263,19 @@ const styles = StyleSheet.create({
     marginBottom: 12, // '4%'
     paddingHorizontal: 48, // '10%'
     maxWidth: 480,
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 200,
+  },
+  offlineText: {
+    color: '#DC2544',
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
   },
 });
