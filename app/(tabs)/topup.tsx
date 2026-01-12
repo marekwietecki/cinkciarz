@@ -243,7 +243,6 @@ return (
                 ) : null}
             </View>
 
-            
 
             <TouchableOpacity 
                 style={[styles.button, { backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1 }]} 

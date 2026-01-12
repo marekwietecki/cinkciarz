@@ -9,8 +9,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ChevronLeftIcon, ContrastIcon, LanguagesIcon, UserIcon } from '../components/Icons';
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
+import { useNetInfo } from '@react-native-community/netinfo';
+
 
 import { BASE_API_URL } from '@/config';
+import { Fonts } from './_layout';
 
 const AVATAR_KEY = 'userAvatar';
 
@@ -22,6 +25,8 @@ export default function ProfileScreen() {
     const [ isLoggedIn, setIsLoggedIn ] = useState(false);
     const [ userEmail, setUserEmail ] = useState('');
     const { token, logout } = useContext(AuthContext);
+    const netInfo = useNetInfo();
+    const isOffline = netInfo.isConnected === false; 
     
     const fetchUserProfile = async () => {
         try {
@@ -113,10 +118,18 @@ export default function ProfileScreen() {
                     : strings.profile_not_logged_in     
                 }                    
                 </ThemedText>
-
             </View>
 
-            
+            {isOffline && (
+                <View style={styles.offlineWrapper}>
+                    <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                        {strings.no_internet_connection}
+                    </ThemedText>
+                    <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                        {strings.no_internet_connection_disclaimer}
+                    </ThemedText>
+                </View>
+            )}
 
             <View style={styles.contextPickers}>
                 <View style={styles.pickerContainer}>
@@ -248,63 +261,76 @@ export default function ProfileScreen() {
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: 20,
-  },
-  back: {
-    position: 'absolute', 
-    top: '8%', 
-    left: '4%',
-  },
-  userContainer: {
-    marginBottom: 80, // '16%'
-    alignSelf: 'flex-start',
-    marginLeft: '8%',
-    gap: 2,
-  },
-  label: { 
-    fontSize: 16, 
-    marginTop:2, 
-    marginBottom: 2,
-  },
-  row: { 
-    flexDirection: 'row', 
-    justifyContent: 'center',
-    alignItems: 'center', 
-    alignContent: 'center',
-    width: '100%',
-    gap: 6,
-  },
-  rowTitle: {
-    flexDirection: 'row', 
-    justifyContent: 'center',
-    alignItems: 'center', 
-    width: '100%',
-    gap: 6,
-  },
-  contextPickers: {
-    gap: 40,
-  },
-  pickerContainer: {
-    width: '100%',
-    alignSelf: 'center',
-  },
-  picker: { 
-    flex: 1, 
-    paddingVertical: 8, 
-    margin: 6,
-    alignItems: 'center' 
-  },
-  button: {
-    marginBottom: 20, //'4%'
-    //marginTop: 64, //12%
-    paddingVertical: 12,
-    paddingHorizontal: 20, 
-    borderRadius: 40, 
-    alignItems: 'center',
-    borderWidth: 3,
-  },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: 20,
+    },
+    back: {
+        position: 'absolute', 
+        top: '8%', 
+        left: '4%',
+    },
+    userContainer: {
+        marginBottom: 80, // '16%'
+        alignSelf: 'flex-start',
+        marginLeft: '8%',
+        gap: 2,
+    },
+    offlineWrapper: {
+        position: 'absolute',
+        top: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+        maxWidth: 200,
+    },
+    offlineText: {
+        fontSize: 12,
+        fontFamily: Fonts.bold,
+        textAlign: 'center',
+    },
+    label: { 
+        fontSize: 16, 
+        marginTop:2, 
+        marginBottom: 2,
+    },
+    row: { 
+        flexDirection: 'row', 
+        justifyContent: 'center',
+        alignItems: 'center', 
+        alignContent: 'center',
+        width: '100%',
+        gap: 6,
+    },
+    rowTitle: {
+        flexDirection: 'row', 
+        justifyContent: 'center',
+        alignItems: 'center', 
+        width: '100%',
+        gap: 6,
+    },
+    contextPickers: {
+        gap: 40,
+    },
+    pickerContainer: {
+        width: '100%',
+        alignSelf: 'center',
+    },
+    picker: { 
+        flex: 1, 
+        paddingVertical: 8, 
+        margin: 6,
+        alignItems: 'center' 
+    },
+    button: {
+        marginBottom: 20, //'4%'
+        //marginTop: 64, //12%
+        paddingVertical: 12,
+        paddingHorizontal: 20, 
+        borderRadius: 40, 
+        alignItems: 'center',
+        borderWidth: 3,
+    },
 });

@@ -8,6 +8,8 @@ import { Fonts } from './_layout';
 import { useRouter } from "expo-router";
 import { ChevronLeftIcon } from "@/components/Icons";
 import { useLocalSearchParams } from 'expo-router';
+import { useNetInfo } from '@react-native-community/netinfo';
+
 
 
 import { BASE_API_URL } from '@/config';
@@ -23,6 +25,9 @@ export default function TransactionChart({  }) {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState(90);
   const [wallets, setWallets] = useState<any[]>([]);
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false; 
 
   const fetchWallets = async () => {
     try {
@@ -104,11 +109,30 @@ export default function TransactionChart({  }) {
   }, [currencyCode, period]);
 
 
+  useEffect(() => {
+    if (netInfo.isConnected === false) {
+      setMessage({ 
+        text: strings.transaction_offline_error, 
+        type: 'error' 
+      });
+    } else if (netInfo.isConnected === true) {
+      console.log("Internet wrócił!");
+      
+      if (message.text === strings.transaction_offline_error) {
+        setMessage({ text: '', type: null });
+      }
+      
+    }
+  }, [netInfo.isConnected, strings.transaction_offline_error]);
+
+
   return (
     <>
       <TouchableOpacity onPress={() => router.back()} style={styles.back}>
         <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
       </TouchableOpacity>
+
+      
 
       <View style={[ styles.container, { backgroundColor: theme.background }]}>
           <View style={styles.titleWrapper}> 
@@ -118,6 +142,16 @@ export default function TransactionChart({  }) {
               {strings.historicRates_title}
             </ThemedText> 
           </View>
+          {isOffline && (
+            <View style={styles.offlineWrapper}>
+                <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                    {strings.no_internet_connection}
+                </ThemedText>
+                <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                    {strings.no_internet_connection_disclaimer}
+                </ThemedText>
+            </View>
+          )}
           <View style={styles.infoContainer}>
               <View style={styles.infoRow}>
                   <ThemedText style={styles.flag}>{currencyFlag}</ThemedText>
@@ -133,8 +167,16 @@ export default function TransactionChart({  }) {
           </View>
 
            
-
-          {chartData && chartData.labels && chartData.datasets ? (
+          {isOffline ? (
+              <View style={ styles.messageContainer }>
+              <ThemedText 
+                  type="default"
+                  style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
+              >
+                  {message.text}  
+              </ThemedText>  
+              </View>
+          ) : chartData && chartData.labels && chartData.datasets ? (
           <View style={styles.chartWrapper}>
             <LineChart
               data={chartData}
@@ -200,12 +242,12 @@ export default function TransactionChart({  }) {
                 }} 
                 style={[
                   styles.selectorButton, 
-                  period === 90 && { borderBottomColor: theme.highContrast, borderBottomWidth: 3 }
+                  period === 90 && { borderBottomColor: theme.highContrast, borderBottomWidth: 3, opacity: (loading || isOffline) ? 0.2 : 1 }
                 ]}
               >
                 <ThemedText style={[
                   styles.selectorText, 
-                  { color: period === 90 ? theme.highContrast : theme.lowContrast }
+                  { color: period === 90 ? theme.highContrast : theme.lowContrast, opacity: (loading || isOffline) ? 0.2 : 1 }
                 ]}>
                   {strings.historicRates_three_months}
                 </ThemedText>
@@ -219,12 +261,12 @@ export default function TransactionChart({  }) {
                 }}  
                 style={[
                   styles.selectorButton, 
-                  period === 365 && { borderBottomColor: theme.highContrast, borderBottomWidth: 3 }
+                  period === 365 && { borderBottomColor: theme.highContrast, borderBottomWidth: 3, opacity: (loading || isOffline) ? 0.2 : 1 }
                 ]}
               >
                 <ThemedText style={[
                   styles.selectorText, 
-                  { color: period === 365 ? theme.highContrast : theme.lowContrast }
+                  { color: period === 365 ? theme.highContrast : theme.lowContrast, opacity: (loading || isOffline) ? 0.2 : 1}
                 ]}>
                   {strings.historicRates_year}
                 </ThemedText>
@@ -233,7 +275,8 @@ export default function TransactionChart({  }) {
           </View>
 
           <TouchableOpacity 
-            style={[styles.button, { backgroundColor: theme.highContrast }]}
+            style={[styles.button, { backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1 }]}
+            disabled={isOffline}
             onPress={() => {
               router.push({
                 pathname: "/(tabs)/transaction", 
@@ -272,10 +315,23 @@ const styles = StyleSheet.create({
     marginTop: '2%',
   },
   back: {
-      position: 'absolute', 
-      top: '8%', 
-      left: '4%',
-      zIndex: 10,
+    position: 'absolute', 
+    top: '8%', 
+    left: '4%',
+    zIndex: 10,
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 200,
+  },
+  offlineText: {
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
   },
   infoContainer: {
     width: 300,
@@ -340,5 +396,13 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  messageContainer: {
+    marginVertical: 10,
+    marginBottom: 20, 
+    paddingHorizontal: 20
+  },
+  message: {
+    textAlign: 'center',
   },
 })

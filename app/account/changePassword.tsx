@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ChevronLeftIcon } from '@/components/Icons';
@@ -9,6 +9,8 @@ import { AuthContext } from '@/contexts/authContext';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
+import { useNetInfo } from '@react-native-community/netinfo';
+
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
@@ -24,6 +26,8 @@ export default function ChangePasswordScreen() {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
+    const netInfo = useNetInfo();
+    const isOffline = netInfo.isConnected === false; 
 
     const handleDelete = async () => {
         setMessage({ text: '', type: null });    
@@ -92,6 +96,22 @@ export default function ChangePasswordScreen() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (netInfo.isConnected === false) {
+            setMessage({ 
+            text: strings.transaction_offline_error, 
+            type: 'error' 
+            });
+        } else if (netInfo.isConnected === true) {
+            console.log("Internet wrócił!");
+            
+            if (message.text === strings.transaction_offline_error) {
+            setMessage({ text: '', type: null });
+            }
+            
+        }
+    }, [netInfo.isConnected, strings.transaction_offline_error]);
     
     return (
         <KeyboardAvoidingView 
@@ -100,13 +120,24 @@ export default function ChangePasswordScreen() {
         >
 
             <TouchableOpacity onPress={() => router.back()} style={styles.back}>
-                    <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
-                </TouchableOpacity>
+                <ChevronLeftIcon color={theme.highContrast} size={30}></ChevronLeftIcon>
+            </TouchableOpacity>
+
+            {isOffline && (
+                <View style={styles.offlineWrapper}>
+                    <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                        {strings.no_internet_connection}
+                    </ThemedText>
+                    <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                        {strings.no_internet_connection_disclaimer}
+                    </ThemedText>
+                </View>
+            )}
 
             <View style={[ styles.container, { backgroundColor: theme.background }]}>
 
                 <View style={styles.titleContainer}>
-                    <ThemedText type="titleMid" style={{color: theme.failure, paddingLeft: '2%'}}>
+                    <ThemedText type="titleMid" style={{color: theme.highContrast, paddingLeft: '2%'}}>
                         {strings.changePassword_title}
                     </ThemedText>
                     <ThemedText type="subtitle" style={{color: theme.midContrast, maxWidth: 300 }}>
@@ -122,7 +153,7 @@ export default function ChangePasswordScreen() {
                         onChangeText={setOldPassword}
                         value={oldPassword}
                         secureTextEntry={true}
-                        editable={!loading}
+                        editable={!loading && !isOffline}
                     />
                     <TextInput 
                         placeholder={strings.changePassword_newPassword} 
@@ -131,16 +162,27 @@ export default function ChangePasswordScreen() {
                         onChangeText={setNewPassword}
                         value={newPassword}
                         secureTextEntry={true}
-                        editable={!loading}
+                        editable={!loading && !isOffline}
                     />
                 </View>
 
+                {message.type && message.text ? (
+                    <View style={ styles.messageContainer }>
+                    <ThemedText 
+                        type="default"
+                        style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
+                    >
+                        {message.text}  
+                    </ThemedText>  
+                    </View>
+                ) : null}
+
                 <TouchableOpacity 
-                    style={[styles.button, { backgroundColor: theme.failure }]}
+                    style={[styles.button, { backgroundColor: theme.failure, opacity: (loading || isOffline) ? 0.2 : 1 }]}
                     onPress={handleDelete}
-                    disabled={loading}
+                    disabled={loading || isOffline}            
                 >
-                    <ThemedText type='default' style={{ color: theme.background }}>
+                    <ThemedText type='default' style={{ color: theme.highContrast }}>
                         {loading ? strings.changePassword_loading : strings.changePassword_button}
                     </ThemedText>
                 </TouchableOpacity>
@@ -166,8 +208,21 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 480, 
     },
+    offlineWrapper: {
+        position: 'absolute',
+        top: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+        maxWidth: 200,
+    },
+    offlineText: {
+        fontSize: 12,
+        fontFamily: Fonts.bold,
+        textAlign: 'center',
+    },
     titleContainer: { 
-        marginBottom: 40, 
+        marginBottom: 24, 
         alignItems: 'center',
         width: '96%', 
         gap: 6,
@@ -199,5 +254,13 @@ const styles = StyleSheet.create({
         top: '8%', 
         left: '4%',
         zIndex: 10,
+    },
+    messageContainer: {
+        marginVertical: 10,
+        marginBottom: 20, 
+        paddingHorizontal: 20
+    },
+    message: {
+        textAlign: 'center',
     },
 });
