@@ -1,14 +1,13 @@
-import { LineChart } from "react-native-chart-kit";
-import { Dimensions, TouchableOpacity, View, StyleSheet, ActivityIndicator } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import { ChevronLeftIcon } from "@/components/Icons";
 import { ThemedText } from "@/components/themed-text";
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
+import { LineChart } from "react-native-chart-kit";
 import { LanguageContext } from '../contexts/languageContext';
 import { ThemeContext } from '../contexts/themeContext';
 import { Fonts } from './_layout';
-import { useRouter } from "expo-router";
-import { ChevronLeftIcon } from "@/components/Icons";
-import { useLocalSearchParams } from 'expo-router';
-import { useNetInfo } from '@react-native-community/netinfo';
 
 
 
@@ -45,6 +44,10 @@ export default function TransactionChart({  }) {
     }
   };
 
+  function roundToTwo(num: number): number {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+  }
+
   const fetchHistoryData = async (code: string, days: number) => { 
     try {
         setLoading(true);
@@ -61,7 +64,7 @@ export default function TransactionChart({  }) {
         const result = await response.json();
 
         if (result.success && result.data) {
-            const points = result.data.map((item: any) => item.rate);
+            const points = result.data.map((item: any) => roundToTwo(Number(item.rate)));
             
             const labels = points.map((_: any, index: number) => {
                 const transLabels = days === 365 
