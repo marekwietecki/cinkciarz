@@ -65,7 +65,8 @@ export default function TransactionScreen() {
         setAvatar('');
       }
     } catch (e) {
-      console.error('Błąd ładowania avatara:', e);
+      //console.error('Błąd ładowania avatara:', e);
+      console.log('Błąd ładowania avatara:', e);
     }
   }, []);
 
@@ -85,7 +86,8 @@ export default function TransactionScreen() {
         setUserWallets(result || []);
       }
     } catch (error) {
-      console.error("Błąd pobierania portfeli:", error);
+      //console.error("Błąd pobierania portfeli:", error);
+      console.log("Błąd pobierania portfeli:", error);
     }
   }, [token]);
 
@@ -109,7 +111,8 @@ export default function TransactionScreen() {
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        console.error("Serwer nie zwrócił JSON-a!");
+        //console.error("Serwer nie zwrócił JSON-a!");
+        console.log("Serwer nie zwrócił JSON-a!");
         return 0;
       }
 
@@ -120,7 +123,8 @@ export default function TransactionScreen() {
       }
       return 0;
     } catch (error) {
-      console.error(`Błąd sieci dla ${currencyCode}:`, error);
+      //console.error(`Błąd sieci dla ${currencyCode}:`, error);
+      console.log(`Błąd sieci dla ${currencyCode}:`, error);
       return 0;
     } finally {
       setLoading(false);
@@ -577,12 +581,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
-    maxWidth: 200,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
   },
   offlineText: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: Fonts.bold,
     textAlign: 'center',
+    lineHeight: 16,
   },
   titleWrapper: {
     width: '100%',

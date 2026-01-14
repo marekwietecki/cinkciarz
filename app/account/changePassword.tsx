@@ -78,7 +78,7 @@ export default function ChangePasswordScreen() {
                     console.error("Błąd pobierania profilu:", error);
                 }
 
-                setMessage(data.message || strings.change_password_success);
+                setMessage(data.message || strings.changePassword_success);
 
 
                 await AsyncStorage.removeItem(AVATAR_KEY);
@@ -87,10 +87,11 @@ export default function ChangePasswordScreen() {
                     params: { changed: 'true' }
                 })
             } else {
-                setMessage(data.message || strings.change_password_unknown_error);
+                setMessage(data.message || strings.changePassword_unknown_error);
             }
         } catch (error) {
-            console.error("Błąd usunięcia konta:", error);
+            //console.error("Błąd usunięcia konta:", error);
+            console.log("Błąd usunięcia konta:", error);
             setMessage({ text: strings.changePassword_network_error, type: 'error' });
         } finally {
             setLoading(false);
@@ -100,18 +101,18 @@ export default function ChangePasswordScreen() {
     useEffect(() => {
         if (netInfo.isConnected === false) {
             setMessage({ 
-            text: strings.transaction_offline_error, 
+            text: strings.delete_offline_error, 
             type: 'error' 
             });
         } else if (netInfo.isConnected === true) {
             console.log("Internet wrócił!");
             
-            if (message.text === strings.transaction_offline_error) {
+            if (message.text === strings.delete_offline_error) {
             setMessage({ text: '', type: null });
             }
             
         }
-    }, [netInfo.isConnected, strings.transaction_offline_error]);
+    }, [netInfo.isConnected, strings.delete_offline_error]);
     
     return (
         <KeyboardAvoidingView 
@@ -214,12 +215,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 999,
-        maxWidth: 200,
+        maxWidth: 220,
+        paddingVertical: 6,
+        paddingHorizontal: 14,
     },
     offlineText: {
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: Fonts.bold,
         textAlign: 'center',
+        lineHeight: 16,
     },
     titleContainer: { 
         marginBottom: 24, 

@@ -18,21 +18,26 @@ import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
 export default function HistoryScreen() {
   const router = useRouter();
-    const { strings } = useContext(LanguageContext);
-    const { theme } = useContext(ThemeContext);
-    const { token } = useContext(AuthContext);
-    
-    const [ avatar, setAvatar ] = useState('');
-    const [ history, setHistory ] = useState<TransactionExtended[]>([]);
-    const [historyDirection, setHistoryDirection] = useState<'AZ' | 'ZA'>('AZ');
-    const HISTORY_CACHE_KEY = '@wallet_history_cache';
-    const netInfo = useNetInfo();
-    const isOffline = netInfo.isConnected === false;  
-    const [isDataFromCache, setIsDataFromCache] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
-    
+  const { strings } = useContext(LanguageContext);
+  const { theme } = useContext(ThemeContext);
+  const { token } = useContext(AuthContext);
+  
+  const [ avatar, setAvatar ] = useState('');
+  const [ history, setHistory ] = useState<TransactionExtended[]>([]);
+  const [historyDirection, setHistoryDirection] = useState<'AZ' | 'ZA'>('AZ');
+  const HISTORY_CACHE_KEY = '@wallet_history_cache';
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false;  
+  const [isDataFromCache, setIsDataFromCache] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-    const ensureWallet = async () => {
+  const ensureWallet = async () => {
+    if (isOffline) {
+      console.log("ensureWallet: Skip (offline mode)");
+      return;
+    }
+
+    try {
       const response = await fetch(`${BASE_API_URL}/wallet/create`, {
         method: 'POST',
         headers: {
@@ -46,7 +51,10 @@ export default function HistoryScreen() {
       } else if (response.status === 400) {
         console.log("Wallet already exists");
       }
-    };
+    } catch (error) {
+      console.log("ensureWallet: Network error (silent catch)");
+    }
+  };
 
   const loadAvatar = useCallback(async () => {
     try {
@@ -250,12 +258,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
-    maxWidth: 200,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
   },
   offlineText: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: Fonts.bold,
     textAlign: 'center',
+    lineHeight: 16,
   },
   titleIconWrapper: {
     flexDirection: 'row', 

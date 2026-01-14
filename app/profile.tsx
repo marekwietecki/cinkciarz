@@ -52,7 +52,8 @@ export default function ProfileScreen() {
                 }
             }
         } catch (error) {
-            console.error("Błąd pobierania profilu:", error);
+            //console.error("Błąd pobierania profilu:", error);
+            console.log("Błąd pobierania profilu:", error);
         }
     };
 
@@ -71,7 +72,8 @@ export default function ProfileScreen() {
             
             console.log('Użytkownik wylogowany pomyślnie.');
         } catch (e) {
-            console.error('Błąd podczas wylogowywania:', e);
+            //console.error('Błąd podczas wylogowywania:', e);
+            console.log('Błąd podczas wylogowywania:', e);
             router.replace('/(auth)/login'); 
         }
     };
@@ -83,7 +85,8 @@ export default function ProfileScreen() {
             await AsyncStorage.setItem(userSpecificKey, newAvatar);
             setAvatar(newAvatar);
         } catch (e) {
-            console.error('Błąd zapisu avatara:', e);
+            //console.error('Błąd zapisu avatara:', e);
+            console.log('Błąd zapisu avatara:', e);
         }
     }, [userEmail]);
 
@@ -284,12 +287,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 999,
-        maxWidth: 200,
+        maxWidth: 220,
+        paddingVertical: 6,
+        paddingHorizontal: 14,
     },
     offlineText: {
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: Fonts.bold,
         textAlign: 'center',
+        lineHeight: 16,
     },
     label: { 
         fontSize: 16, 

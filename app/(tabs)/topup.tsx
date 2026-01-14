@@ -50,7 +50,8 @@ export default function TopUpScreen() {
             setAvatar('');
             }
         } catch (e) {
-            console.error('Błąd ładowania avatara:', e);
+            //console.error('Błąd ładowania avatara:', e);
+            console.log('Błąd ładowania avatara:', e);
         }
     }, []);
 
@@ -285,12 +286,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 999,
-        maxWidth: 200,
+        maxWidth: 220,
+        paddingVertical: 6,
+        paddingHorizontal: 14,
     },
     offlineText: {
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: Fonts.bold,
         textAlign: 'center',
+        lineHeight: 16,
     },
     titleWrapper: {
         width: '100%',
@@ -368,4 +372,19 @@ const styles = StyleSheet.create({
         marginTop: 'auto', 
         marginBottom: 40,
     },
+    buttonWrapper: {
+        paddingVertical: 24,
+        paddingHorizontal: '6%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    /*
+    button: {
+        paddingVertical: 16,
+        paddingHorizontal: 32,
+        borderRadius: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    */
 });

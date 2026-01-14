@@ -40,7 +40,8 @@ export default function TransactionChart({  }) {
       
       setWallets(safeWalletsData);
     } catch (error) {
-      console.error("Błąd pobierania portfeli:", error);
+      //console.error("Błąd pobierania portfeli:", error);
+      console.log("Błąd pobierania portfeli:", error);
     }
   };
 
@@ -78,7 +79,8 @@ export default function TransactionChart({  }) {
             return { labels, datasets: [{ data: points }] };
         }
     } catch (error) {
-        console.error("Błąd:", error);
+        //console.error("Błąd:", error);
+        console.log("Błąd:", error);
         return null;
     } finally {
         setLoading(false);
@@ -99,7 +101,8 @@ export default function TransactionChart({  }) {
           ]);
           setChartData(data);
         } catch (error) {
-          console.error(error);
+          //console.error(error);
+          console.log(error);
         } finally {
           setLoading(false); 
         }
@@ -112,18 +115,18 @@ export default function TransactionChart({  }) {
   useEffect(() => {
     if (netInfo.isConnected === false) {
       setMessage({ 
-        text: strings.transaction_offline_error, 
+        text: strings.historicRates_offline_error, 
         type: 'error' 
       });
     } else if (netInfo.isConnected === true) {
       console.log("Internet wrócił!");
       
-      if (message.text === strings.transaction_offline_error) {
+      if (message.text === strings.historicRates_offline_error) {
         setMessage({ text: '', type: null });
       }
       
     }
-  }, [netInfo.isConnected, strings.transaction_offline_error]);
+  }, [netInfo.isConnected, strings.historicRates_offline_error]);
 
 
   return (
@@ -326,12 +329,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
-    maxWidth: 200,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
   },
   offlineText: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: Fonts.bold,
     textAlign: 'center',
+    lineHeight: 16,
   },
   infoContainer: {
     width: 300,

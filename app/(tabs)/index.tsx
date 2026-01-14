@@ -69,7 +69,8 @@ export default function WalletScreen() {
         setAvatar('');
       }
     } catch (e) {
-      console.error('Błąd ładowania avatara:', e);
+      //console.error('Błąd ładowania avatara:', e);
+      console.log('Błąd ładowania avatara:', e);
     }
   }, []);
 
@@ -84,6 +85,11 @@ const fetchRate = useCallback(async (currencyCode: string) => {
 }, []);
 
 const fetchWallets = useCallback(async () => {
+  if (isOffline) {
+    console.log("fetchWallets: Skip (offline)");
+    return;
+  }
+
   try {
     setLoading(true);
 
@@ -134,18 +140,27 @@ const fetchWallets = useCallback(async () => {
   };
 
   const ensureWallet = async () => {
-    const response = await fetch(`${BASE_API_URL}/wallet/create`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    if (isOffline) {
+      console.log("ensureWallet: Skip (offline mode)");
+      return;
+    }
 
-    if (response.status === 201) {
-      console.log("Wallet created");
-    } else if (response.status === 400) {
-      console.log("Wallet already exists");
+    try {
+      const response = await fetch(`${BASE_API_URL}/wallet/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 201) {
+        console.log("Wallet created");
+      } else if (response.status === 400) {
+        console.log("Wallet already exists");
+      }
+    } catch (error) {
+      console.log("ensureWallet: Network error (silent catch)");
     }
   };
 
@@ -187,7 +202,8 @@ const fetchWallets = useCallback(async () => {
       setHistory(enhanced);
     }
   } catch (error) {
-    console.error("Błąd ładowania historii:", error);
+    //console.error("Błąd ładowania historii:", error);
+    console.log("Błąd ładowania historii:", error);
   }
 }, []);
   
@@ -408,12 +424,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
-    maxWidth: 200,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
   },
   offlineText: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: Fonts.bold,
     textAlign: 'center',
+    lineHeight: 16,
   },
   titleWrapper: {
     width: '100%',

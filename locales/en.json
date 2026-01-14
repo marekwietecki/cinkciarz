@@ -31,6 +31,7 @@
     "historicRates_year": "One Year",
     "historicRates_three_months": "Three Months",
     "historicRates_button": "Buy more: ",
+    "historicRates_offline_error": "No internet connection - You can't see a historic currency chart while being offline.",
 
     "topup_title": "Top Up",
     "topup_PLN": "Polish Złoty - PLN",
@@ -45,7 +46,7 @@
     "topup_success": "Topped Up successfully",
     "topup_error": "Top Up error, try again later.",
     "topup_network_error": "Network error, try again later.",
-    "topup_offline_error": "No internet connection - You cannot make a top up while being offline.",
+    "topup_offline_error": "No internet connection - You can't make a top up while being offline.",
 
     "transaction_title": "Transaction",
     "transaction_sell": "You are selling",
@@ -60,7 +61,7 @@
     "transaction_network_error": "Network error. Unable to connect with server.",
     "transaction_sell_limit": "You own only: ",
     "transaction_buy_limit": "For money You own, You can only buy: ",
-    "transaction_offline_error": "No internet connection - You cannot make a transaction while being offline.",
+    "transaction_offline_error": "No internet connection - You can't make a transaction while being offline.",
 
     "history_title": "History",
     "history_deposit": "Account\nTop-Up",
@@ -81,6 +82,7 @@
     "login_unknown_error": "Unknown Login error occurred",
     "login_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
     "login_loading": "Login in progress..",
+    "login_offline_error": "No internet connection - You can't log in while being offline.",
 
     "register_title": "Register!",
     "register_subtitle": "Register to eWalutka.pl - your online currency exchange service.",
@@ -97,26 +99,13 @@
     "register_success_message": "Registered succefully",
     "register_unknown_error": "Unknown Registration error occurred",
     "register_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
-    "register_loading": "Registration in progress..",
-
-    "change_password_fields_required": "Fill in all items",
-    "change_password_current_password": "Current Password",
-    "change_password_new_password": "New Password",
-    "change_password_confirm_password": "Repeat Password",
-    "change_password_password_mismatch": "Given passwords are not the same",
-    "change_password_error_auth": "Authorization failure. Log In.",
-    "change_password_success": "Password changed succefully",
-    "change_password_unknown_error": "Unknown error of changing password occurred",
-    "change_password_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
-    "change_password_title": "Changing password",
-    "change_password_warning": "Your password will be permanently changed. To continue, confirm your password and new password.",
-    "change_password_loading": "Changing password in progress..",
-    "change_password_button": "Change password",
+    "register_loading": "Registration in progress..",    
+    "register_offline_error": "No internet connection - You can't register while being offline.",
 
     "delete_fields_required": "Fill in all items",
     "delete_error_auth": "Authorization failure. Log In First.",
     "delete_success": "Account deleted succefully",
-    "delete_unknown_error": "Unknown error of deliting account occurred",
+    "delete_unknown_error": "Unknown error of deleting account occurred",
     "delete_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
     "delete_title": "Deleting Account",
     "delete_warning": "All your data will be permanently deleted. To continue, confirm your email and password.",
@@ -124,6 +113,7 @@
     "delete_button": "Delete account",
     "delete_email": "E-mail",
     "delete_password": "Password",
+    "delete_offline_error": "No internet connection - You cannot delete your account while being offline.",
 
     "changePassword_title": "Password Change",
     "changePassword_warning": "Your password will be changed, when you confirm your old password.",
@@ -135,6 +125,9 @@
     "changePassword_error_auth": "Authorization failure. Log In First.",
     "changePassword_success": "Password changed successfully",
     "changePassword_network_error": "Could not connect to the server. Please check your internet connection or try again later.",
+    "changePassword_offline_error": "No internet connection - You cannot change your password while being offline.",
+    "changePassword_unknown_error": "Unknown error of changing password occurred",
+
 
     "profile_logged_in": "Logged In",
     "profile_not_logged_in": "Not Logged In",

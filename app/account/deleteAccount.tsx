@@ -68,7 +68,8 @@ export default function DeleteAccountScreen() {
                 setMessage({ text: strings.delete_unknown_error, type: 'error' });
             }
         } catch (error) {
-            console.error("Błąd usunięcia konta:", error);
+            //console.error("Błąd usunięcia konta:", error);
+            console.log("Błąd usunięcia konta:", error);
             setMessage({ text: strings.delete_network_error, type: 'error' });
         } finally {
             setLoading(false);
@@ -192,12 +193,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 999,
-        maxWidth: 200,
+        maxWidth: 220,
+        paddingVertical: 6,
+        paddingHorizontal: 14,
     },
     offlineText: {
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: Fonts.bold,
         textAlign: 'center',
+        lineHeight: 16,
     },
     titleContainer: { 
         marginBottom: 24, 

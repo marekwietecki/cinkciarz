@@ -31,6 +31,7 @@
     "historicRates_year": "Roku",
     "historicRates_three_months": "Trzech Miesięcy",
     "historicRates_button": "Kup więcej: ",
+    "historicRates_offline_error": "Brak internetu - historyczny wykres waluty nie jest dostępny offline.",
 
 
     "topup_title": "Doładuj",
@@ -82,6 +83,7 @@
     "login_unknown_error": "Wystąpił nieznany błąd podczas logowania.",
     "login_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
     "login_loading": "Trwa logowanie..",
+    "login_offline_error": "Brak internetu - nie można się zalogować będąc offline.",
 
     "register_title": "Zarejestruj się!",
     "register_subtitle": "Zarejestruj się w eWalutka.pl - twoim internetowym serwisie wymiany walut.",
@@ -99,20 +101,8 @@
     "register_unknown_error": "Wystąpił nieznany błąd podczas rejestracji",
     "register_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
     "register_loading": "Trwa rejestracja..",
+    "register_offline_error": "Brak internetu - nie można się zarejestrować będąc offline.",
 
-    "change_password_fields_required": "Wypełnij wszystkie pola",
-    "change_password_current_password": "Obecne hasło",
-    "change_password_new_password": "Nowe hasło",
-    "change_password_confirm_password": "Potwierdzenie nowego hasła",
-    "change_password_password_mismatch": "Podane hasła nie są takie same",
-    "change_password_error_auth": "Błąd Autoryzacji. Zaloguj się.",
-    "change_password_success": "Hasło zostało zmienione pomyślnie",
-    "change_password_unknown_error": "Wystąpił nieznany błąd podczas zmiany hasla",
-    "change_password_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
-    "change_password_title": "Zmiana hasła",
-    "change_password_warning": "Twoje hasło zostanie trwale zmienione. Aby kontynuować, potwierdź obecne oraz nowe hasło.",
-    "change_password_loading": "Trwa zmiana hasła..",
-    "change_password_button": "Zmień hasło",
 
     "delete_fields_required": "Wypełnij wszystkie pola",
     "delete_error_auth": "Błąd Autoryzacji. Zaloguj się.",
@@ -125,6 +115,7 @@
     "delete_button": "Usuń Konto",
     "delete_email": "E-mail",
     "delete_password": "Hasło",
+    "delete_offline_error": "Brak internetu - nie można usunąć konta będąc offline.",
 
     "changePassword_title": "Zmiana Hasła",
     "changePassword_warning": "Twoje hasło zostanie zmienione, gdy potwierdzisz swoje stare hasło.",
@@ -136,6 +127,8 @@
     "changePassword_error_auth": "Błąd Autoryzacji. Zaloguj się.",
     "changePassword_success": "Hasło zmienione pomyślnie",
     "changePassword_network_error": "Nie udało się połączyć z serwerem. Sprawdź swoje połączenie internetowe lub spróbuj ponownie później.",
+    "changePassword_offline_error": "Brak internetu - nie można zmienić hasła będąc offline.",
+    "changePassword_unknown_error": "Wystąpił nieznany błąd podczas zmiany hasła",
 
     "profile_logged_in": "Zalogowano",
     "profile_not_logged_in": "Nie Zalogowano",

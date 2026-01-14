@@ -49,70 +49,72 @@ export default function RatesScreen() {
 
 
   const fetchExchangeData = async () => {
-      try {
-          const currentRes = await fetch(`${BASE_API_URL}/nbp/table/A`);
-          const currentData = await currentRes.json();
+    if (isOffline) return null;  
+    try {
+      const currentRes = await fetch(`${BASE_API_URL}/nbp/table/A`);
+      const currentData = await currentRes.json();
 
-          const range = getPastDateRange();
-          const pastRes = await fetch(`${BASE_API_URL}/nbp/table/A?startDate=${range.start}&endDate=${range.end}`);
-          const pastData = await pastRes.json();
+      const range = getPastDateRange();
+      const pastRes = await fetch(`${BASE_API_URL}/nbp/table/A?startDate=${range.start}&endDate=${range.end}`);
+      const pastData = await pastRes.json();
 
 
-          if (currentData.success) {
-              const dateFromApi = currentData.data && currentData.data[0] ? currentData.effectiveDate : (currentData[0]?.effectiveDate || '');            
-              console.log(dateFromApi);
+      if (currentData.success) {
+        const dateFromApi = currentData.data && currentData.data[0] ? currentData.effectiveDate : (currentData[0]?.effectiveDate || '');            
+        console.log(dateFromApi);
 
-              const joinedData = currentData.data.map((curr: any) => {
-                  const extraInfo = currenciesData.find(c => c.code === curr.code);
-                  
-                  const historyCurr = pastData.success 
-                      ? pastData.data.find((h: any) => h.code === curr.code) 
-                      : null;
+        const joinedData = currentData.data.map((curr: any) => {
+            const extraInfo = currenciesData.find(c => c.code === curr.code);
+            
+            const historyCurr = pastData.success 
+                ? pastData.data.find((h: any) => h.code === curr.code) 
+                : null;
 
-                  const currentRate = Math.round(curr.mid * 100) / 100;                
-                  const pastRate = historyCurr ? historyCurr.mid : currentRate;
-                  
-                  const trend = Math.round(((currentRate - pastRate) / pastRate) * 100 * 10) / 10;
-                  
-                  return {
-                      name: extraInfo?.name || '',
-                      code: curr.code,
-                      symbol: extraInfo?.symbol || '',
-                      flag: extraInfo?.flag || '🏳️',
-                      currentRate: currentRate.toFixed(2),
-                      trend: trend
-                  };
-              });
+            const currentRate = Math.round(curr.mid * 100) / 100;                
+            const pastRate = historyCurr ? historyCurr.mid : currentRate;
+            
+            const trend = Math.round(((currentRate - pastRate) / pastRate) * 100 * 10) / 10;
+            
+            return {
+                name: extraInfo?.name || '',
+                code: curr.code,
+                symbol: extraInfo?.symbol || '',
+                flag: extraInfo?.flag || '🏳️',
+                currentRate: currentRate.toFixed(2),
+                trend: trend
+            };
+        });
 
-              const priority: Record<string, number> = { 
-                  'EUR': 1, 
-                  'USD': 2, 
-                  'GBP': 3, 
-                  'CHF': 4,
-                  'CZK': 5,
-                  'CAD': 6 
-              };
+        const priority: Record<string, number> = { 
+            'EUR': 1, 
+            'USD': 2, 
+            'GBP': 3, 
+            'CHF': 4,
+            'CZK': 5,
+            'CAD': 6 
+        };
 
-              const finalData = joinedData
-                  .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) 
-                  .sort((a: CurrencyItem, b: CurrencyItem) => {
-                      const valA = priority[a.code] || 999;
-                      const valB = priority[b.code] || 999;
+        const finalData = joinedData
+            .filter((item: CurrencyItem) => parseFloat(item.currentRate) > 0) 
+            .sort((a: CurrencyItem, b: CurrencyItem) => {
+                const valA = priority[a.code] || 999;
+                const valB = priority[b.code] || 999;
 
-                      if (valA !== valB) {
-                          return valA - valB;
-                      }
-                      return a.code.localeCompare(b.code);
-                  });
+                if (valA !== valB) {
+                    return valA - valB;
+                }
+                return a.code.localeCompare(b.code);
+            });
 
-              return {
-                rates: finalData,  
-                date: dateFromApi
-              };
-          }
-      } catch (error) {
-          console.error("Błąd przy pobieraniu kursów:", error);
+        return {
+          rates: finalData,  
+          date: dateFromApi
+        };
       }
+    } catch (error) {
+      //console.error("Błąd przy pobieraniu kursów:", error);
+      console.log("Błąd przy pobieraniu kursów:", error);
+    }
   };
 
   const loadAvatar = useCallback(async () => {
@@ -126,7 +128,8 @@ export default function RatesScreen() {
         setAvatar('');
       }
     } catch (e) {
-      console.error('Błąd ładowania avatara:', e);
+      //console.error('Błąd ładowania avatara:', e);
+      console.log('Błąd ładowania avatara:', e);
     }
   }, []);
 
@@ -291,12 +294,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
-    maxWidth: 200,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
   },
   offlineText: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: Fonts.bold,
     textAlign: 'center',
+    lineHeight: 16,
   },
   titleIconWrapper: {
     flexDirection: 'row', 
