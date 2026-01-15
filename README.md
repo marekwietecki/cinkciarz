@@ -5,6 +5,7 @@ Kompletny system mobilny umożliwiający bezpieczną wymianę walut, śledzenie 
 ## Spis treści
 - [Opis projektu](#opis-projektu)
 - [Tech Stack](#tech-stack)
+- [Wymagania](#wymagania)
 - [Zakres Funkcjonalny](#zakres-funkcjonalny)
 - [Użycie endpointów](#użycie-endpointów)
 - [Instalacja i konfiguracja](#instalacja-i-konfiguracja)
@@ -26,6 +27,19 @@ Projekt ma na celu praktyczne zastosowanie zagadnień związanych z komunikacją
 * **Integracja zewnętrzna:** API NBP (kursy walut)
 
 
+## Wymagania
+
+Backend:
+* **Node.js**: produkcujnie v25.2.1
+* **npm**: produkcujnie v11.7
+* **System operacyjny**: produkcujnie Linux Arch
+* **Otwarte porty**: produkcujnie 4000
+
+Aplikacja (frontend):
+* **Node.js**: produkcujnie v25.2.1
+* **npm**: produkcujnie v11.7
+* **System operacyjny**: produkcujnie Windows 11
+* **Otwarte porty**: produkcujnie 8081
 
 
 ## Zakres Funkcjonalny
@@ -111,13 +125,36 @@ Serwis sieciowy udostępnia zestaw ścieżek REST umożliwiających komunikację
     ```bash
     cd backend
     npm install
-    node \server.js\
+    npm start
     ```
 
 4.  **Konfiguracja Frontend (Expo):**
     ```bash
     npm install
     npx expo start
+    ```
+
+4.  **Konfiguracja zmiennych środowiskowych:**
+
+    Zarówno Backend jak i Frontend obsługują zmienne środowiskowe. W celu użycia własnych zmiennych należy utworzyć plik **.env** w katalogach:
+    ```bash
+    /backend/.env
+    /.env
+    ```
+    Dane które są konfigurowalne są wymienione w plikach **config.js**. Przykładowe pliki **.env**:
+
+    **/backend/.env**
+    ```
+    PORT=4000
+    SECRET_KEY="SUPER_HIPER_SECRET_KEY_AND_LOCK" 
+    SALT_ROUNDS=16
+    ```
+
+    **/.env**
+    ```
+    EXPO_PUBLIC_BASE_API_URL="http://localhost:4000/api"
+    EXPO_PUBLIC_AUTH_TOKEN_KEY="userToken"
+    EXPO_PUBLIC_AVATAR_KEY="userAvatar"
     ```
 
 
