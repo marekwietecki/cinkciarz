@@ -17,6 +17,8 @@
     "wallet_history": "Ostatnia Transakcja",
     "wallet_history_link": "Zobacz całą historię transakcji", 
     "wallet_no_transactions": "Brak Transakcji", 
+    "wallet_offline_error": "Brak Internetu - Dane, które widzisz mogą być nieaktualne.",
+    "wallet_back_online": "Aplikacja spowrotem działa w trybie online. Wszystkie dane są aktualne.",
 
     "rates_title": "Bieżące kursy",
     "rates_disclaimer": "Wszystkie kursy są porównywane względem głównej waluty, jaką jest \"Polski Złoty\" - PLN",

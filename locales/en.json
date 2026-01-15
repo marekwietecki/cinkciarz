@@ -17,6 +17,8 @@
     "wallet_history": "Last Transaction",
     "wallet_history_link": "See full transaction history",
     "wallet_no_transactions": "No Transactions", 
+    "wallet_offline_error": "No internet connection - Data You see might be out-of-date.",
+    "wallet_back_online": "The app is back in online mode. All the data is up-to-date.",
 
     "rates_title": "Current Rates",
     "rates_disclaimer": "All rates are being compared to the main currency which is \"Polish Złoty\" - PLN",

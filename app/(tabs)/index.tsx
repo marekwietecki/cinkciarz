@@ -42,6 +42,9 @@ export default function WalletScreen() {
   const [ totalBalance, setTotalBalance ] = useState(0);
   const netInfo = useNetInfo();
   const isOffline = netInfo.isConnected === false;
+  const WALLETS_CACHE_KEY = 'CACHED_WALLETS';
+  const HISTORY_CACHE_KEY = 'CACHED_HISTORY';
+  const TOTAL_BALANCE_CACHE_KEY = 'CACHED_TOTAL_BALANCE';
   
   useEffect(() => {
     if (loggedin === 'true') {
@@ -74,57 +77,64 @@ export default function WalletScreen() {
     }
   }, []);
 
-const fetchRate = useCallback(async (currencyCode: string) => {
-  if (currencyCode === 'PLN') return 1; 
-  try {
-    const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
-    if (!response.ok) return 0;
-    const result = await response.json();
-    return result.success ? result.data[result.data.length - 1].rate : 0;
-  } catch (e) { return 0; }
-}, []);
+  const fetchRate = useCallback(async (currencyCode: string) => {
+    if (currencyCode === 'PLN') return 1; 
+    try {
+      const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
+      if (!response.ok) return 0;
+      const result = await response.json();
+      return result.success ? result.data[result.data.length - 1].rate : 0;
+    } catch (e) { return 0; }
+  }, []);
 
-const fetchWallets = useCallback(async () => {
-  if (isOffline) {
-    console.log("fetchWallets: Skip (offline)");
-    return;
-  }
+  const fetchWallets = useCallback(async () => {
+    if (isOffline) {
+      const cachedWallets = await AsyncStorage.getItem(WALLETS_CACHE_KEY);
+      const cachedTotal = await AsyncStorage.getItem(TOTAL_BALANCE_CACHE_KEY);
 
-  try {
-    setLoading(true);
+      if(cachedWallets) setWallets(JSON.parse(cachedWallets));
+      if(cachedTotal) setTotalBalance(parseFloat(cachedTotal));
 
-    const response = await fetch(`${BASE_API_URL}/wallet`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    
-    const walletsData = await response.json();
-    const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
-    const uniqueCurrencies = [...new Set(safeWalletsData.map((w: any) => w.currency as string))]
-      .filter(curr => curr !== 'PLN');
-    
+      console.log("fetchWallets: Skip (offline)");
+      return;
+    }
 
-    const ratesArray = await Promise.all(
-      uniqueCurrencies.map(async (currCode) => {
-        
-        const code = String(currCode); 
-        
-        const rate = await fetchRate(code);
-        
-        return { 
-          code: code, 
-          mid: rate || 0 
-        };
-      })
-    );
+    try {
+      setLoading(true);
 
-    const total = calculateTotal(safeWalletsData, ratesArray);
-    
-    setWallets(walletsData);
-    setTotalBalance(total);
-  } finally {
-    setLoading(false);
-  }
-}, [fetchRate]);
+      const response = await fetch(`${BASE_API_URL}/wallet`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      
+      const walletsData = await response.json();
+      const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
+
+      const uniqueCurrencies = [...new Set(safeWalletsData.map((w: any) => w.currency as string))]
+        .filter(curr => curr !== 'PLN');
+      
+
+      const ratesArray = await Promise.all(
+        uniqueCurrencies.map(async (currCode) => {
+          const rate = await fetchRate(String(currCode));
+          return { 
+            code: currCode, 
+            mid: rate || 0 
+          };
+        })
+      );
+
+      const total = calculateTotal(safeWalletsData, ratesArray);
+      
+      setWallets(walletsData);
+      setTotalBalance(total);
+
+      await AsyncStorage.setItem(WALLETS_CACHE_KEY, JSON.stringify(walletsData));
+      await AsyncStorage.setItem(TOTAL_BALANCE_CACHE_KEY, total.toString());
+
+    } finally {
+      setLoading(false);
+    }
+  }, [isOffline, token, fetchRate]);
 
   const calculateTotal = (wallets: any[], rates: any[]) => {
     return wallets.reduce((sum: number, wallet: { currency: string; amount: number; }) => {
@@ -165,47 +175,58 @@ const fetchWallets = useCallback(async () => {
   };
 
   const loadHistory = useCallback(async () => {
-  try {
-    await ensureWallet();
-
-    const response = await fetch(`${BASE_API_URL}/wallet/history`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    if (isOffline) {
+      const cachedHistory = await AsyncStorage.getItem(HISTORY_CACHE_KEY);
+      if (cachedHistory) {
+        setHistory(JSON.parse(cachedHistory));
+        console.log("loadHistory: Załadowano historię z cache (offline)");
       }
-    });
-
-    if (response.ok) {
-      const rawTransactions = await response.json();
-      console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk");
-      
-      const enhanced = rawTransactions
-        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 1)
-        .map((tx: any) => {
-          const fromCode = tx.from_currency?.toUpperCase();
-          const toCode = tx.to_currency?.toUpperCase();
-
-          const fromInfo = currenciesJson.find(c => c.code === fromCode);
-          const toInfo = currenciesJson.find(c => c.code === toCode);
-
-          return {
-            ...tx, 
-            fromFlag: fromInfo?.flag || '🏳️',
-            toFlag: toInfo?.flag || '🏳️',
-            from_currency: fromCode,
-            to_currency: toCode,
-          };
-        });
-
-      setHistory(enhanced);
+      return;
     }
-  } catch (error) {
-    //console.error("Błąd ładowania historii:", error);
-    console.log("Błąd ładowania historii:", error);
-  }
-}, []);
+    
+    try {
+      await ensureWallet();
+
+      const response = await fetch(`${BASE_API_URL}/wallet/history`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const rawTransactions = await response.json();
+        console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk");
+        
+        const enhanced = rawTransactions
+          .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 1)
+          .map((tx: any) => {
+            const fromCode = tx.from_currency?.toUpperCase();
+            const toCode = tx.to_currency?.toUpperCase();
+
+            const fromInfo = currenciesJson.find(c => c.code === fromCode);
+            const toInfo = currenciesJson.find(c => c.code === toCode);
+
+            return {
+              ...tx, 
+              fromFlag: fromInfo?.flag || '🏳️',
+              toFlag: toInfo?.flag || '🏳️',
+              from_currency: fromCode,
+              to_currency: toCode,
+            };
+          });
+
+        setHistory(enhanced);
+
+        await AsyncStorage.setItem(HISTORY_CACHE_KEY, JSON.stringify(enhanced));
+      }
+    } catch (error) {
+      //console.error("Błąd ładowania historii:", error);
+      console.log("Błąd ładowania historii:", error);
+    }
+  }, [isOffline, token]);
   
   useFocusEffect(
     useCallback(() => {
@@ -222,6 +243,18 @@ const fetchWallets = useCallback(async () => {
       fetchWallets();
     }
   }, [netInfo.isConnected]);
+
+  useEffect(() => {
+  if (netInfo.isConnected === false) {
+    setMessage({ 
+      text: strings.wallet_offline_error,
+      type: 'error' 
+    });
+  } else if (netInfo.isConnected === true) {
+    setMessage({ text: strings.wallet_back_online, type: 'success' });
+    setTimeout(() => setMessage({ text: '', type: null }), 3000);
+  }
+}, [netInfo.isConnected, strings.no_internet_connection]);
 
   return (
     <View style={[
@@ -275,13 +308,14 @@ const fetchWallets = useCallback(async () => {
         </TouchableOpacity>
       </View>
 
-      <View style={{maxHeight: 140}}>  
+      <View style={{maxHeight: 120}}>  
         <ScrollView
           horizontal 
-          style={{ marginTop: 16, width: 320, alignSelf: 'flex-start',   }}
+          style={{ marginTop: 8, width: 320, alignSelf: 'flex-start', //backgroundColor: 'blue'
+          }}
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={{ 
-            paddingHorizontal: 16, //'4%'
+            paddingHorizontal: 20, //'4%'
             paddingVertical: 8,
             columnGap: dynamicGap,
           }}
@@ -447,7 +481,7 @@ const styles = StyleSheet.create({
   walletWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 12,
     width: 288, //264
     height: 184.42, //169
   },
@@ -465,8 +499,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   messageContainer: {
-    marginVertical: '6%', 
-    paddingHorizontal: 20
+    marginTop: '1.5%', //iOS 3%, Android ?, Web ?
+    marginBottom: '2.5%',
+    paddingHorizontal: 20,
+    //height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    //backgroundColor: 'blue',
   },
   message: {
     textAlign: 'center',
