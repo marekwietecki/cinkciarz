@@ -4,15 +4,15 @@ import { ThemedText } from '@/components/themed-text';
 import { AuthContext } from '@/contexts/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, View, ViewStyle } from 'react-native';
 import currenciesJson from '../../backend/currencies.json';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
-import { Fonts } from '../_layout';
-import { useWindowDimensions } from 'react-native';
 
-import { AVATAR_KEY, BASE_API_URL } from '@/config';
+import { Fonts } from '../_layout';
+
+import { BASE_API_URL } from '@/config';
 import { useNetInfo } from '@react-native-community/netinfo';
 
 
@@ -31,8 +31,12 @@ export default function WalletScreen() {
   const { loggedin } = useLocalSearchParams<{ loggedin: string }>();  
   const { width } = useWindowDimensions();
   
-  const isLargeScreen = width > 480;
-  const dynamicGap = isLargeScreen ? 40 : 4;
+  const isWideScreen = width > 480;
+  const dynamicGap = isWideScreen ? 40 : 4;
+  const messageMargins = {
+    marginTop: isWideScreen ? 20 : '1.5%',
+    marginBottom: isWideScreen ? 40 : '2.5%',
+  }
   
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [ avatar, setAvatar ] = useState('');
@@ -42,6 +46,7 @@ export default function WalletScreen() {
   const [ totalBalance, setTotalBalance ] = useState(0);
   const netInfo = useNetInfo();
   const isOffline = netInfo.isConnected === false;
+  const prevIsConnected = useRef<boolean | null>(null)
   const WALLETS_CACHE_KEY = 'CACHED_WALLETS';
   const HISTORY_CACHE_KEY = 'CACHED_HISTORY';
   const TOTAL_BALANCE_CACHE_KEY = 'CACHED_TOTAL_BALANCE';
@@ -245,16 +250,38 @@ export default function WalletScreen() {
   }, [netInfo.isConnected]);
 
   useEffect(() => {
-  if (netInfo.isConnected === false) {
-    setMessage({ 
-      text: strings.wallet_offline_error,
-      type: 'error' 
-    });
-  } else if (netInfo.isConnected === true) {
-    setMessage({ text: strings.wallet_back_online, type: 'success' });
-    setTimeout(() => setMessage({ text: '', type: null }), 3000);
-  }
-}, [netInfo.isConnected, strings.no_internet_connection]);
+    const prev = prevIsConnected.current;
+    const current = netInfo.isConnected;
+
+    // First render
+    if (prev === null || current === null) {
+      prevIsConnected.current = current;
+      return;
+    }
+
+    // offline
+    if (prev === true && current === false) {
+      setMessage({
+        text: strings.wallet_offline_error,
+        type: 'error',
+      });
+    }
+
+    // back online
+    if (prev === false && current === true) {
+      setMessage({
+        text: strings.wallet_back_online,
+        type: 'success',
+      });
+
+      setTimeout(() => {
+        setMessage({ text: '', type: null });
+      }, 3000);
+    }
+
+    prevIsConnected.current = current;
+  }, [netInfo.isConnected]);
+
 
   return (
     <View style={[
@@ -308,21 +335,23 @@ export default function WalletScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={{maxHeight: 120}}>  
+      <View style={{maxHeight: 120, height: 120, width: '100%', alignItems: 'center' }}>  
         <ScrollView
           horizontal 
-          style={{ marginTop: 8, width: 320, alignSelf: 'flex-start', //backgroundColor: 'blue'
+          style={{ marginTop: 8, width: '100%', maxWidth: 340 //backgroundColor: 'blue'
           }}
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={{ 
-            paddingHorizontal: 20, //'4%'
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
             paddingVertical: 8,
             columnGap: dynamicGap,
           }}
         >
           {loading ? (
             <ActivityIndicator color={theme.highContrast} />
-          ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? ( 
+          ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? (
             wallets
               .filter(wallet => (wallet.amount ?? 0) > 0) 
               .map((wallet, index, array) => (
@@ -340,7 +369,7 @@ export default function WalletScreen() {
                         height: 40, 
                         backgroundColor: theme.midContrast, 
                         opacity: 0.2, 
-                        alignSelf: 'flex-start',
+                        alignSelf: 'center',
                         marginTop: 32, //'5%'
                         marginHorizontal: 10 
                       }} 
@@ -350,7 +379,7 @@ export default function WalletScreen() {
               ))
           ) : (
             <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 12 }}>
-              <ThemedText style={{ color: theme.lowContrast, textAlign: 'center' }}>
+              <ThemedText style={{ color: theme.lowContrast, textAlign: 'center', fontSize: 14 }}>
                 {strings.wallet_no_funds}
               </ThemedText>
             </View>
@@ -360,7 +389,7 @@ export default function WalletScreen() {
 
       <View 
         style={[
-          styles.messageContainer, 
+          styles.messageContainer, messageMargins as ViewStyle,
           { 
             opacity: (message.type && message.text) ? 1 : 0 
           }
@@ -400,7 +429,7 @@ export default function WalletScreen() {
             </View>
           )}
           ListEmptyComponent={() => (
-            <ThemedText style={{ textAlign: 'center', marginTop: 40, color: theme.lowContrast }}>
+            <ThemedText style={{ textAlign: 'center', marginTop: 40, color: theme.lowContrast, fontSize: 14 }}>
               {strings.wallet_no_transactions}
             </ThemedText>
           )}
@@ -499,8 +528,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   messageContainer: {
-    marginTop: '1.5%', //iOS 3%, Android ?, Web ?
-    marginBottom: '2.5%',
+    marginTop: '6%', //iOS 1.5%, Android 6%, Web ?
+    marginBottom: '12%', //iOS 2.5%, Android 12%, Web ?
     paddingHorizontal: 20,
     //height: 56,
     alignItems: 'center',
