@@ -31,7 +31,7 @@ export default function WalletScreen() {
   const { loggedin } = useLocalSearchParams<{ loggedin: string }>();  
   const { width } = useWindowDimensions();
   
-  const isWideScreen = width > 480;
+  const isWideScreen = width > 484;
   const dynamicGap = isWideScreen ? 40 : 4;
   const messageMargins = {
     marginTop: isWideScreen ? 20 : '1.5%',
