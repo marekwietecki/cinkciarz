@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
 import { Fonts } from '../_layout';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import { BASE_API_URL } from '@/config';
 
@@ -20,6 +21,8 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [loading, setLoading] = useState(false);
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false; 
 
   useEffect(() => {
       if (deleted === 'true') {
@@ -96,6 +99,16 @@ export default function RegisterScreen() {
       setConfirmPassword(text);
   };
 
+  useEffect(() => {
+    if (isOffline) {
+      setMessage({ text: strings.register_offline_error, type: 'error' });
+    } else {
+      setMessage((prev) => 
+        prev.text === strings.register_offline_error ? { text: '', type: null } : prev
+      );
+    }
+  }, [isOffline, strings.register_offline_error]);
+
   return (
     <KeyboardAvoidingView 
       style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center' }}
@@ -129,6 +142,7 @@ export default function RegisterScreen() {
                     value={email}
                     keyboardType='email-address'
                     autoCapitalize='none'
+                    editable={!isOffline && !loading}
                 />
             </View>
             <View style={styles.singleInputContainer}>
@@ -143,6 +157,7 @@ export default function RegisterScreen() {
                     onChangeText={handleSetPassword}
                     value={password}
                     secureTextEntry={true}
+                    editable={!isOffline && !loading}
                 />
             </View>
             <View style={styles.singleInputContainer}>
@@ -157,6 +172,7 @@ export default function RegisterScreen() {
                   onChangeText={handleSetConfirmPassword}
                   value={confirmPassword}
                   secureTextEntry={true}
+                  editable={!isOffline && !loading}
               />
             </View>
           </View>
@@ -173,9 +189,9 @@ export default function RegisterScreen() {
           ) : null}
 
           <TouchableOpacity 
-              style={[styles.button, {backgroundColor: theme.highContrast}]}
+              style={[styles.button, {backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1}]}
               onPress={handleRegister}
-              disabled={loading}    
+              disabled={loading || isOffline}    
           >
               <ThemedText type='default' style={{ color: theme.accentDark }}>
                   {loading ? strings.register_loading : strings.register_button}

@@ -39,7 +39,7 @@ export function CurrencyRateCard({ name, code, symbol, flag, currentRate, trend 
     };
 
     return (
-        <TouchableOpacity style={[styles.card, { backgroundColor: theme.background, borderColor: theme.lowContrast }]}>
+        <View style={[styles.card, { backgroundColor: theme.background, borderColor: theme.lowContrast }]}>
             <View style={styles.row}>
                 <View style={styles.currency}>                        
                     <ThemedText type="titleMid" style={{ color: theme.midContrast, marginTop: 3 }}>{flag}</ThemedText>
@@ -59,7 +59,7 @@ export function CurrencyRateCard({ name, code, symbol, flag, currentRate, trend 
                     </ThemedText>
                 </View>
             </View>
-        </TouchableOpacity>
+        </View>
     );
 }
 

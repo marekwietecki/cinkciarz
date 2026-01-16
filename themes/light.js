@@ -27,8 +27,8 @@ export default {
     highContrast: gray800,
     midContrast: gray500,
     lowContrast: gray300,
-    veryLowContrast: gray200,
-    background: gray100,
+    veryLowContrast: gray100, //200
+    background: gray000, //100
     accentDark: gold700,
     accentLight: gold400,
     tabIconDefault: gray400,

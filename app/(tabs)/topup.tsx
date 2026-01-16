@@ -1,7 +1,7 @@
 import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View, Keyboard, 
   TouchableWithoutFeedback } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -10,6 +10,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon, ChevronUpIcon } from '@/components/Icons';
 import { AuthContext } from '@/contexts/authContext';
+import currencies from '../../backend/currencies.json';
+import { useNetInfo } from '@react-native-community/netinfo';
+
+
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -26,6 +30,8 @@ export default function TopUpScreen() {
     const [loading, setLoading] = useState(false);
     const [pickerVisibility, setPickerVisibility] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
+    const netInfo = useNetInfo();
+    const isOffline = netInfo.isConnected === false; 
 
     const handleDismiss = () => {
         if (Platform.OS !== 'web') {
@@ -44,7 +50,8 @@ export default function TopUpScreen() {
             setAvatar('');
             }
         } catch (e) {
-            console.error('Błąd ładowania avatara:', e);
+            //console.error('Błąd ładowania avatara:', e);
+            console.log('Błąd ładowania avatara:', e);
         }
     }, []);
 
@@ -103,10 +110,15 @@ export default function TopUpScreen() {
         setMessage({ text: '', type: null });
     };
 
-    const handleSetAmount = (text: string) => {
+    const handleSetAmount = (val: string) => {
         setPickerVisibility(false);
+        let cleanVal = val.replace(',', '.');
+        const regex = /^\d*\.?\d{0,2}$/;
+        if (cleanVal !== "" && !regex.test(cleanVal)) {
+            return;
+        }
         clearMessage();
-        setAmount(text);
+        setAmount(cleanVal);
     };
 
 
@@ -116,15 +128,54 @@ export default function TopUpScreen() {
         }, [loadAvatar])
     );
 
+    useEffect(() => {
+        if (netInfo.isConnected === true) {
+          console.log("Internet wrócił! Odświeżam historię...");
+        }
+    }, [netInfo.isConnected]);
+
+    useEffect(() => {
+        if (netInfo.isConnected === false) {
+          setMessage({ 
+            text: strings.topup_offline_error, 
+            type: 'error' 
+          });
+        } else if (netInfo.isConnected === true) {
+          console.log("Internet wrócił!");
+          
+          if (message.text === strings.topup_offline_error) {
+            setMessage({ text: '', type: null });
+          }
+          
+        }
+    }, [netInfo.isConnected, strings.topup_offline_error]);
+
 return (
     <TouchableWithoutFeedback onPress={handleDismiss} accessible={false}>
         <View style={[
             styles.container,
             { backgroundColor: theme.background }
             ]}>
-            <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-                <ThemedText type="titleSmall">{avatar}</ThemedText>
+            <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}
+            >
+                {avatar === '' ? (
+                    <ThemedText type="titleSmall">👤</ThemedText>
+                ) : (
+                    <ThemedText type="titleSmall">{avatar}</ThemedText>
+                )}
             </TouchableOpacity>
+
+            {isOffline && (
+                <View style={styles.offlineWrapper}>
+                    <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                        {strings.no_internet_connection}
+                    </ThemedText>
+                    <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                        {strings.no_internet_connection_disclaimer}
+                    </ThemedText>
+                </View>
+            )}
+
             <View style={styles.titleWrapper}>
                 <ThemedText
                     type="titleMid"
@@ -138,10 +189,10 @@ return (
                         style={[styles.textInput, { color: theme.highContrast, borderColor: theme.lowContrast }]}
                         placeholder="0.00"
                         placeholderTextColor={theme.highContrast}
+                        editable={!isOffline && !loading}
                         keyboardType="decimal-pad"
                         value={amount}
                         onChangeText={handleSetAmount}
-                        editable={!loading} 
                         selectTextOnFocus={true}
                     />
                     <TouchableOpacity onPress={() => setPickerVisibility(!pickerVisibility)} style={{flexDirection: 'row', alignItems: "center"}}>
@@ -162,16 +213,21 @@ return (
                 <View style={[styles.pickerContainer, { borderColor: theme.lowContrast }]}>
                     <Picker
                         selectedValue={currency}
-                        onValueChange={(itemValue) => setCurrency(itemValue)}
+                        onValueChange={(itemValue) => {
+                            setPickerVisibility(false);
+                            setCurrency(itemValue)
+                        }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
-                        <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                        {currencies.map((curr) => (
+                        <Picker.Item 
+                          key={curr.code} 
+                          label={`${curr.code} - ${curr.name}`} 
+                          value={curr.code} 
+                          color={theme.highContrast}
+                        />
+                      ))}
                     </Picker>
                 </View>
                 )}
@@ -188,19 +244,20 @@ return (
                 ) : null}
             </View>
 
+
             <TouchableOpacity 
-                    style={[styles.button, { backgroundColor: theme.highContrast }]} 
-                    onPress={handleDeposit}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator color={theme.background} />
-                    ) : (
-                        <ThemedText type='default' style={{ color: theme.accentDark}}>
-                            {loading ? strings.topup_loading : strings.topup_button}
-                        </ThemedText>                
-                    )}
-                </TouchableOpacity>
+                style={[styles.button, { backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1 }]} 
+                onPress={handleDeposit}
+                disabled={loading || isOffline}            
+            >
+                {loading ? (
+                    <ActivityIndicator color={theme.background} />
+                ) : (
+                    <ThemedText type='default' style={{ color: theme.accentDark}}>
+                        {loading ? strings.topup_loading : strings.topup_button}
+                    </ThemedText>                
+                )}
+            </TouchableOpacity>
         </View>
     </TouchableWithoutFeedback>
 )};
@@ -222,6 +279,22 @@ const styles = StyleSheet.create({
         position: 'absolute', 
         top: 70, // '11%'
         right: 40, // '10.5%'
+    },
+    offlineWrapper: {
+        position: 'absolute',
+        top: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+        maxWidth: 220,
+        paddingVertical: 6,
+        paddingHorizontal: 14,
+    },
+    offlineText: {
+        fontSize: 10,
+        fontFamily: Fonts.bold,
+        textAlign: 'center',
+        lineHeight: 16,
     },
     titleWrapper: {
         width: '100%',
@@ -299,4 +372,19 @@ const styles = StyleSheet.create({
         marginTop: 'auto', 
         marginBottom: 40,
     },
+    buttonWrapper: {
+        paddingVertical: 24,
+        paddingHorizontal: '6%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    /*
+    button: {
+        paddingVertical: 16,
+        paddingHorizontal: 32,
+        borderRadius: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    */
 });

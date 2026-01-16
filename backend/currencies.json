@@ -6,10 +6,10 @@
     "flag": "🇵🇱"
     },
     {
-    "name": "Bat (Tajlandia)",
-    "code": "THB",
-    "symbol": "฿",
-    "flag": "🇹🇭"
+    "name": "Euro",
+    "code": "EUR",
+    "symbol": "€",
+    "flag": "🇪🇺"
     },
     {
     "name": "Dolar Amerykański",
@@ -17,6 +17,31 @@
     "symbol": "$",
     "flag": "🇺🇸"
     },
+    {
+    "name": "Funt Szterling",
+    "code": "GBP",
+    "symbol": "£",
+    "flag": "🇬🇧"
+    },
+    {
+    "name": "Frank Szwajcarski",
+    "code": "CHF",
+    "symbol": "Fr",
+    "flag": "🇨🇭"
+    },
+    {
+    "name": "Korona Czeska",
+    "code": "CZK",
+    "symbol": "Kč",
+    "flag": "🇨🇿"
+    },
+    {
+    "name": "Bat (Tajlandia)",
+    "code": "THB",
+    "symbol": "฿",
+    "flag": "🇹🇭"
+    },
+
     {
     "name": "Dolar Australijski",
     "code": "AUD",
@@ -47,30 +72,15 @@
     "symbol": "S$",
     "flag": "🇸🇬"
     },
-    {
-    "name": "Euro",
-    "code": "EUR",
-    "symbol": "€",
-    "flag": "🇪🇺"
-    },
+    
     {
     "name": "Forint (Węgry)",
     "code": "HUF",
     "symbol": "Ft",
     "flag": "🇭🇺"
     },
-    {
-    "name": "Frank Szwajcarski",
-    "code": "CHF",
-    "symbol": "Fr",
-    "flag": "🇨🇭"
-    },
-    {
-    "name": "Funt Szterling",
-    "code": "GBP",
-    "symbol": "£",
-    "flag": "🇬🇧"
-    },
+
+    
     {
     "name": "Hrywna (Ukraina)",
     "code": "UAH",
@@ -83,12 +93,7 @@
     "symbol": "¥",
     "flag": "🇯🇵"
     },
-    {
-    "name": "Korona Czeska",
-    "code": "CZK",
-    "symbol": "Kč",
-    "flag": "🇨🇿"
-    },
+    
     {
     "name": "Korona Duńska",
     "code": "DKK",

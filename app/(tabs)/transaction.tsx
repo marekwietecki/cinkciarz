@@ -3,13 +3,16 @@ import { ThemedText } from '@/components/themed-text';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/themeContext';
 import { LanguageContext } from '../../contexts/languageContext';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Fonts } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { ChevronDownIcon, ChevronUpIcon, ArrowDownUpIcon } from '@/components/Icons';
 import currenciesJson from '../../backend/currencies.json';
 import { AuthContext } from '@/contexts/authContext';
+import currencies from '../../backend/currencies.json';
+import { useNetInfo } from '@react-native-community/netinfo';
+
 
 import { BASE_API_URL, AVATAR_KEY } from '@/config';
 
@@ -18,6 +21,7 @@ export default function TransactionScreen() {
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   const { token } = useContext(AuthContext);
+  const { initialToCurrency } = useLocalSearchParams();
   
   const [avatar, setAvatar] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,13 +30,15 @@ export default function TransactionScreen() {
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
 
   const [fromCurrency, setFromCurrency] = useState('PLN');
-  const [toCurrency, setToCurrency] = useState('EUR');
+  const [toCurrency, setToCurrency] = useState<string>((initialToCurrency as string) || "USD");  
   const [toRate, setToRate] = useState<number | null>(null);
   const [fromRate, setFromRate] = useState<number | null>(null);
   const [transactionRate, setTransactionRate] = useState<number | null>(null);
   const [amount, setAmount] = useState('');
   const [lastChanged, setLastChanged] = useState<'from' | 'to'>('from');
   const [userWallets, setUserWallets] = useState<any[]>([]);
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false;  
 
   const handleDismiss = () => {
     if (Platform.OS !== 'web') {
@@ -59,7 +65,8 @@ export default function TransactionScreen() {
         setAvatar('');
       }
     } catch (e) {
-      console.error('Błąd ładowania avatara:', e);
+      //console.error('Błąd ładowania avatara:', e);
+      console.log('Błąd ładowania avatara:', e);
     }
   }, []);
 
@@ -79,7 +86,8 @@ export default function TransactionScreen() {
         setUserWallets(result || []);
       }
     } catch (error) {
-      console.error("Błąd pobierania portfeli:", error);
+      //console.error("Błąd pobierania portfeli:", error);
+      console.log("Błąd pobierania portfeli:", error);
     }
   }, [token]);
 
@@ -103,7 +111,8 @@ export default function TransactionScreen() {
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        console.error("Serwer nie zwrócił JSON-a!");
+        //console.error("Serwer nie zwrócił JSON-a!");
+        console.log("Serwer nie zwrócił JSON-a!");
         return 0;
       }
 
@@ -114,7 +123,8 @@ export default function TransactionScreen() {
       }
       return 0;
     } catch (error) {
-      console.error(`Błąd sieci dla ${currencyCode}:`, error);
+      //console.error(`Błąd sieci dla ${currencyCode}:`, error);
+      console.log(`Błąd sieci dla ${currencyCode}:`, error);
       return 0;
     } finally {
       setLoading(false);
@@ -171,6 +181,11 @@ export default function TransactionScreen() {
   };
 
   const handleTransaction = async () => {
+    if (!netInfo.isConnected) {
+      setMessage({ text: strings.transaction_offline_error, type: 'error' });
+      return;
+    }
+    
     setMessage({ text: '', type: null });    
     
     const fAmount = parseFloat(displayFrom);
@@ -227,6 +242,22 @@ export default function TransactionScreen() {
     setMessage({ text: '', type: null });
   };
 
+  useEffect(() => {
+    if (netInfo.isConnected === false) {
+      setMessage({ 
+        text: strings.transaction_offline_error, 
+        type: 'error' 
+      });
+    } else if (netInfo.isConnected === true) {
+      console.log("Internet wrócił!");
+      
+      if (message.text === strings.transaction_offline_error) {
+        setMessage({ text: '', type: null });
+      }
+      
+    }
+  }, [netInfo.isConnected, strings.transaction_offline_error]);
+
 
   return (
     <TouchableWithoutFeedback onPress={handleDismiss} accessible={false}>
@@ -235,8 +266,24 @@ export default function TransactionScreen() {
               { backgroundColor: theme.background }
             ]}>
           <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-            <ThemedText type="titleSmall">{avatar}</ThemedText>
+            {avatar === '' ? (
+                <ThemedText type="titleSmall">👤</ThemedText>
+            ) : (
+                <ThemedText type="titleSmall">{avatar}</ThemedText>
+            )}
           </TouchableOpacity>
+
+          {isOffline && (
+            <View style={styles.offlineWrapper}>
+              <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                  {strings.no_internet_connection}
+              </ThemedText>
+              <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+                  {strings.no_internet_connection_disclaimer}
+              </ThemedText>
+            </View>
+          )}
+
           <View style={styles.titleWrapper}>
             <ThemedText
               type="titleMid"
@@ -285,6 +332,7 @@ export default function TransactionScreen() {
                       style={[styles.textInput, { color: theme.highContrast }]}
                       placeholder="0.00"
                       secureTextEntry={false}
+                      editable={!isOffline && !loading}
                       autoComplete="off"
                       textContentType="none"
                       placeholderTextColor={theme.highContrast}
@@ -294,6 +342,10 @@ export default function TransactionScreen() {
                         clearMessage();
                         
                         const cleanVal = val.replace(',', '.');
+                        
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (cleanVal !== "" && !regex.test(cleanVal)) return;
+
                         const numInput = parseFloat(cleanVal) || 0;
 
                         const currentWallet = userWallets.find(w => w.currency === fromCurrency);
@@ -307,7 +359,7 @@ export default function TransactionScreen() {
                             type: 'error' 
                           });
                         } else {
-                          setAmount(val);
+                          setAmount(cleanVal);
                           setLastChanged('from');
                         }
                       }}
@@ -324,17 +376,28 @@ export default function TransactionScreen() {
                         selectedValue={fromCurrency}
                         onValueChange={(itemValue) => {
                           clearMessage(); 
-                          setFromCurrency(itemValue);
+                          setPickerFirstVisibility(false);
+                          setPickerSecondVisibility(false);                           setFromCurrency(itemValue);
                         }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
+                      {currencies.map((curr) => (
+                        <Picker.Item 
+                          key={curr.code} 
+                          label={`${curr.code} - ${curr.name}`} 
+                          value={curr.code} 
+                          color={theme.highContrast}
+                        />
+                      ))}
+                      {/*
                         <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
                         <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                      */}
                     </Picker>
                 </View>
                 )}
@@ -381,6 +444,7 @@ export default function TransactionScreen() {
                       style={[styles.textInput, { color: theme.highContrast }]}
                       placeholder="0.00"
                       secureTextEntry={false}
+                      editable={!isOffline && !loading}
                       autoComplete="off"
                       textContentType="none"
                       placeholderTextColor={theme.highContrast}
@@ -389,8 +453,11 @@ export default function TransactionScreen() {
                       onChangeText={(val) => {
                         clearMessage();
                         const cleanVal = val.replace(',', '.');
-                        const numInputTo = parseFloat(cleanVal) || 0;
 
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (cleanVal !== "" && !regex.test(cleanVal)) return;
+
+                        const numInputTo = parseFloat(cleanVal) || 0;
                         const sourceWallet = userWallets.find(w => w.currency === fromCurrency);
                         const balanceFrom = sourceWallet ? sourceWallet.amount : 0;
 
@@ -405,7 +472,7 @@ export default function TransactionScreen() {
                         if (estimatedCostFrom > balanceFrom) {
                           const maxToBuy = balanceFrom * transactionRate;
                           
-                          const safeMax = (Math.floor(maxToBuy * 100) / 100).toString();
+                          const safeMax = (Math.floor(maxToBuy * 100) / 100).toFixed(2).toString();
 
                           setAmount(safeMax);
                           setLastChanged('to');
@@ -414,7 +481,7 @@ export default function TransactionScreen() {
                             type: 'error' 
                           });
                         } else {
-                          setAmount(val);
+                          setAmount(cleanVal);
                           setLastChanged('to');
                         }
                       }}
@@ -430,18 +497,22 @@ export default function TransactionScreen() {
                     <Picker
                         selectedValue={toCurrency}
                         onValueChange={(itemValue) => {
-                          clearMessage(); 
+                          clearMessage();
+                          setPickerFirstVisibility(false);
+                          setPickerSecondVisibility(false); 
                           setToCurrency(itemValue);
                         }}
                         style={{ color: theme.highContrast }}
                         dropdownIconColor={theme.highContrast}
                     >
-                        <Picker.Item label={strings.topup_PLN} value="PLN" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_EUR} value="EUR" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_USD} value="USD" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_GBP} value="GBP" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CHF} value="CHF" color={theme.highContrast}/>
-                        <Picker.Item label={strings.topup_CZK} value="CZK" color={theme.highContrast}/>
+                        {currencies.map((curr) => (
+                        <Picker.Item 
+                          key={curr.code} 
+                          label={`${curr.code} - ${curr.name}`} 
+                          value={curr.code} 
+                          color={theme.highContrast}
+                        />
+                      ))}
                     </Picker>
                 </View>
                 )}
@@ -466,11 +537,12 @@ export default function TransactionScreen() {
             </View>
             
           </ScrollView>
+
           <View style={styles.buttonWrapper}>
             <TouchableOpacity 
-              style={[styles.button, { backgroundColor: theme.highContrast }]} 
+              style={[styles.button, { backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1 }]} 
               onPress={handleTransaction}
-              disabled={loading}
+              disabled={loading || isOffline}
             >
               {loading ? (
                 <ActivityIndicator color={theme.background} />
@@ -502,6 +574,22 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 70, // '11%'
     right: 40, // '10.5%'
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  offlineText: {
+    fontSize: 10,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
+    lineHeight: 16,
   },
   titleWrapper: {
     width: '100%',

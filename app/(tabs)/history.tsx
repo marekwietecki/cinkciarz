@@ -11,21 +11,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '@/contexts/authContext';
 import { SortAZIcon, SortZAIcon } from '@/components/Icons';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import { AVATAR_KEY, BASE_API_URL } from '@/config';
 
 
 export default function HistoryScreen() {
   const router = useRouter();
-    const { strings } = useContext(LanguageContext);
-    const { theme } = useContext(ThemeContext);
-    const { token } = useContext(AuthContext);
-    
-    const [ avatar, setAvatar ] = useState('');
-    const [ history, setHistory ] = useState<TransactionExtended[]>([]);
-    const [historyDirection, setHistoryDirection] = useState<'AZ' | 'ZA'>('AZ');
+  const { strings } = useContext(LanguageContext);
+  const { theme } = useContext(ThemeContext);
+  const { token } = useContext(AuthContext);
   
-    const ensureWallet = async () => {
+  const [ avatar, setAvatar ] = useState('');
+  const [ history, setHistory ] = useState<TransactionExtended[]>([]);
+  const [historyDirection, setHistoryDirection] = useState<'AZ' | 'ZA'>('AZ');
+  const HISTORY_CACHE_KEY = '@wallet_history_cache';
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false;  
+  const [isDataFromCache, setIsDataFromCache] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const ensureWallet = async () => {
+    if (isOffline) {
+      console.log("ensureWallet: Skip (offline mode)");
+      return;
+    }
+
+    try {
       const response = await fetch(`${BASE_API_URL}/wallet/create`, {
         method: 'POST',
         headers: {
@@ -39,7 +51,10 @@ export default function HistoryScreen() {
       } else if (response.status === 400) {
         console.log("Wallet already exists");
       }
-    };
+    } catch (error) {
+      console.log("ensureWallet: Network error (silent catch)");
+    }
+  };
 
   const loadAvatar = useCallback(async () => {
     try {
@@ -92,8 +107,18 @@ export default function HistoryScreen() {
         });
         
         setHistory(enhancedHistory);
+        setIsDataFromCache(false);
+
+        await AsyncStorage.setItem(HISTORY_CACHE_KEY, JSON.stringify(enhancedHistory));
       } catch (e) {
-        console.error("Błąd historii:", e);
+        //console.error("Błąd historii:", e);
+        console.log("Błąd historii:", e);
+        setIsDataFromCache(true);
+        
+        const cachedData = await AsyncStorage.getItem(HISTORY_CACHE_KEY);
+        if (cachedData) {
+          setHistory(JSON.parse(cachedData));
+        }
       }
   }, []);
   
@@ -121,6 +146,19 @@ export default function HistoryScreen() {
     });
   }, [history, historyDirection]);
 
+  useEffect(() => {
+    if (netInfo.isConnected === true) {
+      console.log("Internet wrócił! Odświeżam historię...");
+      loadHistory();
+    }
+  }, [netInfo.isConnected, loadHistory]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadHistory();
+    setRefreshing(false);
+  };
+
   return (
     <View style={[
       styles.container,
@@ -133,6 +171,18 @@ export default function HistoryScreen() {
             <ThemedText type="titleSmall">{avatar}</ThemedText>
         )}
       </TouchableOpacity>
+      
+      {isOffline && (
+        <View style={styles.offlineWrapper}>
+          <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+              {strings.no_internet_connection}
+          </ThemedText>
+          <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+              {strings.no_internet_connection_disclaimer}
+          </ThemedText>
+        </View>
+      )}
+
       <View style={styles.titleIconWrapper}>
         <ThemedText
           type="titleMid"
@@ -148,6 +198,15 @@ export default function HistoryScreen() {
         </TouchableOpacity>
       </View>
 
+      {(isOffline || isDataFromCache) && (
+        <ThemedText
+          type="textSmall"
+          style={[{ fontFamily: Fonts.regular, color: theme.lowContrast }, styles.disclaimer]}
+        >
+          {strings.history_disclaimer}
+        </ThemedText>
+      )}
+
       {history.length === 0 ? (
         <ThemedText style={{ textAlign: 'center', marginTop: 20, color: theme.highContrast }}>
           Brak historii transakcji
@@ -155,6 +214,7 @@ export default function HistoryScreen() {
       ) : (
         <FlatList
           data={sortedHistory}
+          refreshing={refreshing}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <HistoricTransaction transaction={item}/>}
           contentContainerStyle={{ paddingVertical: 12 }}
@@ -192,6 +252,22 @@ const styles = StyleSheet.create({
     top: 70, // '11%'
     right: 40, // '10.5%'
   },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  offlineText: {
+    fontSize: 10,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
   titleIconWrapper: {
     flexDirection: 'row', 
     alignItems: 'center', 
@@ -204,5 +280,13 @@ const styles = StyleSheet.create({
     paddingLeft: '6%', 
     marginBottom: '4%',
     marginTop: '2%',
+  },
+  disclaimer: {
+    alignSelf: 'center',
+    textAlign: 'center', 
+    marginTop: 6, // '2%'
+    marginBottom: 12, // '4%'
+    paddingHorizontal: 48, // '10%'
+    maxWidth: 480,
   },
 });

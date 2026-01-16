@@ -4,15 +4,16 @@ import { ThemedText } from '@/components/themed-text';
 import { AuthContext } from '@/contexts/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, View, ViewStyle } from 'react-native';
 import currenciesJson from '../../backend/currencies.json';
 import { LanguageContext } from '../../contexts/languageContext';
 import { ThemeContext } from '../../contexts/themeContext';
-import { Fonts } from '../_layout';
-import { useWindowDimensions } from 'react-native';
 
-import { AVATAR_KEY, BASE_API_URL } from '@/config';
+import { Fonts } from '../_layout';
+
+import { BASE_API_URL } from '@/config';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 
 interface CurrencyWalletCardProps {
@@ -27,11 +28,15 @@ export default function WalletScreen() {
   const { strings } = useContext(LanguageContext);
   const { theme } = useContext(ThemeContext);
   const { token } = useContext(AuthContext);
-  const { loggedin } = useLocalSearchParams();
+  const { loggedin } = useLocalSearchParams<{ loggedin: string }>();  
   const { width } = useWindowDimensions();
   
-  const isLargeScreen = width > 480;
-  const dynamicGap = isLargeScreen ? 40 : 20;
+  const isWideScreen = width > 484;
+  const dynamicGap = isWideScreen ? 40 : 4;
+  const messageMargins = {
+    marginTop: isWideScreen ? 20 : '1.5%',
+    marginBottom: isWideScreen ? 40 : '2.5%',
+  }
   
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [ avatar, setAvatar ] = useState('');
@@ -39,10 +44,17 @@ export default function WalletScreen() {
   const [ wallets, setWallets ] = useState<CurrencyWalletCardProps[]>([]);
   const [ history, setHistory ] = useState<TransactionExtended[]>([]);
   const [ totalBalance, setTotalBalance ] = useState(0);
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false;
+  const prevIsConnected = useRef<boolean | null>(null)
+  const WALLETS_CACHE_KEY = 'CACHED_WALLETS';
+  const HISTORY_CACHE_KEY = 'CACHED_HISTORY';
+  const TOTAL_BALANCE_CACHE_KEY = 'CACHED_TOTAL_BALANCE';
   
   useEffect(() => {
     if (loggedin === 'true') {
       setMessage({ text: strings.login_success_message, type: 'success' });
+      router.setParams({ loggedin: '' });
       
       const timer = setTimeout(() => {
         setMessage({ text: '', type: null });
@@ -65,56 +77,69 @@ export default function WalletScreen() {
         setAvatar('');
       }
     } catch (e) {
-      console.error('Błąd ładowania avatara:', e);
+      //console.error('Błąd ładowania avatara:', e);
+      console.log('Błąd ładowania avatara:', e);
     }
   }, []);
 
-const fetchRate = useCallback(async (currencyCode: string) => {
-  if (currencyCode === 'PLN') return 1; 
-  try {
-    const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
-    if (!response.ok) return 0;
-    const result = await response.json();
-    return result.success ? result.data[result.data.length - 1].rate : 0;
-  } catch (e) { return 0; }
-}, []);
+  const fetchRate = useCallback(async (currencyCode: string) => {
+    if (currencyCode === 'PLN') return 1; 
+    try {
+      const response = await fetch(`${BASE_API_URL}/nbp/rate/A/${currencyCode}`);
+      if (!response.ok) return 0;
+      const result = await response.json();
+      return result.success ? result.data[result.data.length - 1].rate : 0;
+    } catch (e) { return 0; }
+  }, []);
 
-const fetchWallets = useCallback(async () => {
-  try {
-    setLoading(true);
+  const fetchWallets = useCallback(async () => {
+    if (isOffline) {
+      const cachedWallets = await AsyncStorage.getItem(WALLETS_CACHE_KEY);
+      const cachedTotal = await AsyncStorage.getItem(TOTAL_BALANCE_CACHE_KEY);
 
-    const response = await fetch(`${BASE_API_URL}/wallet`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    
-    const walletsData = await response.json();
-    const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
-    const uniqueCurrencies = [...new Set(safeWalletsData.map((w: any) => w.currency as string))]
-      .filter(curr => curr !== 'PLN');
-    
+      if(cachedWallets) setWallets(JSON.parse(cachedWallets));
+      if(cachedTotal) setTotalBalance(parseFloat(cachedTotal));
 
-    const ratesArray = await Promise.all(
-      uniqueCurrencies.map(async (currCode) => {
-        
-        const code = String(currCode); 
-        
-        const rate = await fetchRate(code);
-        
-        return { 
-          code: code, 
-          mid: rate || 0 
-        };
-      })
-    );
+      console.log("fetchWallets: Skip (offline)");
+      return;
+    }
 
-    const total = calculateTotal(safeWalletsData, ratesArray);
-    
-    setWallets(walletsData);
-    setTotalBalance(total);
-  } finally {
-    setLoading(false);
-  }
-}, [fetchRate]);
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${BASE_API_URL}/wallet`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      
+      const walletsData = await response.json();
+      const safeWalletsData = Array.isArray(walletsData) ? walletsData : [];
+
+      const uniqueCurrencies = [...new Set(safeWalletsData.map((w: any) => w.currency as string))]
+        .filter(curr => curr !== 'PLN');
+      
+
+      const ratesArray = await Promise.all(
+        uniqueCurrencies.map(async (currCode) => {
+          const rate = await fetchRate(String(currCode));
+          return { 
+            code: currCode, 
+            mid: rate || 0 
+          };
+        })
+      );
+
+      const total = calculateTotal(safeWalletsData, ratesArray);
+      
+      setWallets(walletsData);
+      setTotalBalance(total);
+
+      await AsyncStorage.setItem(WALLETS_CACHE_KEY, JSON.stringify(walletsData));
+      await AsyncStorage.setItem(TOTAL_BALANCE_CACHE_KEY, total.toString());
+
+    } finally {
+      setLoading(false);
+    }
+  }, [isOffline, token, fetchRate]);
 
   const calculateTotal = (wallets: any[], rates: any[]) => {
     return wallets.reduce((sum: number, wallet: { currency: string; amount: number; }) => {
@@ -130,62 +155,83 @@ const fetchWallets = useCallback(async () => {
   };
 
   const ensureWallet = async () => {
-    const response = await fetch(`${BASE_API_URL}/wallet/create`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    if (isOffline) {
+      console.log("ensureWallet: Skip (offline mode)");
+      return;
+    }
 
-    if (response.status === 201) {
-      console.log("Wallet created");
-    } else if (response.status === 400) {
-      console.log("Wallet already exists");
+    try {
+      const response = await fetch(`${BASE_API_URL}/wallet/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 201) {
+        console.log("Wallet created");
+      } else if (response.status === 400) {
+        console.log("Wallet already exists");
+      }
+    } catch (error) {
+      console.log("ensureWallet: Network error (silent catch)");
     }
   };
 
   const loadHistory = useCallback(async () => {
-  try {
-    await ensureWallet();
-
-    const response = await fetch(`${BASE_API_URL}/wallet/history`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    if (isOffline) {
+      const cachedHistory = await AsyncStorage.getItem(HISTORY_CACHE_KEY);
+      if (cachedHistory) {
+        setHistory(JSON.parse(cachedHistory));
+        console.log("loadHistory: Załadowano historię z cache (offline)");
       }
-    });
-
-    if (response.ok) {
-      const rawTransactions = await response.json();
-      console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk"); //TEST
-      
-      const enhanced = rawTransactions
-        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 1)
-        .map((tx: any) => {
-          const fromCode = tx.from_currency?.toUpperCase();
-          const toCode = tx.to_currency?.toUpperCase();
-
-          const fromInfo = currenciesJson.find(c => c.code === fromCode);
-          const toInfo = currenciesJson.find(c => c.code === toCode);
-
-          return {
-            ...tx, 
-            fromFlag: fromInfo?.flag || '🏳️',
-            toFlag: toInfo?.flag || '🏳️',
-            from_currency: fromCode,
-            to_currency: toCode,
-          };
-        });
-
-      setHistory(enhanced);
+      return;
     }
-  } catch (error) {
-    console.error("Błąd ładowania historii:", error);
-  }
-}, []);
+    
+    try {
+      await ensureWallet();
+
+      const response = await fetch(`${BASE_API_URL}/wallet/history`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const rawTransactions = await response.json();
+        console.log("1. RAW DATA Z SERWERA:", rawTransactions.length, "sztuk");
+        
+        const enhanced = rawTransactions
+          .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 1)
+          .map((tx: any) => {
+            const fromCode = tx.from_currency?.toUpperCase();
+            const toCode = tx.to_currency?.toUpperCase();
+
+            const fromInfo = currenciesJson.find(c => c.code === fromCode);
+            const toInfo = currenciesJson.find(c => c.code === toCode);
+
+            return {
+              ...tx, 
+              fromFlag: fromInfo?.flag || '🏳️',
+              toFlag: toInfo?.flag || '🏳️',
+              from_currency: fromCode,
+              to_currency: toCode,
+            };
+          });
+
+        setHistory(enhanced);
+
+        await AsyncStorage.setItem(HISTORY_CACHE_KEY, JSON.stringify(enhanced));
+      }
+    } catch (error) {
+      //console.error("Błąd ładowania historii:", error);
+      console.log("Błąd ładowania historii:", error);
+    }
+  }, [isOffline, token]);
   
   useFocusEffect(
     useCallback(() => {
@@ -195,14 +241,72 @@ const fetchWallets = useCallback(async () => {
     }, [loadAvatar, fetchWallets, loadHistory])
   );
 
+  useEffect(() => {
+    if (netInfo.isConnected === true) {
+      console.log("Internet wrócił! Odświeżam historię...");
+      loadHistory();
+      fetchWallets();
+    }
+  }, [netInfo.isConnected]);
+
+  useEffect(() => {
+    const prev = prevIsConnected.current;
+    const current = netInfo.isConnected;
+
+    // First render
+    if (prev === null || current === null) {
+      prevIsConnected.current = current;
+      return;
+    }
+
+    // offline
+    if (prev === true && current === false) {
+      setMessage({
+        text: strings.wallet_offline_error,
+        type: 'error',
+      });
+    }
+
+    // back online
+    if (prev === false && current === true) {
+      setMessage({
+        text: strings.wallet_back_online,
+        type: 'success',
+      });
+
+      setTimeout(() => {
+        setMessage({ text: '', type: null });
+      }, 3000);
+    }
+
+    prevIsConnected.current = current;
+  }, [netInfo.isConnected]);
+
+
   return (
     <View style={[
           styles.container,
           { backgroundColor: theme.background }
         ]}>
       <TouchableOpacity style={[styles.profileLink, { backgroundColor: theme.veryLowContrast }]} onPress={() => router.push('../profile')}>
-        <ThemedText type="titleSmall" style={{ color: theme.highContrast }}>{avatar}</ThemedText>
+        {avatar === '' ? (
+            <ThemedText type="titleSmall">👤</ThemedText>
+        ) : (
+            <ThemedText type="titleSmall">{avatar}</ThemedText>
+        )}
       </TouchableOpacity>
+
+    {isOffline && (
+      <View style={styles.offlineWrapper}>
+        <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+            {strings.no_internet_connection}
+        </ThemedText>
+        <ThemedText style={[styles.offlineText, { color: theme.lowContrast }]}>
+            {strings.no_internet_connection_disclaimer}
+        </ThemedText>
+      </View>
+    )}
+
       <View style={styles.titleWrapper}>  
         <ThemedText
           type="titleMid"
@@ -231,64 +335,79 @@ const fetchWallets = useCallback(async () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        horizontal 
-        style={{ marginTop: 16 }}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ 
-          paddingHorizontal: 16, //'4%'
-          paddingVertical: 8,
-          columnGap: dynamicGap, 
-          justifyContent: 'center' 
-        }}
-      >
-        {loading ? (
-          <ActivityIndicator color={theme.highContrast} />
-        ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? ( 
-          wallets
-            .filter(wallet => (wallet.amount ?? 0) > 0) 
-            .map((wallet, index, array) => (
-              <React.Fragment key={wallet.id || index}>
-                <CurrencyWalletCard
-                  wallet_id={wallet.wallet_id}
-                  id={wallet.id}
-                  currency_code={wallet.currency}
-                  balance={wallet.amount}
-                />
-                {index < array.length - 1 && (
-                  <View 
-                    style={{
-                      width: 1,
-                      height: 40, 
-                      backgroundColor: theme.midContrast, 
-                      opacity: 0.2, 
-                      alignSelf: 'flex-start',
-                      marginTop: 32, //'5%'
-                      marginHorizontal: 10 
-                    }} 
+      <View style={{maxHeight: 120, height: 120, width: '100%', alignItems: 'center' }}>  
+        <ScrollView
+          horizontal 
+          style={{ marginTop: 8, width: '100%', maxWidth: 340 //backgroundColor: 'blue'
+          }}
+          showsHorizontalScrollIndicator={true}
+          contentContainerStyle={{ 
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 8,
+            columnGap: dynamicGap,
+          }}
+        >
+          {loading ? (
+            <ActivityIndicator color={theme.highContrast} />
+          ) : (wallets && Array.isArray(wallets) && wallets.filter(w => (w.amount ?? 0) > 0).length > 0) ? (
+            wallets
+              .filter(wallet => (wallet.amount ?? 0) > 0) 
+              .map((wallet, index, array) => (
+                <React.Fragment key={wallet.id || index}>
+                  <CurrencyWalletCard
+                    wallet_id={wallet.wallet_id}
+                    id={wallet.id}
+                    currency_code={wallet.currency}
+                    balance={wallet.amount}
                   />
-                )}
-              </React.Fragment>
-            ))
-        ) : (
-          <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 12 }}>
-            <ThemedText style={{ color: theme.lowContrast, textAlign: 'center' }}>
-              {strings.wallet_no_funds}
-            </ThemedText>
-          </View>
-        )}
-      </ScrollView>
-      
-      {message.type && message.text ? (
-        <View style={ styles.messageContainer }>
-          <ThemedText 
-            type="default"
-            style={[styles.message, {color: message.type === 'error' ? theme.failure : theme.success}]} 
-          >
-            {message.text}  
-          </ThemedText>  
-        </View>
-      ) : null}
+                  {index < array.length - 1 && (
+                    <View 
+                      style={{
+                        width: 1,
+                        height: 40, 
+                        backgroundColor: theme.midContrast, 
+                        opacity: 0.2, 
+                        alignSelf: 'center',
+                        marginTop: 32, //'5%'
+                        marginHorizontal: 10 
+                      }} 
+                    />
+                  )}
+                </React.Fragment>
+              ))
+          ) : (
+            <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 12 }}>
+              <ThemedText style={{ color: theme.lowContrast, textAlign: 'center', fontSize: 14 }}>
+                {strings.wallet_no_funds}
+              </ThemedText>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+
+      <View 
+        style={[
+          styles.messageContainer, messageMargins as ViewStyle,
+          { 
+            opacity: (message.type && message.text) ? 1 : 0 
+          }
+        ]}
+      >
+        <ThemedText 
+          type="default"
+          style={[
+            styles.message, 
+            { 
+              color: message.type === 'error' ? theme.failure : theme.success 
+            }
+          ]} 
+        >
+          {/* if no text space is being displayed, to maintain proper height */}
+          {message.text || " "}  
+        </ThemedText>  
+      </View>
 
       <View style={styles.titleWrapper}>  
         <ThemedText
@@ -310,7 +429,7 @@ const fetchWallets = useCallback(async () => {
             </View>
           )}
           ListEmptyComponent={() => (
-            <ThemedText style={{ textAlign: 'center', marginTop: 40, color: theme.lowContrast }}>
+            <ThemedText style={{ textAlign: 'center', marginTop: 40, color: theme.lowContrast, fontSize: 14 }}>
               {strings.wallet_no_transactions}
             </ThemedText>
           )}
@@ -350,7 +469,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingHorizontal: '4%',
     paddingTop: 120, // '32%'
   },
@@ -361,6 +480,22 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 70, // '11%'
     right: 40, // '10.5%'
+  },
+  offlineWrapper: {
+    position: 'absolute',
+    top: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    maxWidth: 220,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  offlineText: {
+    fontSize: 10,
+    fontFamily: Fonts.bold,
+    textAlign: 'center',
+    lineHeight: 16,
   },
   titleWrapper: {
     width: '100%',
@@ -375,7 +510,7 @@ const styles = StyleSheet.create({
   walletWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 12,
     width: 288, //264
     height: 184.42, //169
   },
@@ -393,8 +528,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   messageContainer: {
-    marginVertical: 16, 
-    paddingHorizontal: 20
+    marginTop: '6%', //iOS 1.5%, Android 6%, Web ?
+    marginBottom: '12%', //iOS 2.5%, Android 12%, Web ?
+    paddingHorizontal: 20,
+    //height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    //backgroundColor: 'blue',
   },
   message: {
     textAlign: 'center',

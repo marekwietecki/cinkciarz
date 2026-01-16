@@ -10,6 +10,7 @@ import { Fonts } from '../_layout';
 import { BASE_API_URL } from '@/config';
 import { AuthContext } from '@/contexts/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -23,6 +24,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' | null}>({ text: '', type: null});
   const [loading, setLoading] = useState(false);
+  const netInfo = useNetInfo();
+  const isOffline = netInfo.isConnected === false; 
 
   useEffect(() => {
     if (registered === 'true') {
@@ -81,6 +84,7 @@ export default function LoginScreen() {
             pathname: '/',
             params: { loggedin: 'true' }
           });
+          setTimeout(() => login(token), 100);
         } else {
           //no token
           setMessage({text: strings.login_token_error, type: 'error'})
@@ -93,7 +97,8 @@ export default function LoginScreen() {
       }
     } catch (error) {
       //network
-      console.error("Błąd logowania:", error);
+      //console.error("Błąd logowania:", error);
+      console.log("Błąd logowania:", error);
       setMessage({ text: strings.login_network_error, type: 'error'})
     } finally {
       setLoading(false);
@@ -117,6 +122,16 @@ export default function LoginScreen() {
   // if (token !== null) {
   //   return <Redirect href="/(tabs)" />
   // }
+
+  useEffect(() => {
+    if (isOffline) {
+      setMessage({ text: strings.login_offline_error, type: 'error' });
+    } else {
+      setMessage((prev) => 
+        prev.text === strings.login_offline_error ? { text: '', type: null } : prev
+      );
+    }
+  }, [isOffline, strings.login_offline_error]);
 
   return (
     <KeyboardAvoidingView 
@@ -151,6 +166,7 @@ export default function LoginScreen() {
                   value={email}
                   keyboardType='email-address'
                   autoCapitalize='none'
+                  editable={!isOffline && !loading}
                 />
             </View>
             <View style={styles.singleInputContainer}>
@@ -165,6 +181,7 @@ export default function LoginScreen() {
                 onChangeText={handleSetPassword}
                 value={password}
                 secureTextEntry={true}
+                editable={!isOffline && !loading}
               />
             </View>
           </View>
@@ -181,9 +198,9 @@ export default function LoginScreen() {
           ) : null}
 
           <TouchableOpacity 
-            style={[styles.button, {backgroundColor: theme.highContrast}]}
+            style={[styles.button, {backgroundColor: theme.highContrast, opacity: (loading || isOffline) ? 0.2 : 1}]}
             onPress={handleLogin}
-            disabled={loading}
+            disabled={loading || isOffline}
           >
             <ThemedText type='default' style={{ color: theme.accentDark}}>
               {loading ? strings.login_loading : strings.login_button}
